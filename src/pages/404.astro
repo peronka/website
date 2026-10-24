@@ -1,0 +1,58 @@
+---
+import { ArrowLeft } from '@lucide/astro';
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Base title="Nie ma takiej strony">
+  <Nav tone="light" />
+  <main class="wrap notfound" id="tresc">
+    <p class="notfound__code mono">404 · Peron nieznany</p>
+    <h1 class="notfound__title">Ten pociąg tu nie zatrzymuje się</h1>
+    <p class="notfound__lead">Strona, której szukasz, nie istnieje albo zmieniła adres.</p>
+    <a class="notfound__link" href="/"><ArrowLeft size={18} aria-hidden="true" /> Wróć na stronę główną</a>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .notfound {
+    display: grid;
+    justify-items: start;
+    gap: 20px;
+    padding-top: clamp(72px, 12vw, 160px);
+    padding-bottom: clamp(72px, 12vw, 160px);
+  }
+
+  .notfound__code {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--amber);
+  }
+
+  .notfound__title {
+    max-width: 14ch;
+    font-size: clamp(2.4rem, 1.8rem + 2.6vw, 3.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+
+  .notfound__lead {
+    font-size: 1.125rem;
+    color: var(--ink-2);
+  }
+
+  .notfound__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 12px 20px;
+    border-radius: 999px;
+    background: var(--navy);
+    color: var(--white);
+    font-weight: 700;
+    text-decoration: none;
+  }
+</style>

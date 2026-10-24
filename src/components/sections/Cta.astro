@@ -1,0 +1,71 @@
+---
+import { Image } from 'astro:assets';
+import icon from '../../assets/brand/icon.png';
+import StoreButton from '../StoreButton.astro';
+---
+
+<section class="cta wrap" id="pobierz">
+  <div class="cta__band">
+    <Image src={icon} alt="" width={104} height={104} densities={[1, 2]} class="cta__icon" />
+    <div class="cta__text">
+      <h2 class="cta__title">Sprawdź swój pociąg, zanim wyjdziesz z domu</h2>
+      <p class="cta__meta mono">Bezpłatna · bez konta · iPhone</p>
+    </div>
+    <StoreButton />
+  </div>
+</section>
+
+<style>
+  .cta {
+    padding-bottom: var(--section);
+  }
+
+  .cta__band {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 48px;
+    align-items: center;
+    padding: 64px 72px;
+    border-radius: 32px;
+    background: linear-gradient(120deg, var(--navy-2) 0%, var(--navy) 60%, var(--night) 100%);
+    color: var(--white);
+  }
+
+  .cta__icon {
+    width: 104px;
+    height: 104px;
+    border-radius: 24px;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.15);
+  }
+
+  .cta__text {
+    display: grid;
+    gap: 10px;
+  }
+
+  .cta__title {
+    font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.5rem);
+    line-height: 1.08;
+  }
+
+  .cta__meta {
+    font-size: 0.875rem;
+    color: var(--mist);
+  }
+
+  @media (max-width: 860px) {
+    .cta__band {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: start;
+      gap: 20px;
+      padding: 28px;
+      border-radius: 24px;
+    }
+
+    .cta__icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 15px;
+    }
+  }
+</style>

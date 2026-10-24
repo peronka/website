@@ -1,0 +1,699 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { site, statusComponents } from '../config';
+
+const metrics = [
+  { key: 'uptime_30d_pct', label: 'Dostępność · 30 dni' },
+  { key: 'uptime_90d_pct', label: 'Dostępność · 90 dni' },
+  { key: 'api_avg_response_ms', label: 'Średni czas odpowiedzi API' },
+  { key: 'incidents_30d', label: 'Incydenty · 30 dni' },
+];
+---
+
+<Base title="Status usług" description="Bieżący stan API, danych PKP PLK OpenData, powiadomień i aplikacji Peronka.">
+  <Nav tone="light" />
+  <main class="status" data-api={site.statusApiBase} data-state="loading">
+    <section class="hero" id="tresc">
+      <div class="wrap hero__inner">
+        <p class="hero__kicker mono">Status usług</p>
+        <div class="hero__overall">
+          <span class="hero__dot" aria-hidden="true"><span></span></span>
+          <h1 class="hero__title" data-overall-title aria-live="polite">Sprawdzamy status…</h1>
+        </div>
+        <p class="hero__lead" data-overall-lead>Pobieramy aktualny stan usług Peronki.</p>
+        <p class="hero__meta mono" data-updated>&nbsp;</p>
+      </div>
+    </section>
+
+    <dl class="wrap metrics">
+      {
+        metrics.map((m) => (
+          <div class="metric">
+            <dt class="mono">{m.label}</dt>
+            <dd class="mono" data-metric={m.key}>—</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <section class="wrap components" aria-labelledby="components-title">
+      <div class="components__head">
+        <h2 id="components-title">Komponenty</h2>
+        <ul class="legend" aria-label="Legenda">
+          <li><span class="legend__sw legend__sw--ok"></span>Działa</li>
+          <li><span class="legend__sw legend__sw--degraded"></span>Spowolnione</li>
+          <li><span class="legend__sw legend__sw--down"></span>Awaria</li>
+        </ul>
+      </div>
+      <ul class="component-list">
+        {
+          statusComponents.map((c) => (
+            <li class="component" data-component={c.key}>
+              <div class="component__top">
+                <div>
+                  <h3 class="component__name">{c.name}</h3>
+                  <p class="component__desc">{c.description}</p>
+                </div>
+                <span class="pill pill--unknown" data-pill>
+                  <span class="pill__dot" aria-hidden="true" />
+                  <span data-pill-label>Sprawdzamy…</span>
+                </span>
+              </div>
+              <div class="bars" data-bars role="img" aria-label="Historia z ostatnich 60 dni">
+                {Array.from({ length: 60 }, () => <span class="bar" />)}
+              </div>
+              <div class="component__labels mono">
+                <span><span class="days-long">60</span><span class="days-short">30</span> dni temu</span>
+                <span class="component__uptime" data-uptime>&nbsp;</span>
+                <span>Dziś</span>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="wrap incidents" aria-labelledby="incidents-title">
+      <h2 id="incidents-title">Historia incydentów</h2>
+      <p class="incidents__sub">Ostatnie 30 dni.</p>
+      <ol class="incident-list" data-incidents>
+        <li class="incidents__empty">Ładujemy historię…</li>
+      </ol>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  type State = 'ok' | 'degraded' | 'down';
+
+  interface StatusPayload {
+    overall: State;
+    generated_at: string;
+    refresh_seconds: number;
+    metrics: { uptime_30d_pct: number; uptime_90d_pct: number; api_avg_response_ms: number; incidents_30d: number };
+    components: { key: string; name: string; state: State; uptime_60d_pct: number; daily: { date: string; state: State }[] }[];
+    incidents: {
+      id: string;
+      started_at: string;
+      duration_min: number;
+      severity: 'minor' | 'major';
+      resolved: boolean;
+      title: string;
+      description: string;
+      components: string[];
+      timeline: { at: string; label: string }[];
+    }[];
+  }
+
+  const OVERALL: Record<State | 'error', [string, string]> = {
+    ok: [
+      'Wszystko działa',
+      'Odjazdy, opóźnienia i powiadomienia docierają normalnie. Jeśli coś przestanie działać, zobaczysz to tutaj w ciągu kilkudziesięciu sekund.',
+    ],
+    degraded: ['Część usług działa wolniej', 'Pracujemy nad tym. Szczegóły znajdziesz poniżej.'],
+    down: ['Trwa awaria', 'Część funkcji jest niedostępna. Pracujemy nad rozwiązaniem — szczegóły poniżej.'],
+    error: ['Nie udało się pobrać statusu', 'Spróbuj odświeżyć stronę za chwilę. Jeśli problem się powtarza, napisz do nas.'],
+  };
+  const PILL: Record<State, string> = { ok: 'Działa', degraded: 'Spowolnione', down: 'Awaria' };
+  const SEVERITY = { minor: 'Drobny', major: 'Poważny' };
+
+  const root = document.querySelector<HTMLElement>('.status')!;
+  const api = `${root.dataset.api}/api/status`;
+  const $ = <T extends Element = HTMLElement>(sel: string, el: ParentNode = root) => el.querySelector<T>(sel);
+
+  const pct = (v: number) =>
+    `${v.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+  const time = (iso: string) => new Date(iso).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+  const duration = (min: number) => (min < 60 ? `${min} min` : `${Math.floor(min / 60)} h ${min % 60} min`);
+
+  function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls: string, text?: string) {
+    const node = document.createElement(tag);
+    node.className = cls;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function setOverall(state: State | 'error') {
+    root.dataset.state = state;
+    $('[data-overall-title]')!.textContent = OVERALL[state][0];
+    $('[data-overall-lead]')!.textContent = OVERALL[state][1];
+  }
+
+  function render(data: StatusPayload) {
+    setOverall(data.overall);
+    const generated = new Date(data.generated_at).toLocaleString('pl-PL', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    $('[data-updated]')!.textContent = `Zaktualizowano ${generated} · odświeża się co ${data.refresh_seconds} s`;
+
+    const m = data.metrics;
+    $('[data-metric="uptime_30d_pct"]')!.textContent = pct(m.uptime_30d_pct);
+    $('[data-metric="uptime_90d_pct"]')!.textContent = pct(m.uptime_90d_pct);
+    $('[data-metric="api_avg_response_ms"]')!.textContent = `${m.api_avg_response_ms} ms`;
+    $('[data-metric="incidents_30d"]')!.textContent = String(m.incidents_30d);
+
+    const names = new Map<string, string>();
+    for (const c of data.components) {
+      names.set(c.key, c.name);
+      const row = $(`[data-component="${c.key}"]`);
+      if (!row) continue;
+      const pill = $('[data-pill]', row)!;
+      pill.className = `pill pill--${c.state}`;
+      $('[data-pill-label]', pill)!.textContent = PILL[c.state];
+      $('[data-uptime]', row)!.textContent = `${pct(c.uptime_60d_pct)} dostępności`;
+      const bars = $('[data-bars]', row)!;
+      bars.replaceChildren(
+        ...c.daily.map((d) => {
+          const bar = el('span', `bar bar--${d.state}`);
+          bar.title = `${d.date}: ${PILL[d.state]}`;
+          return bar;
+        }),
+      );
+    }
+
+    const list = $('[data-incidents]')!;
+    if (!data.incidents.length) {
+      list.replaceChildren(el('li', 'incidents__empty', 'Brak incydentów w ostatnich 30 dniach.'));
+      return;
+    }
+    list.replaceChildren(
+      ...data.incidents.map((inc) => {
+        const started = new Date(inc.started_at);
+        const li = el('li', 'incident');
+
+        const date = el('div', 'incident__date mono');
+        date.append(
+          el('span', 'incident__day', started.toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' })),
+          el('span', 'incident__weekday', started.toLocaleDateString('pl-PL', { weekday: 'long' })),
+        );
+
+        const body = el('div', 'incident__body');
+        const head = el('div', 'incident__head');
+        head.append(
+          el('h3', 'incident__title', inc.title),
+          el('span', `tag tag--${inc.severity}`, SEVERITY[inc.severity] ?? inc.severity),
+          el('span', inc.resolved ? 'tag tag--resolved' : 'tag tag--open', inc.resolved ? 'Rozwiązany' : 'Trwa'),
+        );
+        const comps = inc.components.map((k) => names.get(k) ?? k).join(', ');
+        body.append(
+          head,
+          el('p', 'incident__meta mono', `${inc.resolved ? 'Trwał' : 'Trwa od'} ${duration(inc.duration_min)}${comps ? ` · ${comps}` : ''}`),
+        );
+        if (inc.description) body.append(el('p', 'incident__desc', inc.description));
+
+        if (inc.timeline?.length) {
+          const tl = el('ol', 'timeline');
+          [...inc.timeline].reverse().forEach((t, i) => {
+            const item = el('li', i === 0 && inc.resolved ? 'timeline__item timeline__item--latest' : 'timeline__item');
+            item.append(el('time', 'timeline__time mono', time(t.at)), el('span', 'timeline__label', t.label));
+            tl.append(item);
+          });
+          body.append(tl);
+        }
+
+        li.append(date, body);
+        return li;
+      }),
+    );
+  }
+
+  let loaded = false;
+  let timer: number | undefined;
+
+  async function poll() {
+    let next = 30;
+    try {
+      const res = await fetch(api, { headers: { Accept: 'application/json' } });
+      if (!res.ok) throw new Error(String(res.status));
+      const data: StatusPayload = await res.json();
+      render(data);
+      loaded = true;
+      next = data.refresh_seconds || 30;
+    } catch {
+      // Keep the last good snapshot on screen; only show the error state
+      // if we never managed to load anything.
+      if (!loaded) {
+        setOverall('error');
+        root.querySelectorAll('[data-pill-label]').forEach((l) => (l.textContent = 'Brak danych'));
+        $('[data-incidents]')!.replaceChildren(el('li', 'incidents__empty', 'Nie udało się wczytać historii incydentów.'));
+      }
+    }
+    timer = window.setTimeout(poll, next * 1000);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && timer === undefined) poll();
+    if (document.visibilityState === 'hidden') {
+      window.clearTimeout(timer);
+      timer = undefined;
+    }
+  });
+
+  poll();
+</script>
+
+<style>
+  .hero {
+    background: linear-gradient(160deg, var(--navy) 0%, var(--night) 80%);
+    color: var(--white);
+  }
+
+  .hero__inner {
+    display: grid;
+    gap: 20px;
+    padding-top: clamp(48px, 7vw, 80px);
+    padding-bottom: clamp(48px, 6vw, 72px);
+  }
+
+  .hero__kicker {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--mist);
+  }
+
+  .hero__overall {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .hero__dot {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgb(148 163 184 / 0.2);
+    transition: background 0.3s;
+  }
+
+  .hero__dot span {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #94a3b8;
+    transition: background 0.3s;
+  }
+
+  [data-state='ok'] .hero__dot { background: rgb(34 197 94 / 0.2); }
+  [data-state='ok'] .hero__dot span { background: #22c55e; }
+  [data-state='degraded'] .hero__dot { background: rgb(245 158 11 / 0.2); }
+  [data-state='degraded'] .hero__dot span { background: #f59e0b; }
+  [data-state='down'] .hero__dot { background: rgb(239 68 68 / 0.2); }
+  [data-state='down'] .hero__dot span { background: #ef4444; }
+
+  .hero__title {
+    font-size: clamp(2.2rem, 1.6rem + 2.6vw, 3.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+
+  .hero__lead {
+    max-width: 720px;
+    font-size: clamp(1.05rem, 1rem + 0.3vw, 1.1875rem);
+    line-height: 1.6;
+    color: var(--mist);
+  }
+
+  .hero__meta {
+    font-size: 0.875rem;
+    color: var(--mist-2);
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .metric {
+    display: grid;
+    gap: 8px;
+    padding: 32px;
+  }
+
+  .metric:first-child {
+    padding-left: 0;
+  }
+
+  .metric + .metric {
+    border-left: 1px solid var(--line);
+  }
+
+  .metric dt {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ink-3);
+  }
+
+  .metric dd {
+    margin: 0;
+    font-size: clamp(1.6rem, 1.3rem + 1vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .components {
+    display: grid;
+    gap: 28px;
+    padding-top: 72px;
+  }
+
+  .components__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .components h2,
+  .incidents h2 {
+    font-size: clamp(1.5rem, 1.3rem + 0.7vw, 1.875rem);
+    letter-spacing: -0.03em;
+  }
+
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.8125rem;
+    color: var(--ink-2);
+  }
+
+  .legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legend__sw {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  .legend__sw--ok,
+  .bars :global(.bar.bar--ok) { background: #22c55e; }
+  .legend__sw--degraded,
+  .bars :global(.bar.bar--degraded) { background: #f59e0b; }
+  .legend__sw--down,
+  .bars :global(.bar.bar--down) { background: #ef4444; }
+
+  .component-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .component {
+    display: grid;
+    gap: 16px;
+    padding: 28px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .component:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .component__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .component__name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .component__desc {
+    font-size: 0.9375rem;
+    color: var(--ink-3);
+  }
+
+  .pill {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  .pill__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .pill--unknown { background: #f1f5f9; color: var(--ink-3); }
+  .pill--ok { background: var(--green-soft); color: #15803d; }
+  .pill--degraded { background: var(--amber-soft); color: #b45309; }
+  .pill--down { background: #fee2e2; color: #b91c1c; }
+
+  .bars {
+    display: grid;
+    grid-template-columns: repeat(60, minmax(0, 1fr));
+    gap: 3px;
+    height: 36px;
+  }
+
+  .bars :global(.bar) {
+    border-radius: 2px;
+    background: #e2e8f0;
+  }
+
+  .component__labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--ink-3);
+  }
+
+  .days-short {
+    display: none;
+  }
+
+  .component__uptime {
+    font-weight: 600;
+    color: #334155;
+  }
+
+  .incidents {
+    display: grid;
+    gap: 12px;
+    padding-top: 72px;
+    padding-bottom: var(--section);
+  }
+
+  .incidents__sub {
+    color: var(--ink-3);
+  }
+
+  .incident-list {
+    margin: 20px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .incident-list :global(.incidents__empty) {
+    padding: 28px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-2);
+  }
+
+  .incident-list :global(.incident) {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 48px;
+    padding: 32px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .incident-list :global(.incident:last-child) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .incident-list :global(.incident__date) {
+    display: grid;
+    align-content: start;
+    gap: 4px;
+  }
+
+  .incident-list :global(.incident__day) {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .incident-list :global(.incident__weekday) {
+    font-size: 0.8125rem;
+    color: var(--ink-3);
+  }
+
+  .incident-list :global(.incident__body) {
+    display: grid;
+    gap: 14px;
+    max-width: 720px;
+  }
+
+  .incident-list :global(.incident__head) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .incident-list :global(.incident__title) {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .incident-list :global(.tag) {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .incident-list :global(.tag--minor) { background: var(--amber-soft); color: #b45309; }
+  .incident-list :global(.tag--major) { background: #fee2e2; color: #b91c1c; }
+  .incident-list :global(.tag--resolved) { background: var(--green-soft); color: #15803d; }
+  .incident-list :global(.tag--open) { background: var(--amber-soft); color: #b45309; }
+
+  .incident-list :global(.incident__meta) {
+    font-size: 0.8125rem;
+    color: var(--ink-3);
+  }
+
+  .incident-list :global(.incident__desc) {
+    line-height: 1.6;
+    color: #334155;
+  }
+
+  .incident-list :global(.timeline) {
+    margin: 0;
+    padding: 6px 0 0;
+    list-style: none;
+  }
+
+  .incident-list :global(.timeline__item) {
+    position: relative;
+    display: flex;
+    gap: 12px;
+    padding: 0 0 14px 28px;
+    font-size: 0.875rem;
+  }
+
+  .incident-list :global(.timeline__item)::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 1px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #cbd5e1;
+  }
+
+  .incident-list :global(.timeline__item:not(:last-child))::after {
+    content: '';
+    position: absolute;
+    top: 18px;
+    bottom: 0;
+    left: 5px;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .incident-list :global(.timeline__item--latest)::before {
+    background: var(--green);
+  }
+
+  .incident-list :global(.timeline__time) {
+    flex: none;
+    font-weight: 600;
+  }
+
+  .incident-list :global(.timeline__label) {
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 860px) {
+    .metrics {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metric + .metric:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .metric:nth-child(n + 3) {
+      border-top: 1px solid var(--line);
+    }
+
+    .incident-list :global(.incident) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .metric {
+      padding: 20px 16px;
+    }
+
+    .metric:nth-child(odd) {
+      padding-left: 0;
+    }
+
+    .component__top {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bars {
+      grid-template-columns: repeat(30, minmax(0, 1fr));
+      height: 28px;
+    }
+
+    .bars :global(.bar:nth-child(-n + 30)) {
+      display: none;
+    }
+
+    .days-long {
+      display: none;
+    }
+
+    .days-short {
+      display: inline;
+    }
+
+    .legend {
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+  }
+</style>

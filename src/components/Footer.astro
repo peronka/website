@@ -1,0 +1,155 @@
+---
+import { Image } from 'astro:assets';
+import icon from '../assets/brand/icon.png';
+import { site } from '../config';
+
+const columns = [
+  {
+    title: 'Produkt',
+    links: [
+      { href: '/#aplikacja', label: 'Aplikacja' },
+      { href: '/#widzety', label: 'Widżety' },
+      { href: site.appStoreUrl || '/#pobierz', label: 'Pobierz z App Store' },
+    ],
+  },
+  {
+    title: 'Dane',
+    links: [
+      { href: 'https://pdp-api.plk-sa.pl', label: 'PKP PLK OpenData' },
+      { href: '/status/', label: 'Status usług' },
+    ],
+  },
+  {
+    title: 'Informacje',
+    links: [
+      { href: '/polityka-prywatnosci/', label: 'Polityka prywatności' },
+      { href: '/regulamin/', label: 'Regulamin' },
+      { href: '/kontakt/', label: 'Kontakt' },
+    ],
+  },
+];
+---
+
+<footer class="footer dark">
+  <div class="wrap footer__inner">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a class="footer__logo" href="/">
+          <Image src={icon} alt="" width={36} height={36} densities={[1, 2]} class="footer__icon" />
+          Peronka
+        </a>
+        <p>Odjazdy, perony i opóźnienia pociągów w Polsce — na żywo.</p>
+      </div>
+      {
+        columns.map((c) => (
+          <nav class="footer__col" aria-label={c.title}>
+            <p class="footer__heading">{c.title}</p>
+            <ul>
+              {c.links.map((l) => (
+                <li>
+                  <a href={l.href}>{l.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
+    </div>
+    <div class="footer__bottom">
+      <p>© {new Date().getFullYear()} Peronka</p>
+      <p>{site.disclaimer}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer__inner {
+    display: grid;
+    gap: 56px;
+    padding-top: 72px;
+    padding-bottom: 40px;
+  }
+
+  .footer__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) repeat(3, 200px);
+    gap: 64px;
+  }
+
+  .footer__brand {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+  }
+
+  .footer__brand p {
+    max-width: 300px;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--mist);
+  }
+
+  .footer__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+
+  .footer__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+  }
+
+  .footer__heading {
+    margin-bottom: 14px;
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  .footer__col ul {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer__col a {
+    font-size: 0.9375rem;
+    color: var(--mist);
+    text-decoration: none;
+  }
+
+  .footer__col a:hover {
+    color: var(--white);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line-dark);
+    font-size: 0.875rem;
+    color: var(--mist-2);
+  }
+
+  @media (max-width: 960px) {
+    .footer__top {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 32px 24px;
+    }
+
+    .footer__brand {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

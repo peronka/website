@@ -1,0 +1,9 @@
+---
+import Legal from '../layouts/Legal.astro';
+import type { LegalFrontmatter } from '../legal/types';
+import { Content, frontmatter, getHeadings } from '../legal/polityka-prywatnosci.md';
+---
+
+<Legal frontmatter={frontmatter as LegalFrontmatter} headings={getHeadings()}>
+  <Content />
+</Legal>

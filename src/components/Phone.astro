@@ -1,0 +1,139 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { Signal, Wifi, BatteryFull } from '@lucide/astro';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  /** Header colour of the screen, so the iOS status bar blends into it. */
+  bar?: 'navy' | 'white';
+  sizes?: string;
+  loading?: 'eager' | 'lazy';
+  class?: string;
+}
+
+const { src, alt, bar = 'navy', sizes = '(min-width: 1024px) 280px, 220px', loading = 'lazy', class: cls } = Astro.props;
+---
+
+<figure class:list={['phone', cls]}>
+  <div class="phone__frame">
+    <span class="phone__btn phone__btn--action" aria-hidden="true"></span>
+    <span class="phone__btn phone__btn--vol-up" aria-hidden="true"></span>
+    <span class="phone__btn phone__btn--vol-down" aria-hidden="true"></span>
+    <span class="phone__btn phone__btn--side" aria-hidden="true"></span>
+    <div class="phone__bezel">
+      <div class:list={['phone__screen', `phone__screen--${bar}`]}>
+        <div class="phone__status" aria-hidden="true">
+          <span>9:41</span>
+          <span class="phone__status-icons"><Signal /><Wifi /><BatteryFull /></span>
+        </div>
+        <div class="phone__island" aria-hidden="true"></div>
+        <div class="phone__content">
+          <Image src={src} alt={alt} widths={[280, 560, 780]} sizes={sizes} loading={loading} class="phone__img" />
+        </div>
+      </div>
+    </div>
+  </div>
+</figure>
+
+<style>
+  /* Every measurement is a share of the phone's width (cqi), so one
+     component renders at any size with iPhone 15/16 Pro proportions. */
+  .phone {
+    --w: 280px;
+    width: var(--w);
+    margin: 0;
+    container-type: inline-size;
+    flex-shrink: 0;
+  }
+
+  .phone__frame {
+    position: relative;
+    aspect-ratio: 280 / 580;
+    padding: 1.2cqi;
+    border-radius: 17cqi;
+    background: linear-gradient(135deg, #9a9ca3 0%, #45474e 18%, #2a2c31 50%, #5c5f67 82%, #a7a9b0 100%);
+    box-shadow:
+      0 0 0 0.5px rgb(0 0 0 / 0.4),
+      0 9cqi 20cqi rgb(15 23 42 / 0.25);
+  }
+
+  .phone__btn {
+    position: absolute;
+    width: 1.1cqi;
+    border-radius: 2px;
+    background: #5c5f67;
+  }
+
+  .phone__btn--action { left: -0.7cqi; top: 17.5%; height: 4.5%; }
+  .phone__btn--vol-up { left: -0.7cqi; top: 24.5%; height: 7.5%; }
+  .phone__btn--vol-down { left: -0.7cqi; top: 33.5%; height: 7.5%; }
+  .phone__btn--side { right: -0.7cqi; top: 27%; height: 11.5%; }
+
+  .phone__bezel {
+    height: 100%;
+    padding: 3cqi;
+    border-radius: 15.8cqi;
+    background: #040404;
+  }
+
+  .phone__screen {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 12.8cqi;
+  }
+
+  .phone__screen--navy { background: var(--navy); color: var(--white); }
+  .phone__screen--white { background: var(--white); color: var(--ink); }
+
+  /* iOS status bar is 54 pt on a 393 pt wide screen. */
+  .phone__status {
+    display: flex;
+    flex: none;
+    align-items: flex-start;
+    justify-content: space-between;
+    height: 12.6cqi;
+    padding: 4.3cqi 7.8cqi 0 10.5cqi;
+    font-size: 3.9cqi;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .phone__status-icons {
+    display: inline-flex;
+    gap: 1.1cqi;
+  }
+
+  .phone__status-icons :global(svg) {
+    width: 4.2cqi;
+    height: 4.2cqi;
+  }
+
+  .phone__island {
+    position: absolute;
+    top: 2.75cqi;
+    left: 50%;
+    width: 29.3cqi;
+    height: 8.6cqi;
+    border-radius: 999px;
+    background: #000;
+    transform: translateX(-50%);
+  }
+
+  .phone__content {
+    flex: 1;
+    overflow: hidden;
+    background: #f1f5f9;
+  }
+
+  /* Screenshots include the app's own 33 pt status bar; hide it under ours. */
+  .phone__img {
+    width: 100%;
+    height: auto;
+    margin-top: -8.46%;
+  }
+</style>

@@ -1,0 +1,58 @@
+---
+interface Props {
+  kicker: string;
+  title: string;
+  intro?: string;
+  meta?: string;
+}
+
+const { kicker, title, intro, meta } = Astro.props;
+---
+
+<header class="page-header" id="tresc">
+  <div class="wrap page-header__inner">
+    <p class="page-header__kicker mono">{kicker}</p>
+    <h1 class="page-header__title">{title}</h1>
+    {meta && <p class="page-header__meta mono">{meta}</p>}
+    {intro && <p class="page-header__intro">{intro}</p>}
+    <slot />
+  </div>
+</header>
+
+<style>
+  .page-header {
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .page-header__inner {
+    display: grid;
+    gap: 20px;
+    padding-top: clamp(48px, 7vw, 88px);
+    padding-bottom: clamp(40px, 5vw, 64px);
+  }
+
+  .page-header__kicker {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--navy-2);
+  }
+
+  .page-header__title {
+    font-size: clamp(2.4rem, 1.8rem + 2.6vw, 3.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+
+  .page-header__meta {
+    font-size: 0.875rem;
+    color: var(--ink-3);
+  }
+
+  .page-header__intro {
+    max-width: 760px;
+    font-size: clamp(1.05rem, 1rem + 0.3vw, 1.1875rem);
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+</style>

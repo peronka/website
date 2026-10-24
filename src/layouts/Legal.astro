@@ -1,0 +1,296 @@
+---
+import type { MarkdownHeading } from 'astro';
+import { Mail } from '@lucide/astro';
+import Base from './Base.astro';
+import Nav from '../components/Nav.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Footer from '../components/Footer.astro';
+
+import type { LegalFrontmatter } from '../legal/types';
+
+interface Props {
+  frontmatter: LegalFrontmatter;
+  headings: MarkdownHeading[];
+}
+
+const { frontmatter: fm, headings } = Astro.props;
+const sections = headings.filter((h) => h.depth === 2);
+const label = (i: number) => (fm.numbering === 'paragraph' ? `§ ${i + 1}` : String(i + 1).padStart(2, '0'));
+---
+
+<Base title={fm.title} description={fm.intro}>
+  <Nav tone="light" />
+  <main>
+    <PageHeader kicker="Dokumenty" title={fm.title} meta={`Ostatnia aktualizacja: ${fm.updated}`} intro={fm.intro} />
+
+    <div class="wrap legal">
+      <nav class="toc" aria-label="Spis treści">
+        <p class="toc__title mono">Spis treści</p>
+        <ol>
+          {
+            sections.map((h, i) => (
+              <li>
+                <a href={`#${h.slug}`} data-toc={h.slug} aria-current={i === 0 ? 'true' : undefined}>
+                  <span class="toc__num mono">{label(i)}</span>
+                  {h.text}
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+
+      <div class="legal__main">
+        <article class:list={['prose', `prose--${fm.numbering}`]}>
+          <slot />
+        </article>
+
+        <aside class="callout">
+          <span class="callout__icon"><Mail size={22} aria-hidden="true" /></span>
+          <div class="callout__text">
+            <p class="callout__title">{fm.calloutTitle}</p>
+            <a class="callout__email" href={`mailto:${fm.calloutEmail}`}>{fm.calloutEmail}</a>
+            <p class="callout__note">{fm.calloutNote}</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  // Highlight the section currently being read in the table of contents.
+  const links = new Map(
+    [...document.querySelectorAll<HTMLAnchorElement>('[data-toc]')].map((a) => [a.dataset.toc, a]),
+  );
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        links.forEach((a) => a.removeAttribute('aria-current'));
+        links.get(e.target.id)?.setAttribute('aria-current', 'true');
+      }
+    },
+    { rootMargin: '-15% 0px -75% 0px' },
+  );
+  document.querySelectorAll('.prose h2[id]').forEach((h) => observer.observe(h));
+</script>
+
+<style>
+  .legal {
+    display: grid;
+    grid-template-columns: 264px minmax(0, 720px);
+    gap: 96px;
+    padding-top: 72px;
+    padding-bottom: var(--section);
+  }
+
+  .toc {
+    position: sticky;
+    top: 32px;
+    align-self: start;
+  }
+
+  .toc__title {
+    margin-bottom: 16px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ink-3);
+  }
+
+  .toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .toc a {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 12px;
+    padding: 8px 0 8px 14px;
+    border-left: 2px solid var(--line);
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: var(--ink-2);
+    text-decoration: none;
+    transition:
+      border-color 0.15s,
+      color 0.15s;
+  }
+
+  .toc__num {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #94a3b8;
+  }
+
+  .toc a:hover,
+  .toc a[aria-current] {
+    border-left-color: var(--navy);
+    color: var(--ink);
+  }
+
+  .toc a[aria-current] {
+    font-weight: 600;
+  }
+
+  .toc a[aria-current] .toc__num {
+    color: var(--navy);
+  }
+
+  .legal__main {
+    display: grid;
+    gap: 56px;
+  }
+
+  /* Markdown output: section numbers come from a CSS counter so the
+     source stays plain prose. */
+  .prose {
+    counter-reset: section;
+  }
+
+  .prose :global(h2) {
+    counter-increment: section;
+    margin-top: 56px;
+    padding-top: 40px;
+    border-top: 1px solid var(--line);
+    font-size: clamp(1.5rem, 1.3rem + 0.7vw, 1.875rem);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    scroll-margin-top: 24px;
+  }
+
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .prose :global(h2)::before {
+    display: block;
+    margin-bottom: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--navy-2);
+  }
+
+  .prose--decimal :global(h2)::before {
+    content: counter(section, decimal-leading-zero);
+  }
+
+  .prose--paragraph :global(h2)::before {
+    content: '§ ' counter(section);
+  }
+
+  .prose :global(p),
+  .prose :global(li) {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: #334155;
+  }
+
+  .prose :global(p) {
+    margin-top: 16px;
+  }
+
+  .prose :global(ul) {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .prose :global(li) {
+    position: relative;
+    padding-left: 28px;
+  }
+
+  .prose :global(li)::before {
+    content: '';
+    position: absolute;
+    top: 0.85em;
+    left: 0;
+    width: 12px;
+    height: 2px;
+    background: var(--navy-2);
+  }
+
+  .prose :global(strong) {
+    color: var(--ink);
+  }
+
+  .prose :global(a) {
+    color: var(--link);
+    text-underline-offset: 3px;
+  }
+
+  .callout {
+    display: flex;
+    gap: 20px;
+    padding: 32px;
+    border-radius: 20px;
+    background: #eef2f8;
+  }
+
+  .callout__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--navy);
+    color: var(--white);
+  }
+
+  .callout__text {
+    display: grid;
+    gap: 6px;
+  }
+
+  .callout__title {
+    font-size: 1.1875rem;
+    font-weight: 700;
+  }
+
+  .callout__email {
+    justify-self: start;
+    font-size: 1.1875rem;
+    font-weight: 600;
+    color: var(--link);
+    text-underline-offset: 4px;
+  }
+
+  .callout__note {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 960px) {
+    .legal {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 40px;
+      padding-top: 40px;
+    }
+
+    .toc {
+      position: static;
+      padding: 20px 20px 12px;
+      border-radius: 16px;
+      background: var(--paper);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .callout {
+      flex-direction: column;
+      padding: 24px;
+    }
+  }
+</style>

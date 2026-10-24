@@ -1,0 +1,114 @@
+---
+import { ArrowDown } from '@lucide/astro';
+import Nav from '../Nav.astro';
+import StoreButton from '../StoreButton.astro';
+import DepartureBoard from '../DepartureBoard.astro';
+---
+
+<section class="hero">
+  <Nav tone="dark" />
+  <div class="wrap hero__body" id="tresc">
+    <div class="hero__copy">
+      <p class="hero__live mono"><span class="live-dot" aria-hidden="true"></span>Na żywo z danych PKP PLK</p>
+      <h1 class="hero__title">Wiesz, kiedy naprawdę odjedzie.</h1>
+      <p class="hero__lead">
+        Odjazdy, perony i opóźnienia ze stacji w całej Polsce — w jednym czytelnym widoku. Bez zakładania konta.
+      </p>
+      <div class="hero__ctas">
+        <StoreButton />
+        <a class="hero__more" href="#aplikacja">Zobacz, jak działa <ArrowDown size={18} aria-hidden="true" /></a>
+      </div>
+      <p class="hero__meta mono">Bezpłatna · iPhone · bez konta</p>
+    </div>
+    <DepartureBoard />
+  </div>
+</section>
+
+<style>
+  .hero {
+    overflow: hidden;
+    background: linear-gradient(160deg, var(--navy) 0%, var(--night) 70%);
+    color: var(--white);
+  }
+
+  .hero__body {
+    display: grid;
+    grid-template-columns: minmax(0, 520px) minmax(0, 1fr);
+    gap: 72px;
+    align-items: start;
+    padding-top: 88px;
+    padding-bottom: 120px;
+  }
+
+  .hero__copy {
+    display: grid;
+    gap: 28px;
+    padding-top: 24px;
+  }
+
+  .hero__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mist);
+  }
+
+  .hero__title {
+    font-size: var(--step-display);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+  }
+
+  .hero__lead {
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: var(--mist);
+  }
+
+  .hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+    padding-top: 12px;
+  }
+
+  .hero__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .hero__more:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .hero__meta {
+    font-size: 0.875rem;
+    color: var(--mist-2);
+  }
+
+  @media (max-width: 1023px) {
+    .hero__body {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 48px;
+      padding-top: 32px;
+      padding-bottom: 56px;
+    }
+
+    .hero__copy {
+      gap: 20px;
+      padding-top: 0;
+      max-width: 620px;
+    }
+
+    .hero__lead {
+      font-size: 1.0625rem;
+    }
+  }
+</style>

@@ -1,0 +1,266 @@
+---
+import { RefreshCw } from '@lucide/astro';
+
+type Status = 'ok' | 'late' | 'in';
+
+interface Row {
+  time: string;
+  planned?: string;
+  train: string;
+  color: string;
+  dest: string;
+  via: string;
+  platform: string;
+  status: string;
+  state: Status;
+}
+
+// Illustrative data in the same shape the app shows on the departures screen.
+const rows: Row[] = [
+  { time: '14:35', train: 'EIP 1602', color: '#7c3aed', dest: 'Gdańsk Główny', via: 'przez Iława, Malbork', platform: '4', status: 'Planowo', state: 'ok' },
+  { time: '14:42', planned: '14:38', train: 'KM 19210', color: '#16a34a', dest: 'Skierniewice', via: 'przez Pruszków, Żyrardów', platform: '1', status: '+4 min', state: 'late' },
+  { time: '14:41', train: 'IC 3512', color: '#2563eb', dest: 'Kraków Główny', via: 'przez Radom, Kielce', platform: '3', status: 'Wjeżdża', state: 'in' },
+  { time: '14:59', planned: '14:47', train: 'TLK 38108', color: '#475569', dest: 'Białystok', via: 'przez Małkinia', platform: '2', status: '+12 min', state: 'late' },
+  { time: '14:50', train: 'IC 1408', color: '#2563eb', dest: 'Poznań Główny', via: 'przez Kutno, Konin', platform: '5', status: 'Planowo', state: 'ok' },
+];
+---
+
+<figure class="board-wrap">
+  <div class="board" role="table" aria-label="Przykładowa tablica odjazdów: Warszawa Centralna">
+    <div class="board__head" role="rowgroup">
+      <div role="row" class="board__head-row">
+        <div role="columnheader">
+          <p class="board__station">Warszawa Centralna</p>
+          <p class="board__kind">Odjazdy</p>
+        </div>
+        <p class="board__clock mono" role="columnheader">14:32</p>
+      </div>
+    </div>
+    <div role="rowgroup">
+      {
+        rows.map((r, i) => (
+          <div role="row" class:list={['board__row', { 'board__row--flash': i === 1 }]}>
+            <div role="cell" class="board__time mono">
+              <span class:list={{ 'board__time--late': r.planned }}>{r.time}</span>
+              {r.planned && (
+                <s class="board__planned">
+                  <span class="sr-only">planowo </span>
+                  {r.planned}
+                </s>
+              )}
+            </div>
+            <div role="cell" class="board__mid">
+              <p class="board__line">
+                <span class="board__train mono" style={`background:${r.color}`}>
+                  {r.train}
+                </span>
+                <span class="board__dest">{r.dest}</span>
+              </p>
+              <p class="board__via">{r.via}</p>
+            </div>
+            <div role="cell" class="board__platform mono">Peron {r.platform}</div>
+            <div role="cell" class="board__status">
+              <span class:list={['board__pill', `board__pill--${r.state}`]}>{r.status}</span>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+  <figcaption class="board-caption mono">
+    <RefreshCw size={14} aria-hidden="true" />
+    Tak wygląda tablica w aplikacji — godziny, perony i opóźnienia na bieżąco.
+  </figcaption>
+</figure>
+
+<style>
+  .board-wrap {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+  }
+
+  .board {
+    overflow: hidden;
+    background: var(--navy);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 20px;
+    box-shadow: 0 30px 60px rgb(0 0 0 / 0.33);
+    color: var(--white);
+  }
+
+  .board__head-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: var(--navy-2);
+  }
+
+  .board__station {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .board__kind {
+    font-size: 0.875rem;
+    color: var(--mist);
+  }
+
+  .board__clock {
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+
+  .board__row {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) auto 96px;
+    gap: 18px;
+    align-items: center;
+    padding: 18px 24px;
+  }
+
+  .board__row + .board__row {
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  .board__time {
+    display: grid;
+    gap: 2px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .board__time--late {
+    color: var(--amber-bright);
+  }
+
+  .board__planned {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--mist-2);
+  }
+
+  .board__mid {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .board__line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .board__train {
+    flex: none;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+
+  .board__dest {
+    overflow: hidden;
+    font-size: 1.125rem;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .board__via {
+    font-size: 0.8125rem;
+    color: var(--mist-2);
+  }
+
+  .board__platform {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--mist);
+  }
+
+  .board__status {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .board__pill {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .board__pill--ok { background: rgb(22 163 74 / 0.18); color: #86efac; }
+  .board__pill--late { background: rgb(245 158 11 / 0.18); color: #fcd34d; }
+  .board__pill--in { background: rgb(59 130 246 / 0.18); color: #93c5fd; }
+
+  /* The one orchestrated moment: the delayed train lights up once on load. */
+  .board__row--flash {
+    background: rgb(245 158 11 / 0.08);
+    animation: flash 1.6s 0.9s ease-out both;
+  }
+
+  @keyframes flash {
+    0% { background: rgb(245 158 11 / 0); }
+    35% { background: rgb(245 158 11 / 0.28); }
+    100% { background: rgb(245 158 11 / 0.08); }
+  }
+
+  .board-caption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-inline: 4px;
+    font-size: 0.8125rem;
+    color: var(--mist-2);
+  }
+
+  @media (max-width: 560px) {
+    .board__head-row {
+      padding: 14px 16px;
+    }
+
+    .board__station {
+      font-size: 1rem;
+    }
+
+    .board__clock {
+      font-size: 1.25rem;
+    }
+
+    .board__row {
+      grid-template-columns: 54px minmax(0, 1fr) auto;
+      grid-template-areas:
+        'time mid status'
+        'time mid platform';
+      gap: 4px 12px;
+      padding: 14px 16px;
+    }
+
+    .board__time { grid-area: time; font-size: 1.125rem; }
+    .board__mid { grid-area: mid; }
+    .board__status { grid-area: status; }
+    .board__platform { grid-area: platform; justify-self: end; font-size: 0.6875rem; }
+    .board__via { display: none; }
+
+    .board__line {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .board__dest {
+      font-size: 0.9375rem;
+    }
+
+    .board__row:nth-child(n + 5) {
+      display: none;
+    }
+  }
+</style>

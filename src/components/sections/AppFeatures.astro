@@ -1,0 +1,302 @@
+---
+import {
+  Clock3,
+  MapPin,
+  Timer,
+  Route,
+  Locate,
+  TrainFront,
+  BellRing,
+  ArrowLeftRight,
+  TriangleAlert,
+} from '@lucide/astro';
+import Phone from '../Phone.astro';
+import odjazdy from '../../assets/screens/odjazdy.png';
+import szczegoly from '../../assets/screens/szczegoly-pociagu.png';
+import powiadomienia from '../../assets/screens/powiadomienia.png';
+import ulubione from '../../assets/screens/ulubione.png';
+import wyborStacji from '../../assets/screens/wybor-stacji.png';
+
+const features = [
+  {
+    kicker: 'Odjazdy i przyjazdy',
+    title: 'Tablica odjazdów, która mieści się w kieszeni',
+    text: 'Wybierz stację i od razu zobacz najbliższe pociągi — z planową i rzeczywistą godziną, kategorią i kierunkiem.',
+    image: odjazdy,
+    alt: 'Ekran odjazdów ze stacji Warszawa Centralna z godzinami, peronami i opóźnieniami',
+    details: [
+      { icon: Clock3, text: 'Planowa i rzeczywista godzina' },
+      { icon: MapPin, text: 'Peron i tor' },
+      { icon: Timer, text: 'Czas do odjazdu' },
+    ],
+  },
+  {
+    kicker: 'Szczegóły pociągu',
+    title: 'Cała trasa, stacja po stacji',
+    text: 'Otwórz dowolny pociąg i sprawdź każdy przystanek: godziny przyjazdów, perony i aktualne opóźnienie.',
+    image: szczegoly,
+    alt: 'Szczegóły pociągu IC z trasą przejazdu i informacjami o składzie',
+    details: [
+      { icon: Route, text: 'Kolejne stacje z godzinami' },
+      { icon: Locate, text: 'Gdzie pociąg jest teraz' },
+      { icon: TrainFront, text: 'Skład: wagony i udogodnienia' },
+    ],
+  },
+  {
+    kicker: 'Powiadomienia',
+    title: 'Opóźnienie? Dowiesz się od razu',
+    text: 'Śledź swój pociąg, a Peronka da znać, gdy się spóźnia, zmienia peron albo na trasie są utrudnienia.',
+    image: powiadomienia,
+    alt: 'Lista powiadomień o opóźnieniach, zmianach peronu i utrudnieniach',
+    details: [
+      { icon: BellRing, text: 'Opóźnienia' },
+      { icon: ArrowLeftRight, text: 'Zmiany peronu' },
+      { icon: TriangleAlert, text: 'Utrudnienia na trasie' },
+    ],
+  },
+];
+---
+
+<section class="app wrap" id="aplikacja">
+  <header class="app__head">
+    <h2 class="app__title">Cała podróż w jednej aplikacji</h2>
+    <p class="lead">
+      Od wyboru stacji po ostatni przystanek — Peronka pokazuje to, co zwykle sprawdzasz na tablicy na peronie, tylko
+      wcześniej.
+    </p>
+  </header>
+
+  {
+    features.map((f, i) => (
+      <article class:list={['feature', { 'feature--flip': i % 2 === 1 }]}>
+        <div class="feature__stage">
+          <Phone src={f.image} alt={f.alt} />
+        </div>
+        <div class="feature__text">
+          <p class="kicker mono">{f.kicker}</p>
+          <h3 class="feature__title">{f.title}</h3>
+          <p class="feature__body">{f.text}</p>
+          <ul class="details">
+            {f.details.map((d) => (
+              <li>
+                <d.icon size={20} aria-hidden="true" />
+                {d.text}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </article>
+    ))
+  }
+
+  <article class="favs">
+    <div class="favs__text">
+      <p class="kicker mono">Ulubione stacje</p>
+      <h3 class="feature__title">Twoje stacje jednym dotknięciem</h3>
+      <p class="favs__body">
+        Zapisz stacje, z których jeździsz najczęściej, i ustaw jedną jako domyślną. Wyszukiwarka znajdzie każdą stację w
+        Polsce.
+      </p>
+      <p class="favs__note mono">Ulubione zostają na Twoim telefonie.</p>
+    </div>
+    <div class="favs__phones">
+      <Phone src={ulubione} alt="Lista ulubionych stacji z najbliższymi odjazdami" sizes="250px" class="favs__phone" />
+      <Phone src={wyborStacji} alt="Wyszukiwarka stacji z ostatnio używanymi stacjami" bar="white" sizes="250px" class="favs__phone" />
+    </div>
+  </article>
+</section>
+
+<style>
+  .app {
+    display: grid;
+    gap: 112px;
+    padding-top: var(--section);
+    padding-bottom: var(--section);
+  }
+
+  .app__head {
+    display: grid;
+    gap: 20px;
+    max-width: 720px;
+  }
+
+  .app__title {
+    font-size: var(--step-h2);
+  }
+
+  .kicker {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--navy-2);
+  }
+
+  .feature {
+    display: grid;
+    grid-template-columns: 420px 460px;
+    gap: 120px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .feature--flip .feature__stage {
+    order: 2;
+  }
+
+  .feature__stage {
+    display: grid;
+    place-items: center;
+    height: 660px;
+    background: #eef2f8;
+    border-radius: 32px;
+  }
+
+  .feature__text {
+    display: grid;
+    gap: 20px;
+  }
+
+  .feature__title {
+    font-size: clamp(1.75rem, 1.3rem + 1.4vw, 2.375rem);
+    line-height: 1.1;
+  }
+
+  .feature__body {
+    font-size: 1.125rem;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+
+  .details {
+    margin: 0;
+    padding: 12px 0 0;
+    list-style: none;
+  }
+
+  .details li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+    font-weight: 500;
+  }
+
+  .details :global(svg) {
+    flex: none;
+    color: var(--navy-2);
+  }
+
+  .favs {
+    display: grid;
+    grid-template-columns: 440px auto;
+    gap: 72px;
+    align-items: end;
+    justify-content: space-between;
+    padding-inline: 72px;
+    overflow: hidden;
+    background: var(--navy);
+    border-radius: 32px;
+    color: var(--white);
+  }
+
+  .favs__text {
+    display: grid;
+    gap: 20px;
+    padding-block: 72px;
+  }
+
+  .favs .kicker {
+    color: var(--mist);
+  }
+
+  .favs__body {
+    font-size: 1.125rem;
+    line-height: 1.55;
+    color: var(--mist);
+  }
+
+  .favs__note {
+    font-size: 0.875rem;
+    color: var(--mist-2);
+  }
+
+  .favs__phones {
+    display: flex;
+    gap: 28px;
+    height: 500px;
+    padding-top: 56px;
+    overflow: hidden;
+  }
+
+  .favs__phones :global(.favs__phone) {
+    --w: 250px;
+  }
+
+  @media (max-width: 1100px) {
+    .feature {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 56px;
+    }
+
+    .favs {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      padding-inline: 40px;
+    }
+
+    .favs__text {
+      padding-block: 48px 0;
+    }
+
+    .favs__phones {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .app {
+      gap: 64px;
+    }
+
+    .feature {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+    }
+
+    .feature--flip .feature__stage {
+      order: 0;
+    }
+
+    .feature__stage {
+      height: 400px;
+      place-items: start center;
+      padding-top: 36px;
+      overflow: hidden;
+      border-radius: 24px;
+    }
+
+    .feature__stage :global(.phone) {
+      --w: 220px;
+    }
+
+    .feature__body,
+    .favs__body {
+      font-size: 1rem;
+    }
+
+    .favs {
+      padding-inline: 24px;
+      border-radius: 24px;
+    }
+
+    .favs__phones {
+      height: 360px;
+      gap: 16px;
+      padding-top: 40px;
+    }
+
+    .favs__phones :global(.favs__phone) {
+      --w: 180px;
+    }
+  }
+</style>

@@ -1,0 +1,141 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+
+const facts = [
+  { label: 'Źródło danych', value: 'PKP PLK S.A. · Portal Danych Pasażerskich (OpenData)' },
+  { label: 'Konto', value: 'Niepotrzebne' },
+  { label: 'Cena', value: 'Bezpłatna, z reklamami' },
+  { label: 'Twoje dane', value: 'Ulubione i ustawienia zostają na telefonie' },
+  { label: 'Urządzenia', value: 'iPhone · widżety iOS · Live Activity' },
+];
+---
+
+<section class="data wrap" id="dane">
+  <div class="data__text">
+    <p class="kicker mono">Skąd są dane</p>
+    <h2 class="data__title">Oficjalne dane, niezależna aplikacja</h2>
+    <p class="data__body">
+      Rozkłady, perony i opóźnienia pochodzą z otwartych danych PKP Polskich Linii Kolejowych S.A. — tych samych, które
+      zasilają tablice na stacjach. Peronka tylko pokazuje je czytelniej.
+    </p>
+    <p class="data__disclaimer">
+      Peronka nie jest powiązana z PKP PLK S.A. ani z przewoźnikami. W razie wątpliwości obowiązują komunikaty na stacji.
+    </p>
+  </div>
+
+  <dl class="facts">
+    {
+      facts.map((f) => (
+        <div class="fact">
+          <dt class="mono">{f.label}</dt>
+          <dd>{f.value}</dd>
+        </div>
+      ))
+    }
+    <div class="fact">
+      <dt class="mono">Status usług</dt>
+      <dd>
+        <a class="fact__link" href="/status/">
+          Sprawdź, czy wszystko działa <ArrowUpRight size={18} aria-hidden="true" />
+        </a>
+      </dd>
+    </div>
+  </dl>
+</section>
+
+<style>
+  .data {
+    display: grid;
+    grid-template-columns: 480px minmax(0, 1fr);
+    gap: 96px;
+    padding-top: var(--section);
+    padding-bottom: 96px;
+  }
+
+  .data__text {
+    display: grid;
+    align-content: start;
+    gap: 20px;
+  }
+
+  .kicker {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--navy-2);
+  }
+
+  .data__title {
+    font-size: var(--step-h2);
+  }
+
+  .data__body {
+    font-size: 1.125rem;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+
+  .data__disclaimer {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--ink-3);
+  }
+
+  .facts {
+    margin: 0;
+    padding-top: 8px;
+  }
+
+  .fact {
+    display: grid;
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: 24px;
+    padding: 22px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .fact:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .fact dt {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ink-3);
+    padding-top: 2px;
+  }
+
+  .fact dd {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 500;
+  }
+
+  .fact__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--link);
+    text-underline-offset: 4px;
+  }
+
+  @media (max-width: 1023px) {
+    .data {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 40px;
+      padding-bottom: 56px;
+    }
+
+    .data__body {
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .fact {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 4px;
+      padding: 14px 0;
+    }
+  }
+</style>
