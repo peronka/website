@@ -57,6 +57,7 @@ const columns = [
     </div>
     <div class="footer__bottom">
       <p>© {new Date().getFullYear()} Peronka</p>
+      <p>Twórca: <a href={site.owner.url}>{site.owner.name}</a>, NIP {site.owner.nip}</p>
       <p>{site.disclaimer}</p>
     </div>
   </div>
@@ -140,6 +141,16 @@ const columns = [
     border-top: 1px solid var(--line-dark);
     font-size: 0.875rem;
     color: var(--mist-2);
+  }
+
+  .footer__bottom a {
+    text-decoration: none;
+  }
+
+  .footer__bottom a:hover {
+    color: var(--white);
+    text-decoration: underline;
+    text-underline-offset: 4px;
   }
 
   @media (max-width: 960px) {

@@ -1,74 +1,104 @@
 ---
 title: Polityka prywatności
-updated: 20 maja 2026 r.
-intro: Jak aplikacja Peronka zbiera, wykorzystuje i chroni dane użytkowników. Dokument przygotowano zgodnie z RODO (Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679).
+updated: 24 października 2026 r.
+intro: Jak aplikacja Peronka i strona peronka.pl zbierają, wykorzystują i chronią dane użytkowników. Dokument przygotowano zgodnie z RODO (Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679).
 numbering: decimal
 calloutTitle: Masz pytania o prywatność?
-calloutEmail: privacy@peronka.app
+calloutEmail: kontakt@peronka.pl
 calloutNote: Odpowiadamy w ciągu 30 dni od otrzymania zapytania (art. 12 ust. 3 RODO). Opisz sprawę i wskaż, z którego prawa chcesz skorzystać.
 ---
 
 ## Wprowadzenie
 
-Peronka („Aplikacja”) jest niezależną aplikacją mobilną prezentującą rozkłady jazdy oraz informacje o odjazdach pociągów w czasie rzeczywistym dla podróżnych korzystających z polskiej sieci kolejowej. Aplikacja korzysta wyłącznie z publicznie dostępnych danych udostępnianych przez PKP Polskie Linie Kolejowe S.A. za pośrednictwem Portalu Danych Pasażerskich (PDP) OpenData.
+Peronka („Aplikacja”) jest niezależną aplikacją mobilną na iOS, prezentującą rozkłady jazdy oraz informacje o odjazdach pociągów w czasie rzeczywistym dla podróżnych korzystających z polskiej sieci kolejowej. Aplikacja korzysta wyłącznie z publicznie dostępnych danych udostępnianych przez PKP Polskie Linie Kolejowe S.A. w ramach PKP PLK OpenData.
 
-Szanujemy prywatność użytkowników i zobowiązujemy się chronić wszelkie dane osobowe, które mogą zostać przekazane w związku z korzystaniem z Aplikacji. Niniejszy dokument wyjaśnia, jakie informacje są gromadzone, w jakim celu są wykorzystywane oraz jakie prawa przysługują użytkownikom. Prosimy o uważne zapoznanie się z całym tekstem przed rozpoczęciem korzystania z Aplikacji.
+Niniejszy dokument dotyczy Aplikacji oraz strony internetowej peronka.pl („Strona”). Wyjaśnia, jakie informacje są gromadzone, w jakim celu są wykorzystywane oraz jakie prawa przysługują użytkownikom. Prosimy o uważne zapoznanie się z całym tekstem przed rozpoczęciem korzystania z Aplikacji.
 
 ## Administrator danych
 
-Administratorem danych osobowych zbieranych za pośrednictwem Aplikacji Peronka jest osoba fizyczna prowadząca działalność jako twórca Aplikacji, dostępna pod adresem korespondencyjnym wskazanym na końcu niniejszego dokumentu.
+Administratorem danych osobowych przetwarzanych w związku z korzystaniem z Aplikacji i Strony jest Filip Chlebowski, prowadzący działalność gospodarczą pod firmą Chlebowski.it Filip Chlebowski, NIP 9522266552 (dalej: „Administrator”). Adres prowadzenia działalności jest ujawniony w Centralnej Ewidencji i Informacji o Działalności Gospodarczej (CEIDG) i można go znaleźć w wyszukiwarce CEIDG po numerze NIP.
 
-Administrator jest jednoosobowym podmiotem niepowiązanym z PKP Polskimi Liniami Kolejowymi S.A. ani z żadnym przewoźnikiem kolejowym. Wszelkie pytania dotyczące przetwarzania danych można kierować na adres kontaktowy podany w sekcji 12.
+Z Administratorem można kontaktować się pod adresem [kontakt@peronka.pl](mailto:kontakt@peronka.pl). Administrator nie wyznaczył inspektora ochrony danych.
+
+Administrator nie jest powiązany z PKP Polskimi Liniami Kolejowymi S.A. ani z żadnym przewoźnikiem kolejowym.
 
 ## Jakie dane zbieramy
 
-Aplikacja została zaprojektowana zgodnie z zasadą minimalizacji danych. Nie wymagamy zakładania konta użytkownika ani podawania danych identyfikujących. W trakcie korzystania z Aplikacji mogą być jednak zbierane następujące kategorie informacji:
+Aplikacja została zaprojektowana zgodnie z zasadą minimalizacji danych. Nie wymagamy zakładania konta ani podawania imienia, nazwiska czy adresu e-mail. Przetwarzamy wyłącznie następujące kategorie informacji.
 
-- Dane techniczne urządzenia — model urządzenia, wersja systemu operacyjnego, język interfejsu oraz identyfikator instalacji potrzebny do prawidłowego dostarczania powiadomień.
-- Preferencje użytkownika — wybrane stacje ulubione, ustawienia widżetu oraz ustawienia powiadomień przechowywane lokalnie na urządzeniu.
-- Dane diagnostyczne i statystyczne — anonimowe informacje o awariach Aplikacji, liczbie uruchomień i czasie odpowiedzi serwera, służące wyłącznie poprawie jakości usługi.
-- Reklamowe identyfikatory urządzeń (IDFA / Android Advertising ID) — wykorzystywane wyłącznie wtedy, gdy użytkownik wyrazi na to zgodę w systemowym oknie dialogowym.
+W Aplikacji:
 
-## Cele przetwarzania
+- Dane połączenia — adres IP urządzenia oraz treść zapytania (np. wybrana stacja), przesyłane do serwera Peronki podczas pobierania rozkładów. Nie łączymy ich z tożsamością użytkownika.
+- Dane diagnostyczne — raporty o awariach i statystyki stabilności Aplikacji (model urządzenia, wersja systemu operacyjnego i Aplikacji, język interfejsu, przebieg błędu) wraz z pseudonimowym identyfikatorem instalacji Firebase. Identyfikator pozwala rozróżnić instalacje, ale nie wskazuje wprost, do kogo należy urządzenie.
+- Dane reklamowe — wybory dokonane w formularzu zgody, a po wyrażeniu zgody również reklamowy identyfikator urządzenia (IDFA). Szczegóły opisano w sekcji 5.
+- Preferencje — ulubione stacje, ustawienia widżetów i powiadomień. Są przechowywane wyłącznie lokalnie na urządzeniu i nie są przesyłane do Administratora. Powiadomienia o opóźnieniach i zmianach peronów są tworzone na urządzeniu — serwer Peronki nie przechowuje tokenów powiadomień ani listy obserwowanych pociągów i stacji.
 
-Dane przetwarzane są wyłącznie w zakresie niezbędnym do świadczenia usług Aplikacji oraz w celach wskazanych poniżej:
+Na Stronie:
 
-- Świadczenie podstawowej funkcjonalności Aplikacji, w tym pobieranie aktualnych rozkładów odjazdów i informacji o opóźnieniach.
-- Zapewnienie poprawnego działania widżetów ekranu głównego oraz powiadomień o zmianach peronów i opóźnieniach.
-- Diagnostyka błędów, analiza wydajności oraz rozwój nowych funkcji Aplikacji.
-- Wyświetlanie reklam dopasowanych do języka i regionu — wyłącznie po wyrażeniu zgody.
-- Wypełnienie obowiązków prawnych ciążących na Administratorze.
+- Statystyki odwiedzin — adres odwiedzanej podstrony, adres strony odsyłającej, kraj, typ urządzenia, system operacyjny i przeglądarka, zbierane przez Vercel Web Analytics. Odwiedzający są rozróżniani za pomocą skrótu (hash) tworzonego z danych zapytania i resetowanego codziennie, dlatego nie da się śledzić tej samej osoby między kolejnymi dniami ani między różnymi stronami.
+- Logi serwera — adres IP, data i godzina oraz adres żądanej podstrony, zapisywane automatycznie przez dostawcę hostingu. Strona statusu pobiera dane bezpośrednio z serwera Peronki, który również otrzymuje przy tym adres IP przeglądarki.
 
-## Podstawa prawna (RODO / GDPR)
+W korespondencji:
 
-Przetwarzanie danych użytkowników odbywa się zgodnie z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych (RODO). Podstawy prawne dla poszczególnych operacji są następujące:
+- Wiadomości e-mail — adres e-mail nadawcy, treść wiadomości oraz informacje przekazane w niej dobrowolnie (np. model urządzenia przy zgłoszeniu błędu).
 
-- Art. 6 ust. 1 lit. b RODO — przetwarzanie niezbędne do wykonania umowy, której stroną jest osoba korzystająca z Aplikacji (świadczenie usługi pobierania rozkładów).
-- Art. 6 ust. 1 lit. f RODO — uzasadniony interes Administratora, polegający na zapewnieniu bezpieczeństwa Aplikacji, jej rozwoju oraz ochronie przed nadużyciami.
-- Art. 6 ust. 1 lit. a RODO — dobrowolna zgoda użytkownika, w szczególności w zakresie wykorzystywania identyfikatorów reklamowych oraz wysyłki powiadomień push.
-- Art. 6 ust. 1 lit. c RODO — wypełnienie obowiązków prawnych ciążących na Administratorze, w szczególności wynikających z przepisów podatkowych i rachunkowych.
+## Cele i podstawy prawne przetwarzania
 
-## Pliki cookies i identyfikatory urządzeń
+Dane przetwarzamy wyłącznie w zakresie niezbędnym do realizacji poniższych celów, na wskazanych podstawach prawnych RODO:
 
-Aplikacja Peronka jest aplikacją mobilną i nie korzysta z plików cookies w klasycznym rozumieniu przeglądarkowym. Mogą jednak być wykorzystywane technologie funkcjonalnie równoważne, takie jak lokalna pamięć podręczna systemu operacyjnego, identyfikator instalacji Firebase oraz reklamowy identyfikator urządzenia.
+- Świadczenie usług Aplikacji, w tym pobieranie rozkładów i informacji o opóźnieniach oraz obsługa widżetów — art. 6 ust. 1 lit. b RODO (wykonanie umowy, której warunki określa [Regulamin](/regulamin/)).
+- Diagnostyka błędów i poprawa stabilności Aplikacji — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora polegający na zapewnieniu prawidłowego działania i rozwoju Aplikacji).
+- Wyświetlanie reklam spersonalizowanych — art. 6 ust. 1 lit. a RODO (zgoda wyrażona w formularzu zgody).
+- Wyświetlanie reklam niespersonalizowanych, z których finansowana jest bezpłatna Aplikacja — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora).
+- Prowadzenie statystyk odwiedzin oraz zapewnienie bezpieczeństwa Strony i serwerów — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora).
+- Odpowiadanie na wiadomości — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora polegający na prowadzeniu korespondencji z użytkownikami).
+- Rozpatrywanie reklamacji — art. 6 ust. 1 lit. c RODO (obowiązek wynikający z ustawy o prawach konsumenta).
+- Ustalenie, dochodzenie lub obrona roszczeń — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora).
 
-Identyfikator reklamowy jest udostępniany wyłącznie po wyrażeniu odpowiedniej zgody w oknie systemowym (App Tracking Transparency na iOS oraz Privacy Sandbox na Androidzie). W każdej chwili można cofnąć tę zgodę w ustawieniach systemu, co skutkuje zaprzestaniem personalizacji reklam.
+## Reklamy i zgody
 
-## Udostępnianie danych
+Aplikacja jest bezpłatna i finansowana z reklam wyświetlanych przez Google AdMob.
 
-Administrator nie sprzedaje ani nie udostępnia danych osobowych użytkowników podmiotom trzecim w celach marketingowych. Dane mogą być powierzane wyłącznie zaufanym podmiotom przetwarzającym, niezbędnym do działania Aplikacji:
+Przy pierwszym uruchomieniu Aplikacja wyświetla formularz zgody Google (User Messaging Platform — certyfikowana platforma zarządzania zgodami zgodna ze standardem IAB TCF). W formularzu można zgodzić się na reklamy spersonalizowane i związane z nimi przetwarzanie danych, wybrać tylko niektóre cele albo odmówić zgody. Dodatkowo dostęp do identyfikatora reklamowego (IDFA) wymaga zgody w systemowym oknie App Tracking Transparency — bez niej Aplikacja nie ma dostępu do IDFA.
 
-- PKP Polskie Linie Kolejowe S.A. / Portal Danych Pasażerskich (PDP OpenData) — źródło publicznych danych rozkładowych pobieranych przez Aplikację; dostawca nie otrzymuje danych użytkowników, jedynie anonimowe zapytania o rozkłady.
-- Dostawcy infrastruktury chmurowej (operatorzy serwerów aplikacyjnych w regionie Unii Europejskiej) — przechowywanie i serwowanie pamięci podręcznej rozkładów.
-- Dostawcy usług analitycznych oraz dystrybucji powiadomień (Firebase Crashlytics, Firebase Cloud Messaging) — w zakresie anonimowych identyfikatorów instalacji.
-- Dostawcy reklam (Google AdMob) — wyłącznie po uprzedniej zgodzie użytkownika, w celu wyświetlania reklam dopasowanych regionalnie.
+Bez zgody na personalizację wyświetlane są reklamy niespersonalizowane, dobierane na podstawie ogólnego kontekstu, np. przybliżonej lokalizacji ustalonej na podstawie adresu IP.
+
+Zgodę można w każdej chwili zmienić lub wycofać w ustawieniach Aplikacji, a zgodę na śledzenie — w ustawieniach systemu iOS (Ustawienia → Prywatność i ochrona → Śledzenie). Wycofanie zgody nie wpływa na zgodność z prawem przetwarzania dokonanego przed jej wycofaniem.
+
+W zakresie reklam spersonalizowanych Google działa jako odrębny administrator danych. Zasady wykorzystywania danych przez Google opisano na stronie [Jak Google wykorzystuje informacje z witryn i aplikacji, które korzystają z usług Google](https://policies.google.com/technologies/partner-sites).
+
+Reklamy spersonalizowane wiążą się z profilowaniem prowadzonym przez Google w celu doboru reklam. Administrator nie podejmuje wobec użytkowników decyzji opartych wyłącznie na zautomatyzowanym przetwarzaniu, w tym profilowaniu, które wywoływałyby wobec nich skutki prawne lub w podobny sposób istotnie na nich wpływały (art. 22 RODO).
+
+## Pliki cookies
+
+Aplikacja nie korzysta z plików cookies. Biblioteki Google Mobile Ads i Firebase zapisują na urządzeniu informacje potrzebne do ich działania, takie jak identyfikator instalacji i wybory dotyczące zgód. Identyfikator reklamowy jest odczytywany wyłącznie na zasadach opisanych w sekcji 5.
+
+Strona nie używa plików cookies. Statystyki odwiedzin (Vercel Web Analytics) działają bez plików cookies i bez identyfikatorów zapisywanych w przeglądarce.
+
+## Odbiorcy danych
+
+Administrator nie sprzedaje danych osobowych ani nie udostępnia ich w celach marketingowych. Dane mogą być powierzane lub przekazywane wyłącznie następującym podmiotom:
+
+- Dostawcy infrastruktury serwerowej Aplikacji (serwery w Unii Europejskiej) — obsługa zapytań i pamięć podręczna rozkładów.
+- Vercel Inc. — hosting Strony i statystyki odwiedzin.
+- Google Ireland Limited i Google LLC — raporty o awariach (Firebase Crashlytics) oraz reklamy (Google AdMob); w zakresie reklam spersonalizowanych Google działa jako odrębny administrator.
+- Dostawca poczty elektronicznej — obsługa korespondencji.
 - Organy państwowe i sądowe — w przypadkach przewidzianych przepisami prawa.
+
+PKP Polskie Linie Kolejowe S.A. nie otrzymuje danych użytkowników — rozkłady pobiera serwer Peronki, kierując do PKP PLK OpenData wyłącznie zapytania o rozkłady.
+
+## Przekazywanie danych poza EOG
+
+Google LLC i Vercel Inc. mają siedziby w Stanach Zjednoczonych, dlatego dane mogą być przekazywane poza Europejski Obszar Gospodarczy. Przekazanie odbywa się na podstawie decyzji Komisji Europejskiej stwierdzającej odpowiedni stopień ochrony danych w ramach EU-US Data Privacy Framework (art. 45 RODO), a w zakresie, w jakim decyzja ta nie obejmuje danego odbiorcy — na podstawie standardowych klauzul umownych przyjętych przez Komisję Europejską (art. 46 ust. 2 lit. c RODO). Kopię zastosowanych zabezpieczeń można otrzymać, kontaktując się z Administratorem.
 
 ## Przechowywanie danych
 
-Dane techniczne i diagnostyczne są przechowywane przez okres niezbędny do zapewnienia stabilnego działania Aplikacji, nie dłużej jednak niż przez 12 miesięcy od ich zebrania. Preferencje użytkownika (ulubione stacje, ustawienia widżetu) przechowywane są wyłącznie lokalnie na urządzeniu i mogą zostać w każdej chwili usunięte poprzez wyczyszczenie danych Aplikacji lub jej odinstalowanie.
-
-Identyfikator instalacji wykorzystywany do dostarczania powiadomień jest usuwany niezwłocznie po odinstalowaniu Aplikacji lub wyłączeniu powiadomień push w jej ustawieniach.
+- Dane połączenia i logi serwerów — przez okres niezbędny do zapewnienia bezpieczeństwa i stabilnego działania usług, nie dłużej niż 12 miesięcy.
+- Raporty o awariach — do 90 dni od ich zebrania.
+- Statystyki odwiedzin Strony — skrót rozróżniający odwiedzających jest usuwany po 24 godzinach; dalej przechowywane są wyłącznie zbiorcze statystyki, które nie pozwalają zidentyfikować osoby.
+- Dane reklamowe — wybory dotyczące zgód są przechowywane na urządzeniu do czasu ich zmiany lub usunięcia Aplikacji; dane przetwarzane przez Google w zakresie reklam spersonalizowanych — zgodnie z zasadami Google.
+- Korespondencja — przez czas potrzebny do załatwienia sprawy, a w przypadku reklamacji — do upływu terminu przedawnienia związanych z nią roszczeń.
+- Preferencje — wyłącznie na urządzeniu; można je w każdej chwili usunąć w ustawieniach Aplikacji lub odinstalowując Aplikację.
 
 ## Twoje prawa
 
@@ -83,6 +113,8 @@ Zgodnie z RODO każdej osobie, której dane dotyczą, przysługują następując
 - Prawo do cofnięcia zgody w dowolnym momencie, bez wpływu na zgodność z prawem przetwarzania, którego dokonano przed jej cofnięciem.
 - Prawo do wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych (ul. Stawki 2, 00-193 Warszawa).
 
+Podanie danych jest dobrowolne. Bez przesłania danych połączenia nie jest jednak możliwe pobranie rozkładów, a odmowa zgody na reklamy spersonalizowane oznacza jedynie wyświetlanie reklam niespersonalizowanych.
+
 ## Bezpieczeństwo
 
 Administrator stosuje środki techniczne i organizacyjne odpowiednie do zagrożeń oraz kategorii przetwarzanych danych. Komunikacja między Aplikacją a serwerami odbywa się wyłącznie z wykorzystaniem szyfrowania TLS 1.2 lub nowszego. Dostęp do infrastruktury serwerowej posiada wyłącznie Administrator, a wszystkie operacje administracyjne podlegają uwierzytelnieniu wieloskładnikowemu.
@@ -91,12 +123,12 @@ Mimo dochowania należytej staranności, żaden system informatyczny nie jest w 
 
 ## Zmiany polityki
 
-Niniejsza Polityka prywatności może być okresowo aktualizowana w celu odzwierciedlenia zmian w funkcjonalności Aplikacji, obowiązujących przepisach prawa lub praktykach branżowych. Każda istotna zmiana zostanie zakomunikowana w Aplikacji oraz na stronie internetowej Peronki z co najmniej 14-dniowym wyprzedzeniem przed wejściem w życie.
+Niniejsza Polityka prywatności może być okresowo aktualizowana w celu odzwierciedlenia zmian w funkcjonalności Aplikacji lub Strony, obowiązujących przepisach prawa lub praktykach branżowych. Każda istotna zmiana zostanie zakomunikowana w Aplikacji oraz na Stronie z co najmniej 14-dniowym wyprzedzeniem przed wejściem w życie.
 
-Data ostatniej aktualizacji znajduje się w nagłówku dokumentu. Korzystanie z Aplikacji po wejściu w życie zmian oznacza ich akceptację. Użytkownicy, którzy nie zgadzają się z nową treścią Polityki, powinni zaprzestać korzystania z Aplikacji i usunąć ją z urządzenia.
+Data ostatniej aktualizacji znajduje się w nagłówku dokumentu.
 
 ## Kontakt
 
 We wszelkich sprawach dotyczących prywatności, przetwarzania danych osobowych lub realizacji praw wynikających z RODO można kontaktować się z Administratorem za pośrednictwem poczty elektronicznej. Odpowiedzi udzielamy w terminie nie dłuższym niż 30 dni od otrzymania zapytania.
 
-Adres kontaktowy: [privacy@peronka.app](mailto:privacy@peronka.app). Korespondencję tradycyjną prosimy kierować na adres podany w sklepie z aplikacjami. Zachęcamy do zapoznania się również z naszym [Regulaminem](/regulamin/), który stanowi uzupełnienie niniejszej Polityki prywatności.
+Adres kontaktowy: [kontakt@peronka.pl](mailto:kontakt@peronka.pl). Korespondencję tradycyjną prosimy kierować na adres prowadzenia działalności Administratora ujawniony w CEIDG. Zachęcamy do zapoznania się również z naszym [Regulaminem](/regulamin/), który stanowi uzupełnienie niniejszej Polityki prywatności.
