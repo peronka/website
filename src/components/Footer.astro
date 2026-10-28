@@ -9,7 +9,9 @@ const columns = [
     links: [
       { href: '/#aplikacja', label: 'Aplikacja' },
       { href: '/#widzety', label: 'Widżety' },
-      { href: site.appStoreUrl || '/#pobierz', label: 'Pobierz z App Store' },
+      site.appStoreUrl
+        ? { href: site.appStoreUrl, label: 'Pobierz z App Store' }
+        : { href: '/#pobierz', label: 'Powiadom o premierze' },
     ],
   },
   {

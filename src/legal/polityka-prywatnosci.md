@@ -1,6 +1,6 @@
 ---
 title: Polityka prywatności
-updated: 24 października 2026 r.
+updated: 27 października 2026 r.
 intro: Jak aplikacja Peronka i strona peronka.pl zbierają, wykorzystują i chronią dane użytkowników. Dokument przygotowano zgodnie z RODO (Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679).
 numbering: decimal
 calloutTitle: Masz pytania o prywatność?
@@ -24,7 +24,7 @@ Administrator nie jest powiązany z PKP Polskimi Liniami Kolejowymi S.A. ani z �
 
 ## Jakie dane zbieramy
 
-Aplikacja została zaprojektowana zgodnie z zasadą minimalizacji danych. Nie wymagamy zakładania konta ani podawania imienia, nazwiska czy adresu e-mail. Przetwarzamy wyłącznie następujące kategorie informacji.
+Aplikacja została zaprojektowana zgodnie z zasadą minimalizacji danych. Nie wymagamy zakładania konta ani podawania imienia i nazwiska. Adres e-mail przekazujesz nam tylko wtedy, gdy zapiszesz się na powiadomienie o premierze albo do nas napiszesz. Przetwarzamy wyłącznie następujące kategorie informacji.
 
 W Aplikacji:
 
@@ -37,6 +37,7 @@ Na Stronie:
 
 - Statystyki odwiedzin — adres odwiedzanej podstrony, adres strony odsyłającej, kraj, typ urządzenia, system operacyjny i przeglądarka, zbierane przez Vercel Web Analytics. Odwiedzający są rozróżniani za pomocą skrótu (hash) tworzonego z danych zapytania i resetowanego codziennie, dlatego nie da się śledzić tej samej osoby między kolejnymi dniami ani między różnymi stronami.
 - Logi serwera — adres IP, data i godzina oraz adres żądanej podstrony, zapisywane automatycznie przez dostawcę hostingu. Strona statusu pobiera dane bezpośrednio z serwera Peronki, który również otrzymuje przy tym adres IP przeglądarki.
+- Zapis na powiadomienie o premierze — adres e-mail podany w formularzu „Powiadom mnie” oraz data i godzina zapisu i jego potwierdzenia.
 
 W korespondencji:
 
@@ -51,6 +52,7 @@ Dane przetwarzamy wyłącznie w zakresie niezbędnym do realizacji poniższych c
 - Wyświetlanie reklam spersonalizowanych — art. 6 ust. 1 lit. a RODO (zgoda wyrażona w formularzu zgody).
 - Wyświetlanie reklam niespersonalizowanych, z których finansowana jest bezpłatna Aplikacja — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora).
 - Prowadzenie statystyk odwiedzin oraz zapewnienie bezpieczeństwa Strony i serwerów — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora).
+- Wysłanie wiadomości o udostępnieniu Aplikacji w App Store osobom, które zapisały się na powiadomienie o premierze — art. 6 ust. 1 lit. a RODO (zgoda wyrażona w formularzu i potwierdzona linkiem z wiadomości e-mail).
 - Odpowiadanie na wiadomości — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora polegający na prowadzeniu korespondencji z użytkownikami).
 - Rozpatrywanie reklamacji — art. 6 ust. 1 lit. c RODO (obowiązek wynikający z ustawy o prawach konsumenta).
 - Ustalenie, dochodzenie lub obrona roszczeń — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora).
@@ -81,6 +83,7 @@ Administrator nie sprzedaje danych osobowych ani nie udostępnia ich w celach ma
 
 - Dostawcy infrastruktury serwerowej Aplikacji (serwery w Unii Europejskiej) — obsługa zapytań i pamięć podręczna rozkładów.
 - Vercel Inc. — hosting Strony i statystyki odwiedzin.
+- Brevo SAS (Francja) — obsługa zapisów na powiadomienie o premierze i wysyłka tej wiadomości.
 - Google Ireland Limited i Google LLC — raporty o awariach (Firebase Crashlytics) oraz reklamy (Google AdMob); w zakresie reklam spersonalizowanych Google działa jako odrębny administrator.
 - Dostawca poczty elektronicznej — obsługa korespondencji.
 - Organy państwowe i sądowe — w przypadkach przewidzianych przepisami prawa.
@@ -97,6 +100,7 @@ Google LLC i Vercel Inc. mają siedziby w Stanach Zjednoczonych, dlatego dane mo
 - Raporty o awariach — do 90 dni od ich zebrania.
 - Statystyki odwiedzin Strony — skrót rozróżniający odwiedzających jest usuwany po 24 godzinach; dalej przechowywane są wyłącznie zbiorcze statystyki, które nie pozwalają zidentyfikować osoby.
 - Dane reklamowe — wybory dotyczące zgód są przechowywane na urządzeniu do czasu ich zmiany lub usunięcia Aplikacji; dane przetwarzane przez Google w zakresie reklam spersonalizowanych — zgodnie z zasadami Google.
+- Zapisy na powiadomienie o premierze — do wysłania wiadomości o udostępnieniu Aplikacji albo wcześniejszego wycofania zgody; adres, którego nie potwierdzono linkiem z wiadomości, nie jest dodawany do listy odbiorców.
 - Korespondencja — przez czas potrzebny do załatwienia sprawy, a w przypadku reklamacji — do upływu terminu przedawnienia związanych z nią roszczeń.
 - Preferencje — wyłącznie na urządzeniu; można je w każdej chwili usunąć w ustawieniach Aplikacji lub odinstalowując Aplikację.
 
@@ -113,7 +117,7 @@ Zgodnie z RODO każdej osobie, której dane dotyczą, przysługują następując
 - Prawo do cofnięcia zgody w dowolnym momencie, bez wpływu na zgodność z prawem przetwarzania, którego dokonano przed jej cofnięciem.
 - Prawo do wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych (ul. Stawki 2, 00-193 Warszawa).
 
-Podanie danych jest dobrowolne. Bez przesłania danych połączenia nie jest jednak możliwe pobranie rozkładów, a odmowa zgody na reklamy spersonalizowane oznacza jedynie wyświetlanie reklam niespersonalizowanych.
+Podanie danych jest dobrowolne. Bez przesłania danych połączenia nie jest jednak możliwe pobranie rozkładów, a odmowa zgody na reklamy spersonalizowane oznacza jedynie wyświetlanie reklam niespersonalizowanych. Zgodę na powiadomienie o premierze można wycofać w każdej chwili, pisząc na [kontakt@peronka.pl](mailto:kontakt@peronka.pl) lub korzystając z linku rezygnacji w wiadomości.
 
 ## Bezpieczeństwo
 

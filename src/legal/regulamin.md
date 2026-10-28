@@ -1,6 +1,6 @@
 ---
 title: Regulamin
-updated: 24 października 2026 r.
+updated: 27 października 2026 r.
 intro: Zasady korzystania z aplikacji Peronka oraz prawa i obowiązki użytkowników. Przeczytaj je, zanim zaczniesz korzystać z Aplikacji.
 numbering: paragraph
 calloutTitle: Reklamacje i pytania
@@ -10,7 +10,7 @@ calloutNote: Opisz problem, podaj model urządzenia i wersję Aplikacji. Na rekl
 
 ## Postanowienia ogólne
 
-Niniejszy regulamin (dalej: „Regulamin”) określa zasady korzystania z aplikacji mobilnej Peronka (dalej: „Aplikacja”), udostępniającej informacje o rozkładzie jazdy pociągów oraz utrudnieniach w ruchu kolejowym w Polsce. Regulamin jest regulaminem, o którym mowa w art. 8 ustawy z dnia 18 lipca 2002 r. o świadczeniu usług drogą elektroniczną.
+Niniejszy regulamin (dalej: „Regulamin”) określa zasady korzystania z aplikacji mobilnej Peronka (dalej: „Aplikacja”), udostępniającej informacje o rozkładzie jazdy pociągów oraz utrudnieniach w ruchu kolejowym w Polsce, a także z usługi powiadomienia o premierze dostępnej na stronie peronka.pl. Regulamin jest regulaminem, o którym mowa w art. 8 ustawy z dnia 18 lipca 2002 r. o świadczeniu usług drogą elektroniczną.
 
 Aplikację udostępnia Filip Chlebowski, prowadzący działalność gospodarczą pod firmą Chlebowski.it Filip Chlebowski, wpisany do Centralnej Ewidencji i Informacji o Działalności Gospodarczej (CEIDG), NIP 9522266552, adres e-mail: [kontakt@peronka.pl](mailto:kontakt@peronka.pl). Adres prowadzenia działalności jest ujawniony w CEIDG.
 
@@ -19,7 +19,7 @@ Korzystanie z Aplikacji oznacza akceptację warunków niniejszego Regulaminu. Je
 ## Definicje
 
 - **Aplikacja** — mobilna aplikacja Peronka na urządzenia z systemem iOS, dystrybuowana w App Store.
-- **Użytkownik** — osoba fizyczna korzystająca z Aplikacji na własnym urządzeniu mobilnym.
+- **Użytkownik** — osoba fizyczna korzystająca z Aplikacji na własnym urządzeniu mobilnym lub z usługi powiadomienia o premierze.
 - **Dane źródłowe** — oficjalne dane o rozkładzie jazdy i ruchu pociągów udostępniane przez PKP Polskie Linie Kolejowe S.A. w ramach PKP PLK OpenData (pdp-api.plk-sa.pl).
 - **Usługodawca** — podmiot udostępniający Aplikację, wskazany w § 1 Regulaminu.
 - **Umowa** — umowa o świadczenie usług drogą elektroniczną zawierana między Usługodawcą a Użytkownikiem na zasadach określonych w Regulaminie.
@@ -40,7 +40,7 @@ Do korzystania z Aplikacji niezbędne są:
 - dostęp do Internetu,
 - konto Apple umożliwiające pobranie Aplikacji z App Store.
 
-Niektóre funkcje, takie jak widżety, Live Activity i powiadomienia, mogą wymagać nowszej wersji systemu iOS oraz zgody na powiadomienia i odświeżanie w tle.
+Niektóre funkcje, takie jak widżety, Live Activity i powiadomienia, mogą wymagać nowszej wersji systemu iOS oraz zgody na powiadomienia i odświeżanie w tle. Do zapisu na powiadomienie o premierze wystarczy przeglądarka internetowa i adres e-mail.
 
 ## Zawarcie i rozwiązanie umowy
 
@@ -74,6 +74,12 @@ Aplikacja wyświetla reklamy dostarczane przez Google AdMob. Reklamy spersonaliz
 
 Szczegółowe zasady przetwarzania danych w związku z reklamami opisuje [Polityka prywatności](/polityka-prywatnosci/).
 
+## Powiadomienie o premierze
+
+Na stronie peronka.pl można bezpłatnie zapisać się na jednorazowe powiadomienie e-mail o udostępnieniu Aplikacji w App Store. Zapis wymaga podania adresu e-mail i potwierdzenia go linkiem z wiadomości wysłanej na ten adres.
+
+Umowa o świadczenie tej usługi zostaje zawarta z chwilą potwierdzenia zapisu i wygasa po wysłaniu powiadomienia. Użytkownik może ją rozwiązać w każdej chwili, wycofując zgodę — pisząc na adres [kontakt@peronka.pl](mailto:kontakt@peronka.pl) lub korzystając z linku rezygnacji w wiadomości.
+
 ## Reklamacje i kontakt
 
 Reklamacje dotyczące działania Aplikacji można zgłaszać drogą elektroniczną na adres: [kontakt@peronka.pl](mailto:kontakt@peronka.pl).
@@ -106,4 +112,4 @@ Regulamin jest udostępniany nieodpłatnie na stronie peronka.pl w sposób umoż
 
 W sprawach nieuregulowanych niniejszym Regulaminem stosuje się przepisy prawa polskiego, w tym Kodeksu cywilnego, ustawy o świadczeniu usług drogą elektroniczną oraz ustawy o prawach konsumenta.
 
-Regulamin w niniejszym brzmieniu obowiązuje od dnia 24 października 2026 r.
+Regulamin w niniejszym brzmieniu obowiązuje od dnia 27 października 2026 r.

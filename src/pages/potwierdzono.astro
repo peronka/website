@@ -1,0 +1,11 @@
+---
+// Brevo redirects here after the double opt-in link is clicked.
+import Message from '../layouts/Message.astro';
+import { site } from '../config';
+---
+
+<Message
+  kicker="Gotowe"
+  title="Zapis potwierdzony"
+  lead={`Dziękujemy! Napiszemy, gdy Peronka będzie dostępna w App Store. Zgodę możesz wycofać w każdej chwili, pisząc na ${site.emails.main}.`}
+/>

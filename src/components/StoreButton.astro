@@ -1,5 +1,8 @@
 ---
 import { site } from '../config';
+// Official Polish badge from Apple Marketing Tools ("Pobierz w App Store").
+// Apple's guidelines forbid recoloring it or adding effects, so it is shown as is.
+import badge from '../assets/brand/app-store-badge-pl.svg';
 
 interface Props {
   size?: 'small' | 'large';
@@ -8,28 +11,29 @@ interface Props {
 
 const { size = 'large', tone = 'light' } = Astro.props;
 const url = site.appStoreUrl;
-const Tag = url ? 'a' : 'span';
-// Until the listing is live there is nothing to link to, so the button
-// says so instead of pointing at a dead URL.
-const small = url ? 'Pobierz z' : 'Wkrótce w';
+// Until the listing is live there is nothing to download, so the button
+// leads to the "Powiadom mnie" form in the CTA band instead.
+const href = url || '/#pobierz';
 ---
 
-<Tag
-  class:list={['store', `store--${size}`, `store--${tone}`, { 'store--soon': !url }]}
-  href={url || undefined}
-  rel={url ? 'noopener' : undefined}
->
-  {
-    size === 'small' ? (
-      <span class="store__single">{url ? 'Pobierz' : 'Wkrótce w App Store'}</span>
-    ) : (
-      <span class="store__label">
-        <span class="store__small">{small}</span>
-        <span class="store__big">App Store</span>
-      </span>
-    )
-  }
-</Tag>
+{
+  url && size === 'large' ? (
+    <a class="badge" href={url} rel="noopener">
+      <img src={badge.src} width={badge.width} height={badge.height} alt="Pobierz w App Store" />
+    </a>
+  ) : (
+    <a class:list={['store', `store--${size}`, `store--${tone}`]} href={href} rel={url ? 'noopener' : undefined}>
+      {size === 'small' ? (
+        <span class="store__single">{url ? 'Pobierz' : 'Powiadom mnie'}</span>
+      ) : (
+        <span class="store__label">
+          <span class="store__small">Wkrótce w App Store</span>
+          <span class="store__big">Powiadom mnie</span>
+        </span>
+      )}
+    </a>
+  )
+}
 
 <style>
   .store {
@@ -81,12 +85,20 @@ const small = url ? 'Pobierz z' : 'Wkrótce w';
     letter-spacing: -0.015em;
   }
 
-  a.store:hover {
+  .store:hover {
     transform: translateY(-1px);
     box-shadow: 0 10px 24px rgb(11 26 64 / 0.25);
   }
 
-  .store--soon {
-    cursor: default;
+  /* Height above Apple's 40px on-screen minimum; clear space comes from the parent gaps. */
+  .badge {
+    display: inline-block;
+    border-radius: 9px;
+  }
+
+  .badge img {
+    display: block;
+    width: auto;
+    height: 56px;
   }
 </style>

@@ -2,6 +2,8 @@
 import { Image } from 'astro:assets';
 import icon from '../../assets/brand/icon.png';
 import StoreButton from '../StoreButton.astro';
+import NotifyForm from '../NotifyForm.astro';
+import { site } from '../../config';
 ---
 
 <section class="cta wrap" id="pobierz">
@@ -11,7 +13,7 @@ import StoreButton from '../StoreButton.astro';
       <h2 class="cta__title">Sprawdź swój pociąg, zanim wyjdziesz z domu</h2>
       <p class="cta__meta mono">Bezpłatna · bez konta · iPhone</p>
     </div>
-    <StoreButton />
+    {site.appStoreUrl ? <StoreButton /> : <NotifyForm id="powiadom-cta" />}
   </div>
 </section>
 

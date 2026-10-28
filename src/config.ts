@@ -1,11 +1,15 @@
-// Site-wide settings. The App Store link stays empty until the listing is live;
-// an empty link renders as a "coming soon" badge instead of a dead button.
+// Site-wide settings. While appStoreUrl is empty (before launch) the hero and CTA
+// show the "Powiadom mnie" signup form instead of the App Store badge.
+const appStoreId = '6779992047';
+
 export const site = {
   name: 'Peronka',
   tagline: 'Odjazdy i opóźnienia na żywo',
   description:
     'Odjazdy, przyjazdy, perony i opóźnienia pociągów ze stacji w całej Polsce — na żywo, z oficjalnych danych PKP PLK. Bez konta, za darmo.',
-  appStoreUrl: '',
+  // Drives the Safari Smart App Banner (apple-itunes-app meta in Base.astro).
+  appStoreId,
+  appStoreUrl: `https://apps.apple.com/pl/app/peronka/id${appStoreId}`,
   // Override with PUBLIC_STATUS_API_BASE (e.g. http://localhost:8080) to
   // point the status page at a local backend.
   statusApiBase: import.meta.env.PUBLIC_STATUS_API_BASE ?? 'https://api.peronka.pl',

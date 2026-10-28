@@ -1,0 +1,168 @@
+---
+// Waitlist signup shown while the App Store link is empty. Posts to
+// /api/powiadom/, which hands the address to Brevo's double opt-in.
+interface Props {
+  // Unique per page: the hero and the CTA band both render this form.
+  id: string;
+}
+
+const { id } = Astro.props;
+---
+
+<form class="notify" action="/api/powiadom/" method="post">
+  <label class="notify__label" for={id}>Wkrótce w App Store. Zostaw e-mail — damy znać w dniu premiery.</label>
+  <div class="notify__row">
+    <input
+      class="notify__input"
+      id={id}
+      type="email"
+      name="email"
+      required
+      maxlength="254"
+      autocomplete="email"
+      placeholder="twoj@adres.pl"
+    />
+    <button class="notify__button" type="submit">Powiadom mnie</button>
+  </div>
+  <div class="notify__hp" aria-hidden="true">
+    <label>Strona internetowa <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+  </div>
+  <p class="notify__note">
+    Wyślemy jedną wiadomość o udostępnieniu Peronki. Zapis potwierdzasz linkiem z maila, a zgodę możesz wycofać w każdej
+    chwili. <a href="/polityka-prywatnosci/">Polityka prywatności</a>
+  </p>
+  <p class="notify__status" role="status" aria-live="polite"></p>
+</form>
+
+<script>
+  for (const form of document.querySelectorAll<HTMLFormElement>('.notify')) {
+    const button = form.querySelector('button')!;
+    const status = form.querySelector<HTMLElement>('.notify__status')!;
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      button.disabled = true;
+      form.dataset.state = 'sending';
+      status.textContent = 'Zapisuję…';
+
+      let error = 'Nie udało się zapisać. Spróbuj ponownie za chwilę.';
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        if (res.ok) {
+          form.dataset.state = 'done';
+          status.textContent = 'Prawie gotowe — potwierdź zapis, klikając link w wiadomości, którą właśnie wysłaliśmy.';
+          return;
+        }
+        const data: { error?: string } = await res.json().catch(() => ({}));
+        error = data.error ?? error;
+      } catch {
+        // Network failure: keep the generic message.
+      }
+
+      form.dataset.state = 'error';
+      status.textContent = error;
+      button.disabled = false;
+    });
+  }
+</script>
+
+<style>
+  .notify {
+    display: grid;
+    gap: 12px;
+    inline-size: 440px;
+    max-inline-size: 100%;
+  }
+
+  .notify__label {
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .notify__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .notify__input {
+    flex: 1 1 220px;
+    min-width: 0;
+    padding: 14px 16px;
+    border: 1px solid rgb(255 255 255 / 0.24);
+    border-radius: 14px;
+    background: rgb(255 255 255 / 0.08);
+    color: var(--white);
+    font: inherit;
+  }
+
+  .notify__input::placeholder {
+    color: var(--mist-2);
+  }
+
+  .notify__button {
+    padding: 14px 22px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--white);
+    color: var(--night);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      transform 0.15s,
+      box-shadow 0.15s;
+  }
+
+  .notify__button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgb(11 26 64 / 0.25);
+  }
+
+  .notify__button:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .notify__hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .notify__note {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--mist-2);
+  }
+
+  .notify__note a {
+    color: var(--mist);
+  }
+
+  .notify__status {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--mist);
+  }
+
+  .notify__status:empty {
+    display: none;
+  }
+
+  .notify[data-state='error'] .notify__status {
+    color: var(--amber-bright);
+  }
+
+  .notify[data-state='done'] .notify__row,
+  .notify[data-state='done'] .notify__note {
+    display: none;
+  }
+</style>

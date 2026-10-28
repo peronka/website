@@ -2,7 +2,9 @@
 import { ArrowDown } from '@lucide/astro';
 import Nav from '../Nav.astro';
 import StoreButton from '../StoreButton.astro';
+import NotifyForm from '../NotifyForm.astro';
 import DepartureBoard from '../DepartureBoard.astro';
+import { site } from '../../config';
 ---
 
 <section class="hero">
@@ -15,7 +17,7 @@ import DepartureBoard from '../DepartureBoard.astro';
         Odjazdy, perony i opóźnienia ze stacji w całej Polsce — w jednym czytelnym widoku. Bez zakładania konta.
       </p>
       <div class="hero__ctas">
-        <StoreButton />
+        {site.appStoreUrl ? <StoreButton /> : <NotifyForm id="powiadom-hero" />}
         <a class="hero__more" href="#aplikacja">Zobacz, jak działa <ArrowDown size={18} aria-hidden="true" /></a>
       </div>
       <p class="hero__meta mono">Bezpłatna · iPhone · bez konta</p>
