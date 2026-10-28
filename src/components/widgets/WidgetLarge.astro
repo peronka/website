@@ -1,0 +1,261 @@
+---
+// Large home-screen widget: the station board. Drawn after the ui.pen export
+// it replaced; station-sim.ts keeps it in step with the hero board.
+import { RefreshCw, TrainFront } from '@lucide/astro';
+import { START, disruptions, fmt, initial, untilText, view } from '../../lib/departures';
+
+const rows = initial.slice(0, 5).map((d) => ({ d, v: view(d, START) }));
+---
+
+<div class="wlarge" role="img" aria-label="Duży widżet z tablicą odjazdów stacji">
+  <div class="wlarge__head">
+    <span class="wlarge__icon"><TrainFront size={17} aria-hidden="true" /></span>
+    <p class="wlarge__title">
+      <strong>Warszawa Centralna</strong>
+      <span>Odjazdy · stacja domyślna</span>
+    </p>
+    <p class="wlarge__clock">
+      <span class="wlarge__now mono">{fmt(START)}</span>
+      <span class="wlarge__live"><span class="wlarge__dot"></span>na żywo</span>
+    </p>
+  </div>
+  <ul class="wlarge__rows">
+    {
+      rows.map(({ d, v }) => (
+        <li class="wlarge__row" data-id={d.id}>
+          <span class="wlarge__when">
+            <span class="wlarge__time mono">{fmt(d.planned)}</span>
+            <span class="wlarge__until">{untilText(d, START)}</span>
+          </span>
+          <span class="wlarge__train mono" style={`background:${d.color}`}>
+            {d.train}
+          </span>
+          <span class="wlarge__where">
+            <span class="wlarge__dest">{d.dest}</span>
+            <span class="wlarge__platform mono">{`Peron ${d.platform} · Tor ${d.track}`}</span>
+          </span>
+          <span class:list={['wlarge__pill', `wlarge__pill--${v.state}`]}>{v.status}</span>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="wlarge__foot">
+    <RefreshCw size={12} aria-hidden="true" />
+    <span>Zaktualizowano <span class="wlarge__updated">{fmt(START)}</span> · 63 odjazdy / h</span>
+    <span class="wlarge__issues">{disruptions(initial.slice(0, 5))}</span>
+  </p>
+</div>
+
+<script>
+  import { disruptions, fmt, untilText, view } from '../../lib/departures';
+  import { AMBER, BLUE, flip, highlight, motionOk, shiftSlots, spin } from '../../lib/motion';
+  import { subscribe } from '../../lib/station-sim';
+
+  const widget = document.querySelector<HTMLElement>('.wlarge');
+  if (widget && motionOk) {
+    const $ = (selector: string) => widget.querySelector<HTMLElement>(selector)!;
+    const rows = [...widget.querySelectorAll<HTMLElement>('.wlarge__row')];
+    let ids = rows.map((row) => Number(row.dataset.id));
+
+    subscribe(widget, ({ now, trains, changes }) => {
+      flip($('.wlarge__now'), fmt(now));
+      flip($('.wlarge__updated'), fmt(now));
+      flip($('.wlarge__issues'), disruptions(trains.slice(0, rows.length)));
+      spin($('.wlarge__foot svg'));
+      ids = shiftSlots(rows, ids, trains, (row, d, animated) => {
+        const v = view(d, now);
+        const cell = (selector: string) => row.querySelector<HTMLElement>(selector)!;
+        flip(cell('.wlarge__time'), fmt(d.planned), animated);
+        flip(cell('.wlarge__until'), untilText(d, now), animated);
+        const train = cell('.wlarge__train');
+        train.textContent = d.train;
+        train.style.background = d.color;
+        cell('.wlarge__dest').textContent = d.dest;
+        flip(cell('.wlarge__platform'), `Peron ${d.platform} · Tor ${d.track}`, animated);
+        const pill = cell('.wlarge__pill');
+        pill.classList.remove('wlarge__pill--ok', 'wlarge__pill--late', 'wlarge__pill--in');
+        pill.classList.add(`wlarge__pill--${v.state}`);
+        flip(pill, v.status, animated);
+      });
+      for (const { kind, id } of changes) {
+        const j = ids.indexOf(id);
+        if (j >= 0) highlight(rows[j], kind === 'delay' ? AMBER : BLUE);
+      }
+    });
+  }
+</script>
+
+<style>
+  .wlarge {
+    display: grid;
+    gap: 10px;
+    width: 350px;
+    max-width: 100%;
+    padding: 16px;
+    border-radius: 22px;
+    background: var(--navy);
+    box-shadow: 0 14px 34px rgb(0 0 0 / 0.35);
+    color: var(--white);
+  }
+
+  .wlarge__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .wlarge__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--navy);
+  }
+
+  .wlarge__title {
+    display: grid;
+    min-width: 0;
+  }
+
+  .wlarge__title strong {
+    font-size: 15px;
+    line-height: 1.2;
+  }
+
+  .wlarge__title span {
+    font-size: 10.5px;
+    color: var(--mist);
+  }
+
+  .wlarge__clock {
+    display: grid;
+    justify-items: end;
+    margin-left: auto;
+  }
+
+  .wlarge__now {
+    font-size: 16.5px;
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  .wlarge__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9.5px;
+    font-weight: 600;
+    color: #4ade80;
+  }
+
+  .wlarge__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: widget-pulse 2s ease-in-out infinite;
+  }
+
+  .wlarge__rows {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    list-style: none;
+  }
+
+  .wlarge__row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 48px;
+  }
+
+  .wlarge__row + .wlarge__row {
+    border-top: 1px solid rgb(255 255 255 / 0.1);
+  }
+
+  .wlarge__when {
+    display: grid;
+    flex: none;
+    width: 50px;
+  }
+
+  .wlarge__time {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  .wlarge__until {
+    font-size: 9.5px;
+    color: var(--mist);
+  }
+
+  .wlarge__train {
+    flex: none;
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 9.5px;
+    font-weight: 700;
+  }
+
+  .wlarge__where {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .wlarge__dest {
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .wlarge__platform {
+    font-size: 9.5px;
+    color: var(--mist);
+  }
+
+  .wlarge__pill {
+    flex: none;
+    padding: 3px 9px;
+    border-radius: 7px;
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+
+  .wlarge__pill--ok { background: #dcfce7; color: #15803d; }
+  .wlarge__pill--late { background: #fef3c7; color: #b45309; }
+  .wlarge__pill--in { background: #dbeafe; color: #1d4ed8; }
+
+  .wlarge__foot {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 11px;
+    border-radius: 11px;
+    background: var(--navy-2);
+    font-size: 10px;
+    color: var(--mist);
+  }
+
+  .wlarge__updated {
+    display: inline-block;
+  }
+
+  .wlarge__issues {
+    margin-left: auto;
+    font-weight: 600;
+    color: #fca5a5;
+  }
+
+  @keyframes widget-pulse {
+    50% { opacity: 0.35; }
+  }
+</style>

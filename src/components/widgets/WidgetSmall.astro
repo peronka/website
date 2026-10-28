@@ -1,0 +1,157 @@
+---
+// Small home-screen widget: the next departure from the default station.
+// Drawn after the ui.pen export it replaced; station-sim.ts keeps it in step
+// with the hero board.
+import { TrainFront } from '@lucide/astro';
+import { START, countdown, departsAt, fmt, initial, shortName } from '../../lib/departures';
+
+const d = initial[0];
+---
+
+<div class="wsmall" role="img" aria-label="Mały widżet z najbliższym odjazdem">
+  <p class="wsmall__head">
+    <TrainFront size={14} aria-hidden="true" />
+    <span>W-wa Centralna</span>
+    <span class="wsmall__dot"></span>
+  </p>
+  <div class="wsmall__next" data-id={d.id}>
+    <p class="wsmall__time mono">{fmt(departsAt(d))}</p>
+    <p class:list={['wsmall__until', { 'wsmall__until--late': d.delay > 0 }]}>{countdown(d, START)}</p>
+    <p class="wsmall__line">
+      <span class="wsmall__train mono" style={`background:${d.color}`}>{d.train}</span>
+      <span class="wsmall__dest">{shortName(d.dest)}</span>
+    </p>
+  </div>
+  <p class="wsmall__platform mono">Peron {d.platform}</p>
+</div>
+
+<script>
+  import { countdown, departsAt, fmt, shortName } from '../../lib/departures';
+  import { flip, motionOk } from '../../lib/motion';
+  import { subscribe } from '../../lib/station-sim';
+
+  const widget = document.querySelector<HTMLElement>('.wsmall');
+  if (widget && motionOk) {
+    const next = widget.querySelector<HTMLElement>('.wsmall__next')!;
+    const $ = (selector: string) => widget.querySelector<HTMLElement>(selector)!;
+    let shown = Number(next.dataset.id);
+
+    subscribe(widget, ({ now, trains: [d] }) => {
+      // A new train takes the slot as a whole; otherwise only changed text flips.
+      const animated = d.id === shown;
+      shown = d.id;
+      flip($('.wsmall__time'), fmt(departsAt(d)), animated);
+      const until = $('.wsmall__until');
+      flip(until, countdown(d, now), animated);
+      until.classList.toggle('wsmall__until--late', d.delay > 0);
+      const train = $('.wsmall__train');
+      train.textContent = d.train;
+      train.style.background = d.color;
+      $('.wsmall__dest').textContent = shortName(d.dest);
+      flip($('.wsmall__platform'), `Peron ${d.platform}`, animated);
+      if (!animated) {
+        next.animate([{ transform: 'translateY(40%)', opacity: 0 }, { transform: 'none', opacity: 1 }], {
+          duration: 600,
+          easing: 'cubic-bezier(0.65, 0, 0.35, 1)',
+        });
+      }
+    });
+  }
+</script>
+
+<style>
+  .wsmall {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    width: 164px;
+    max-width: 100%;
+    height: 164px;
+    padding: 14px;
+    overflow: hidden;
+    border-radius: 22px;
+    background: var(--navy);
+    box-shadow: 0 14px 34px rgb(0 0 0 / 0.35);
+    color: var(--white);
+  }
+
+  .wsmall__head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--mist);
+  }
+
+  .wsmall__dot {
+    width: 6px;
+    height: 6px;
+    margin-left: auto;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: widget-pulse 2s ease-in-out infinite;
+  }
+
+  .wsmall__next {
+    display: grid;
+    gap: 2px;
+    margin-top: 6px;
+  }
+
+  .wsmall__time {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .wsmall__until {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #4ade80;
+  }
+
+  .wsmall__until--late {
+    color: var(--amber-bright);
+  }
+
+  .wsmall__line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    margin-top: 6px;
+  }
+
+  .wsmall__train {
+    flex: none;
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 9.5px;
+    font-weight: 700;
+  }
+
+  .wsmall__dest {
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .wsmall__platform {
+    grid-row: 4;
+    display: flex;
+    align-items: center;
+    height: 28px;
+    padding: 0 9px;
+    border-radius: 9px;
+    background: rgb(255 255 255 / 0.08);
+    font-size: 10.5px;
+    color: var(--mist);
+  }
+
+  @keyframes widget-pulse {
+    50% { opacity: 0.35; }
+  }
+</style>

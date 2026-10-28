@@ -1,0 +1,181 @@
+---
+// Medium home-screen widget: the next three departures. Drawn after the
+// ui.pen export it replaced; station-sim.ts keeps it in step with the hero board.
+import { TrainFront } from '@lucide/astro';
+import { START, fmt, initial, shortStatus, view } from '../../lib/departures';
+
+const rows = initial.slice(0, 3).map((d) => ({ d, state: view(d, START).state }));
+---
+
+<div class="wmed" role="img" aria-label="Średni widżet z trzema odjazdami">
+  <p class="wmed__head">
+    <TrainFront size={16} aria-hidden="true" />
+    <span class="wmed__station">Warszawa Centralna</span>
+    <span class="wmed__clock mono"><span class="wmed__dot"></span><span class="wmed__now">{fmt(START)}</span></span>
+  </p>
+  <ul class="wmed__rows">
+    {
+      rows.map(({ d, state }) => (
+        <li class="wmed__row" data-id={d.id}>
+          <span class="wmed__time mono">{fmt(d.planned)}</span>
+          <span class="wmed__train mono" style={`background:${d.color}`}>
+            {d.train}
+          </span>
+          <span class="wmed__dest">{d.dest}</span>
+          <span class="wmed__platform mono">P{d.platform}</span>
+          <span class:list={['wmed__pill', `wmed__pill--${state}`]}>{shortStatus(d, START)}</span>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<script>
+  import { fmt, shortStatus, view } from '../../lib/departures';
+  import { AMBER, BLUE, flip, highlight, motionOk, shiftSlots } from '../../lib/motion';
+  import { subscribe } from '../../lib/station-sim';
+
+  const widget = document.querySelector<HTMLElement>('.wmed');
+  if (widget && motionOk) {
+    const clock = widget.querySelector<HTMLElement>('.wmed__now')!;
+    const rows = [...widget.querySelectorAll<HTMLElement>('.wmed__row')];
+    let ids = rows.map((row) => Number(row.dataset.id));
+
+    subscribe(widget, ({ now, trains, changes }) => {
+      flip(clock, fmt(now));
+      ids = shiftSlots(rows, ids, trains, (row, d, animated) => {
+        const $ = (selector: string) => row.querySelector<HTMLElement>(selector)!;
+        flip($('.wmed__time'), fmt(d.planned), animated);
+        const train = $('.wmed__train');
+        train.textContent = d.train;
+        train.style.background = d.color;
+        $('.wmed__dest').textContent = d.dest;
+        flip($('.wmed__platform'), `P${d.platform}`, animated);
+        const pill = $('.wmed__pill');
+        pill.classList.remove('wmed__pill--ok', 'wmed__pill--late', 'wmed__pill--in');
+        pill.classList.add(`wmed__pill--${view(d, now).state}`);
+        flip(pill, shortStatus(d, now), animated);
+      });
+      for (const { kind, id } of changes) {
+        const j = ids.indexOf(id);
+        if (j >= 0) highlight(rows[j], kind === 'delay' ? AMBER : BLUE);
+      }
+    });
+  }
+</script>
+
+<style>
+  .wmed {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 4px;
+    width: 350px;
+    max-width: 100%;
+    height: 164px;
+    padding: 13px 14px;
+    overflow: hidden;
+    border-radius: 22px;
+    background: var(--navy);
+    box-shadow: 0 14px 34px rgb(0 0 0 / 0.35);
+    color: var(--white);
+  }
+
+  .wmed__head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .wmed__station {
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+
+  .wmed__clock {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #16a34a;
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+
+  .wmed__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--white);
+    animation: widget-pulse 2s ease-in-out infinite;
+  }
+
+  .wmed__rows {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    list-style: none;
+  }
+
+  .wmed__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+  }
+
+  .wmed__row + .wmed__row {
+    border-top: 1px solid rgb(255 255 255 / 0.1);
+  }
+
+  .wmed__time {
+    flex: none;
+    width: 44px;
+    font-size: 15.5px;
+    font-weight: 700;
+  }
+
+  .wmed__train {
+    flex: none;
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 9.5px;
+    font-weight: 700;
+  }
+
+  .wmed__dest {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 12.5px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .wmed__platform {
+    flex: none;
+    width: 22px;
+    font-size: 10.5px;
+    color: var(--mist);
+  }
+
+  .wmed__pill {
+    flex: none;
+    width: 50px;
+    padding: 3px 0;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .wmed__pill--ok { background: #16a34a; }
+  .wmed__pill--late { background: #d97706; }
+  .wmed__pill--in { background: #2563eb; }
+
+  @keyframes widget-pulse {
+    50% { opacity: 0.35; }
+  }
+</style>

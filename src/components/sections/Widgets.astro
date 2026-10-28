@@ -1,17 +1,18 @@
 ---
 import { Image } from 'astro:assets';
 import { Smartphone, Lock, RefreshCw } from '@lucide/astro';
-import small from '../../assets/widgets/widget-small.png';
-import medium from '../../assets/widgets/widget-medium.png';
-import large from '../../assets/widgets/widget-large.png';
 import lockScreen from '../../assets/widgets/lock-screen.png';
-import liveActivity from '../../assets/widgets/live-activity.png';
+import WidgetSmall from '../widgets/WidgetSmall.astro';
+import WidgetMedium from '../widgets/WidgetMedium.astro';
+import WidgetLarge from '../widgets/WidgetLarge.astro';
+import LiveActivity from '../widgets/LiveActivity.astro';
 
-// Exports are @3x with a soft shadow margin; display at roughly 1/2.9.
+// Live HTML widgets, drawn after the ui.pen exports and driven by the same
+// simulation as the hero board.
 const widgets = [
-  { src: small, width: 226, name: 'Mały', desc: 'Najbliższy odjazd', alt: 'Mały widżet z najbliższym odjazdem' },
-  { src: medium, width: 412, name: 'Średni', desc: 'Trzy najbliższe odjazdy', alt: 'Średni widżet z trzema odjazdami' },
-  { src: large, width: 412, name: 'Duży', desc: 'Tablica Twojej stacji', alt: 'Duży widżet z tablicą odjazdów stacji' },
+  { component: WidgetSmall, name: 'Mały', desc: 'Najbliższy odjazd' },
+  { component: WidgetMedium, name: 'Średni', desc: 'Trzy najbliższe odjazdy' },
+  { component: WidgetLarge, name: 'Duży', desc: 'Tablica Twojej stacji' },
 ];
 
 const laDetails = [
@@ -33,7 +34,7 @@ const laDetails = [
       {
         widgets.map((w) => (
           <li class="widget">
-            <Image src={w.src} alt={w.alt} width={w.width} densities={[1, 2]} class="widget__img" />
+            <w.component />
             <p class="widget__caption">
               <strong>{w.name}</strong>
               <span class="mono">{w.desc}</span>
@@ -59,13 +60,7 @@ const laDetails = [
           Wybierz pociąg, a Live Activity pokaże go na ekranie blokady aż do stacji docelowej: postęp trasy, najbliższą
           stację, peron i każde opóźnienie.
         </p>
-        <Image
-          src={liveActivity}
-          alt="Live Activity: pociąg IC do Gdańska Głównego z postępem trasy i opóźnieniem"
-          width={540}
-          densities={[1, 2]}
-          class="la__card"
-        />
+        <LiveActivity />
         <ul class="la__details">
           {
             laDetails.map((d) => (
@@ -213,10 +208,6 @@ const laDetails = [
   @media (max-width: 560px) {
     .widgets__row {
       gap: 24px;
-    }
-
-    .widget__img {
-      max-width: 100%;
     }
 
     .la__body {

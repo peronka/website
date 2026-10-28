@@ -26,7 +26,12 @@ Wymaga Node ≥ 22.23 (wymóg Astro 7).
   `zapisano.astro` i `potwierdzono.astro` — strony po zapisie i po kliknięciu linku z maila
 - `src/components/sections/` — sekcje landingu (Hero, AppFeatures, Widgets, DataSource, Cta)
 - `src/components/Phone.astro` — ramka iPhone'a w CSS (skaluje się jednostkami `cqi`)
-- `src/components/DepartureBoard.astro` — tablica odjazdów w hero
+- `src/components/DepartureBoard.astro` — animowana tablica odjazdów w hero
+- `src/components/widgets/` — widżety (mały, średni, duży) i karta Live Activity w HTML,
+  narysowane na wzór eksportów z `ui.pen`
+- `src/lib/` — dane i symulacja animacji: `departures.ts` (przykładowe odjazdy),
+  `station-sim.ts` (wspólny zegar tablicy i widżetów), `journey.ts` (przejazd w Live Activity),
+  `motion.ts` (animacje); przy `prefers-reduced-motion` wszystko zostaje statyczne
 - `src/config.ts` — adresy e-mail, link do App Store, adres API statusu
 - `src/assets/` — zrzuty z aplikacji i widżety wyeksportowane z `ui.pen`
 

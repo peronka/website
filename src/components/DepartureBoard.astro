@@ -1,28 +1,9 @@
 ---
 import { RefreshCw } from '@lucide/astro';
+import { START, fmt, initial, view } from '../lib/departures';
 
-type Status = 'ok' | 'late' | 'in';
-
-interface Row {
-  time: string;
-  planned?: string;
-  train: string;
-  color: string;
-  dest: string;
-  via: string;
-  platform: string;
-  status: string;
-  state: Status;
-}
-
-// Illustrative data in the same shape the app shows on the departures screen.
-const rows: Row[] = [
-  { time: '14:35', train: 'EIP 1602', color: '#7c3aed', dest: 'Gdańsk Główny', via: 'przez Iława, Malbork', platform: '4', status: 'Planowo', state: 'ok' },
-  { time: '14:42', planned: '14:38', train: 'KM 19210', color: '#16a34a', dest: 'Skierniewice', via: 'przez Pruszków, Żyrardów', platform: '1', status: '+4 min', state: 'late' },
-  { time: '14:41', train: 'IC 3512', color: '#2563eb', dest: 'Kraków Główny', via: 'przez Radom, Kielce', platform: '3', status: 'Wjeżdża', state: 'in' },
-  { time: '14:59', planned: '14:47', train: 'TLK 38108', color: '#475569', dest: 'Białystok', via: 'przez Małkinia', platform: '2', status: '+12 min', state: 'late' },
-  { time: '14:50', train: 'IC 1408', color: '#2563eb', dest: 'Poznań Główny', via: 'przez Kutno, Konin', platform: '5', status: 'Planowo', state: 'ok' },
-];
+const [hh, mm] = fmt(START).split(':');
+const rows = initial.map((d) => ({ d, v: view(d, START) }));
 ---
 
 <figure class="board-wrap">
@@ -33,34 +14,34 @@ const rows: Row[] = [
           <p class="board__station">Warszawa Centralna</p>
           <p class="board__kind">Odjazdy</p>
         </div>
-        <p class="board__clock mono" role="columnheader">14:32</p>
+        <p class="board__clock mono" role="columnheader">
+          <span class="board__hh">{hh}</span><span class="board__colon">:</span><span class="board__mm">{mm}</span>
+        </p>
       </div>
     </div>
-    <div role="rowgroup">
+    <div class="board__body" role="rowgroup">
       {
-        rows.map((r, i) => (
-          <div role="row" class:list={['board__row', { 'board__row--flash': i === 1 }]}>
+        rows.map(({ d, v }, i) => (
+          <div role="row" class:list={['board__row', { 'board__row--flash': i === 1 }]} data-id={d.id}>
             <div role="cell" class="board__time mono">
-              <span class:list={{ 'board__time--late': r.planned }}>{r.time}</span>
-              {r.planned && (
-                <s class="board__planned">
-                  <span class="sr-only">planowo </span>
-                  {r.planned}
-                </s>
-              )}
+              <span class:list={['board__time-value', { 'board__time--late': d.delay > 0 }]}>{v.time}</span>
+              <s class="board__planned" hidden={!v.planned}>
+                <span class="sr-only">planowo </span>
+                <span class="board__planned-value">{v.planned}</span>
+              </s>
             </div>
             <div role="cell" class="board__mid">
               <p class="board__line">
-                <span class="board__train mono" style={`background:${r.color}`}>
-                  {r.train}
+                <span class="board__train mono" style={`background:${d.color}`}>
+                  {d.train}
                 </span>
-                <span class="board__dest">{r.dest}</span>
+                <span class="board__dest">{d.dest}</span>
               </p>
-              <p class="board__via">{r.via}</p>
+              <p class="board__via">{d.via}</p>
             </div>
-            <div role="cell" class="board__platform mono">Peron {r.platform}</div>
+            <div role="cell" class="board__platform mono">{v.platform}</div>
             <div role="cell" class="board__status">
-              <span class:list={['board__pill', `board__pill--${r.state}`]}>{r.status}</span>
+              <span class:list={['board__pill', `board__pill--${v.state}`]}>{v.status}</span>
             </div>
           </div>
         ))
@@ -72,6 +53,90 @@ const rows: Row[] = [
     Tak wygląda tablica w aplikacji — godziny, perony i opóźnienia na bieżąco.
   </figcaption>
 </figure>
+
+<script>
+  import { fmt, view, type Departure } from '../lib/departures';
+  import { AMBER, BLUE, flip, highlight, motionOk, slide, spin } from '../lib/motion';
+  import { subscribe, type Frame } from '../lib/station-sim';
+
+  const board = document.querySelector<HTMLElement>('.board');
+  if (board && motionOk) live(board);
+
+  function live(board: HTMLElement) {
+    const body = board.querySelector<HTMLElement>('.board__body')!;
+    const hh = board.querySelector<HTMLElement>('.board__hh')!;
+    const mm = board.querySelector<HTMLElement>('.board__mm')!;
+    const icon = board.parentElement?.querySelector('.board-caption svg');
+    const narrow = matchMedia('(max-width: 560px)');
+    // Server-rendered rows carry the ids of the initial departures.
+    const rows = new Map<number, HTMLElement>();
+    for (const row of body.querySelectorAll<HTMLElement>('.board__row')) rows.set(Number(row.dataset.id), row);
+
+    function paint(row: HTMLElement, d: Departure, now: number, animated: boolean) {
+      const v = view(d, now);
+      const $ = (selector: string) => row.querySelector<HTMLElement>(selector)!;
+      const time = $('.board__time-value');
+      flip(time, v.time, animated);
+      time.classList.toggle('board__time--late', d.delay > 0);
+      $('.board__planned').hidden = !v.planned;
+      $('.board__planned-value').textContent = v.planned;
+      const train = $('.board__train');
+      train.textContent = d.train;
+      train.style.background = d.color;
+      $('.board__dest').textContent = d.dest;
+      $('.board__via').textContent = d.via;
+      flip($('.board__platform'), v.platform, animated);
+      const pill = $('.board__pill');
+      pill.classList.remove('board__pill--ok', 'board__pill--late', 'board__pill--in');
+      pill.classList.add(`board__pill--${v.state}`);
+      flip(pill, v.status, animated);
+    }
+
+    // Narrow screens show four rows (see the CSS), wider ones five.
+    function render({ now, trains, changes }: Frame, animated: boolean) {
+      const shown = trains.slice(0, narrow.matches ? 4 : 5);
+      const ids = new Set(shown.map((d) => d.id));
+      for (const [id, row] of rows) {
+        if (ids.has(id)) continue;
+        rows.delete(id);
+        if (animated) slide(row, 'out');
+        else row.remove();
+      }
+      for (const d of shown) {
+        const row = rows.get(d.id);
+        if (row) {
+          paint(row, d, now, animated);
+          continue;
+        }
+        // Cloning a rendered row keeps Astro's scoped-style attributes.
+        const added = body.querySelector('.board__row')!.cloneNode(true) as HTMLElement;
+        added.removeAttribute('style');
+        added.classList.remove('board__row--flash');
+        paint(added, d, now, false);
+        body.append(added);
+        rows.set(d.id, added);
+        if (animated) slide(added, 'in');
+      }
+      if (!animated) return;
+      for (const { kind, id } of changes) {
+        const row = rows.get(id);
+        if (row) highlight(row, kind === 'delay' ? AMBER : BLUE);
+      }
+    }
+
+    let frame = subscribe(board, (next) => {
+      frame = next;
+      const [h, m] = fmt(next.now).split(':');
+      flip(hh, h);
+      flip(mm, m);
+      spin(icon);
+      render(next, true);
+    });
+    board.classList.add('board--live');
+    render(frame, false);
+    narrow.addEventListener('change', () => render(frame, false));
+  }
+</script>
 
 <style>
   .board-wrap {
@@ -111,6 +176,19 @@ const rows: Row[] = [
   .board__clock {
     font-size: 1.75rem;
     font-weight: 700;
+  }
+
+  .board__hh,
+  .board__mm {
+    display: inline-block;
+  }
+
+  .board--live .board__colon {
+    animation: blink 1s steps(1) infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0.25; }
   }
 
   .board__row {
@@ -200,7 +278,7 @@ const rows: Row[] = [
   .board__pill--late { background: rgb(245 158 11 / 0.18); color: #fcd34d; }
   .board__pill--in { background: rgb(59 130 246 / 0.18); color: #93c5fd; }
 
-  /* The one orchestrated moment: the delayed train lights up once on load. */
+  /* The delayed train lights up once on load; the script adds the rest of the motion. */
   .board__row--flash {
     background: rgb(245 158 11 / 0.08);
     animation: flash 1.6s 0.9s ease-out both;
@@ -259,7 +337,9 @@ const rows: Row[] = [
       font-size: 0.9375rem;
     }
 
-    .board__row:nth-child(n + 5) {
+    /* Without JS, CSS trims to four rows; the live board keeps four itself so
+       rows sliding in and out stay visible. */
+    .board:not(.board--live) .board__row:nth-child(n + 5) {
       display: none;
     }
   }

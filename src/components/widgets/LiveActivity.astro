@@ -1,0 +1,499 @@
+---
+// Live Activity card for a tracked train. Drawn after the ui.pen export it
+// replaced; the script runs the journey from journey.ts so the train moves
+// along the route, then starts over.
+import { ArrowRight, MapPin, Timer, TrainFront } from '@lucide/astro';
+import { JOURNEY_DELAY, JOURNEY_START, journey, routeOffset, stops } from '../../lib/journey';
+import { fmt } from '../../lib/departures';
+
+const j = journey(JOURNEY_START, JOURNEY_DELAY);
+const last = stops.length - 1;
+---
+
+<div class="la-card" role="img" aria-label="Live Activity: pociąg EIP do Gdańska Głównego z postępem trasy i opóźnieniem">
+  <div class="la-card__head">
+    <span class="la-card__icon"><TrainFront size={22} aria-hidden="true" /></span>
+    <div class="la-card__title">
+      <p class="la-card__train">
+        <span class="la-card__badge">EIP 5402</span>
+        <ArrowRight size={14} aria-hidden="true" />
+        <strong>Gdańsk Główny</strong>
+      </p>
+      <p class="la-card__operator">PKP Intercity · z Warszawa Centralna</p>
+    </div>
+    <p class:list={['la-card__eta', { 'la-card__eta--late': JOURNEY_DELAY > 0 }]}>
+      <span class="la-card__headline">{j.headline}</span>
+      <span class="la-card__delay-text">{j.delayText}</span>
+    </p>
+  </div>
+
+  <div class="la-card__route" style={`--fill:${(j.position / last) * 100}%;--at:${routeOffset(j.position)}`}>
+    <span class="la-card__track"><span class="la-card__fill"></span></span>
+    <span class="la-card__marker"><span class="la-card__here">Tutaj</span><span class="la-card__ring"></span></span>
+    <ol class="la-card__stops">
+      {
+        stops.map((s, i) => (
+          <li class:list={['la-card__stop', { 'la-card__stop--final': i === last }]} data-state={j.states[i]}>
+            <span class="la-card__name">{s.name}</span>
+            <span class="la-card__dot" />
+            <span class="la-card__time">{fmt(s.time)}</span>
+            <span class="la-card__details">
+              <span class="la-card__delay" hidden={JOURNEY_DELAY === 0}>{`+${JOURNEY_DELAY} min`}</span>
+              <span class="la-card__platform">peron {s.platform}</span>
+              <span class="la-card__then">następnie</span>
+              <span class="la-card__arrive">Przyjazd</span>
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+
+  <div class="la-card__foot">
+    <span class="la-card__pin"><MapPin size={15} aria-hidden="true" /></span>
+    <div>
+      <p class="la-card__label">Następna stacja</p>
+      <p class="la-card__next">
+        <span class="la-card__next-name">{j.next}</span>
+        <span class="la-card__next-in"><Timer size={11} aria-hidden="true" /><span>{j.nextIn}</span></span>
+      </p>
+    </div>
+    <div class="la-card__arrival">
+      <p class="la-card__label">Przyjazd</p>
+      <p><span class="la-card__dest">Gdańsk Gł.</span> <span class="la-card__arrival-time">{j.arrival}</span></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { JOURNEY_DELAY, JOURNEY_START, journey, routeOffset, stops } from '../../lib/journey';
+  import { flip, motionOk } from '../../lib/motion';
+
+  // One journey minute per tick: quick enough to watch the train move between stops.
+  const TICK_MS = 500;
+  // Ticks to linger at the destination before the journey starts over.
+  const HOLD = 8;
+
+  const card = document.querySelector<HTMLElement>('.la-card');
+  if (card && motionOk) live(card);
+
+  function live(card: HTMLElement) {
+    const $ = (selector: string) => card.querySelector<HTMLElement>(selector)!;
+    const route = $('.la-card__route');
+    const stopEls = [...card.querySelectorAll<HTMLElement>('.la-card__stop')];
+    let now = JOURNEY_START;
+    let delay = JOURNEY_DELAY;
+    let tick = 0;
+    let held = 0;
+
+    function paint(animated: boolean) {
+      const j = journey(now, delay);
+      route.style.setProperty('--fill', `${(j.position / (stops.length - 1)) * 100}%`);
+      route.style.setProperty('--at', routeOffset(j.position));
+      flip($('.la-card__headline'), j.headline, animated);
+      flip($('.la-card__delay-text'), j.delayText, animated);
+      $('.la-card__eta').classList.toggle('la-card__eta--late', delay > 0);
+      flip($('.la-card__next-name'), j.next, animated);
+      flip($('.la-card__next-in span'), j.nextIn, animated);
+      flip($('.la-card__arrival-time'), j.arrival, animated);
+      stopEls.forEach((el, i) => {
+        el.dataset.state = j.states[i];
+        const pill = el.querySelector<HTMLElement>('.la-card__delay')!;
+        pill.hidden = delay === 0;
+        flip(pill, `+${delay} min`, animated);
+      });
+    }
+
+    function step() {
+      if (journey(now, delay).arrived) {
+        if (++held < HOLD) return;
+        held = 0;
+        tick = 0;
+        now = JOURNEY_START;
+        delay = JOURNEY_DELAY;
+        // Jump back without the marker gliding across the whole route.
+        card.classList.add('la-card--reset');
+        paint(false);
+        void card.offsetWidth;
+        card.classList.remove('la-card--reset');
+        card.animate([{ opacity: 0.4 }, { opacity: 1 }], { duration: 500 });
+        return;
+      }
+      now += 1;
+      tick += 1;
+      // The delay drifts now and then, like a real train making up or losing time.
+      if (tick % 18 === 0) delay = Math.min(15, Math.max(0, delay + [-2, -1, 1, 2][Math.floor(Math.random() * 4)]));
+      paint(true);
+    }
+
+    // Tick only while the card is on screen and the tab is visible.
+    let timer = 0;
+    let onScreen = false;
+    function sync() {
+      const run = onScreen && !document.hidden;
+      if (run && !timer) timer = window.setInterval(step, TICK_MS);
+      if (!run && timer) {
+        clearInterval(timer);
+        timer = 0;
+      }
+    }
+    new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      sync();
+    }).observe(card);
+    document.addEventListener('visibilitychange', sync);
+  }
+</script>
+
+<style>
+  .la-card {
+    --green: #4ade80;
+    --slate: #94a3b8;
+    --soft: #cbd5e1;
+    --sky: #93c5fd;
+    --gold: var(--amber-bright);
+
+    display: grid;
+    gap: 14px;
+    width: 464px;
+    max-width: 100%;
+    padding: 16px;
+    border: 1px solid rgb(255 255 255 / 0.06);
+    border-radius: 24px;
+    background: #0f172a;
+    box-shadow: 0 18px 40px rgb(0 0 0 / 0.4);
+    color: var(--white);
+  }
+
+  .la-card__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .la-card__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: var(--white);
+    color: var(--navy);
+  }
+
+  .la-card__title {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .la-card__train {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .la-card__train strong {
+    overflow: hidden;
+    font-size: 15px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .la-card__badge {
+    flex: none;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: #7c3aed;
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+
+  .la-card__operator {
+    overflow: hidden;
+    font-size: 10.5px;
+    color: var(--slate);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .la-card__eta {
+    display: grid;
+    flex: none;
+    justify-items: end;
+    margin-left: auto;
+    color: var(--green);
+  }
+
+  .la-card__eta--late {
+    color: var(--gold);
+  }
+
+  .la-card__headline {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.15;
+  }
+
+  .la-card__delay-text {
+    font-size: 9.5px;
+    font-weight: 700;
+  }
+
+  /* Route: six equal columns; the track and marker are laid over them. */
+  .la-card__route {
+    position: relative;
+  }
+
+  .la-card__track {
+    position: absolute;
+    top: 41px;
+    left: calc(100% / 12);
+    right: calc(100% / 12);
+    height: 3px;
+    border-radius: 2px;
+    background: #334155;
+  }
+
+  .la-card__fill {
+    display: block;
+    width: var(--fill);
+    height: 100%;
+    border-radius: inherit;
+    background: var(--green);
+    transition: width 0.5s linear;
+  }
+
+  .la-card__marker {
+    position: absolute;
+    top: 0;
+    left: var(--at);
+    z-index: 2;
+    transition: left 0.5s linear;
+  }
+
+  .la-card--reset .la-card__fill,
+  .la-card--reset .la-card__marker {
+    transition: none;
+  }
+
+  .la-card__here {
+    position: absolute;
+    top: 23px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--green);
+    color: #052e16;
+    font-size: 9px;
+    font-weight: 800;
+    transform: translate(-50%, -50%);
+  }
+
+  .la-card__ring {
+    position: absolute;
+    top: 42px;
+    width: 15px;
+    height: 15px;
+    border: 4px solid var(--green);
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: 0 0 0 5px rgb(74 222 128 / 0.18);
+    transform: translate(-50%, -50%);
+  }
+
+  .la-card__stops {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .la-card__stop {
+    display: grid;
+    grid-template-rows: 14px 20px 16px auto auto;
+    justify-items: center;
+    min-width: 0;
+    color: var(--soft);
+  }
+
+  .la-card__name {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 9px;
+    letter-spacing: -0.01em;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* Positioned so the dots sit above the track line. */
+  .la-card__dot {
+    position: relative;
+    grid-row: 3;
+    align-self: center;
+    z-index: 1;
+    width: 7px;
+    height: 7px;
+    border: 1.5px solid #64748b;
+    border-radius: 50%;
+    background: #0f172a;
+  }
+
+  .la-card__time {
+    grid-row: 4;
+    margin-top: 4px;
+    font-size: 10.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .la-card__details {
+    display: grid;
+    grid-row: 5;
+    align-content: start;
+    justify-items: center;
+    gap: 2px;
+    min-height: 32px;
+    margin-top: 2px;
+    font-size: 9px;
+    font-weight: 600;
+  }
+
+  .la-card__details > * {
+    display: none;
+  }
+
+  .la-card__delay {
+    padding: 0 6px;
+    border-radius: 999px;
+    background: rgb(234 88 12 / 0.28);
+    color: #fdba74;
+    font-weight: 700;
+  }
+
+  .la-card__platform,
+  .la-card__then {
+    color: var(--sky);
+  }
+
+  .la-card__arrive {
+    padding: 0 6px;
+    border: 1px solid rgb(251 191 36 / 0.45);
+    border-radius: 999px;
+    background: rgb(251 191 36 / 0.12);
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  /* Per-stop states, set by journey(). */
+  .la-card__stop[data-state='passed'] {
+    color: var(--slate);
+  }
+
+  .la-card__stop[data-state='passed'] .la-card__time {
+    color: var(--green);
+  }
+
+  .la-card__stop[data-state='passed'] .la-card__time::before {
+    content: '✓ ';
+  }
+
+  .la-card__stop[data-state='passed'] .la-card__dot {
+    border-color: var(--green);
+    background: var(--green);
+  }
+
+  .la-card__stop[data-state='focus'],
+  .la-card__stop[data-state='upcoming'] {
+    color: var(--white);
+  }
+
+  .la-card__stop[data-state='focus'] .la-card__delay:not([hidden]),
+  .la-card__stop[data-state='focus'] .la-card__platform,
+  .la-card__stop[data-state='upcoming']:not(.la-card__stop--final) .la-card__then,
+  .la-card__stop--final .la-card__arrive {
+    display: block;
+  }
+
+  /* Doubled class so the destination stays gold whatever its state. */
+  .la-card__stop.la-card__stop--final {
+    color: var(--gold);
+  }
+
+  .la-card__stop--final .la-card__dot {
+    width: 13px;
+    height: 13px;
+    border: 2.5px solid var(--gold);
+  }
+
+  .la-card__foot {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border: 1px solid rgb(255 255 255 / 0.08);
+    border-radius: 14px;
+  }
+
+  .la-card__pin {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: rgb(255 255 255 / 0.06);
+    color: var(--green);
+  }
+
+  .la-card__label {
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--sky);
+  }
+
+  .la-card__next {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+  }
+
+  .la-card__next-name {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .la-card__next-in {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 8px;
+    border: 1px solid rgb(251 191 36 / 0.35);
+    border-radius: 999px;
+    background: rgb(251 191 36 / 0.1);
+    color: var(--gold);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .la-card__arrival {
+    text-align: right;
+  }
+
+  .la-card__dest {
+    font-size: 11px;
+    color: var(--soft);
+  }
+
+  .la-card__arrival-time {
+    display: inline-block;
+    font-size: 19px;
+    font-weight: 800;
+  }
+</style>
