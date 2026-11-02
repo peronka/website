@@ -12,6 +12,8 @@ export const site = {
   appStoreUrl: `https://apps.apple.com/pl/app/peronka/id${appStoreId}`,
   // Estimated Android release (ISO date) shown next to the App Store badge.
   androidEta: '2026-11-12',
+  // GA4 web stream; gtag.js loads only after consent in CookieConsent.astro.
+  gaId: 'G-JH5GFFHNZ2',
   // Override with PUBLIC_STATUS_API_BASE (e.g. http://localhost:8080) to
   // point the status page at a local backend.
   statusApiBase: import.meta.env.PUBLIC_STATUS_API_BASE ?? 'https://api.peronka.pl',

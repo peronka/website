@@ -1,6 +1,6 @@
 ---
 title: Polityka prywatności
-updated: 27 października 2026 r.
+updated: 2 listopada 2026 r.
 intro: Jak aplikacja Peronka i strona peronka.pl zbierają, wykorzystują i chronią dane użytkowników. Dokument przygotowano zgodnie z RODO (Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679).
 numbering: decimal
 calloutTitle: Masz pytania o prywatność?
@@ -30,12 +30,14 @@ W Aplikacji:
 
 - Dane połączenia — adres IP urządzenia oraz treść zapytania (np. wybrana stacja), przesyłane do serwera Peronki podczas pobierania rozkładów. Nie łączymy ich z tożsamością użytkownika.
 - Dane diagnostyczne — raporty o awariach i statystyki stabilności Aplikacji (model urządzenia, wersja systemu operacyjnego i Aplikacji, język interfejsu, przebieg błędu) wraz z pseudonimowym identyfikatorem instalacji Firebase. Identyfikator pozwala rozróżnić instalacje, ale nie wskazuje wprost, do kogo należy urządzenie.
+- Dane analityczne — po wyrażeniu zgody: wyświetlane ekrany i zdarzenia w Aplikacji (np. wybór stacji, uruchomienie widżetu), czas korzystania, model urządzenia, wersja systemu i Aplikacji oraz przybliżona lokalizacja (kraj, miasto), wraz z pseudonimowym identyfikatorem instalacji, zbierane przez Google Analytics for Firebase.
 - Dane reklamowe — wybory dokonane w formularzu zgody, a po wyrażeniu zgody również reklamowy identyfikator urządzenia (IDFA). Szczegóły opisano w sekcji 5.
 - Preferencje — ulubione stacje, ustawienia widżetów i powiadomień. Są przechowywane wyłącznie lokalnie na urządzeniu i nie są przesyłane do Administratora. Powiadomienia o opóźnieniach i zmianach peronów są tworzone na urządzeniu — serwer Peronki nie przechowuje tokenów powiadomień ani listy obserwowanych pociągów i stacji.
 
 Na Stronie:
 
 - Statystyki odwiedzin — adres odwiedzanej podstrony, adres strony odsyłającej, kraj, typ urządzenia, system operacyjny i przeglądarka, zbierane przez Vercel Web Analytics. Odwiedzający są rozróżniani za pomocą skrótu (hash) tworzonego z danych zapytania i resetowanego codziennie, dlatego nie da się śledzić tej samej osoby między kolejnymi dniami ani między różnymi stronami.
+- Statystyki Google Analytics — wyłącznie po wyrażeniu zgody w banerze cookies: odwiedzane podstrony, źródło wejścia, czas wizyty, zdarzenia (np. kliknięcie plakietki App Store), typ urządzenia, system, przeglądarka i przybliżona lokalizacja, powiązane z identyfikatorem zapisanym w plikach cookies `_ga`. Google Analytics nie zapisuje adresów IP.
 - Logi serwera — adres IP, data i godzina oraz adres żądanej podstrony, zapisywane automatycznie przez dostawcę hostingu. Strona statusu pobiera dane bezpośrednio z serwera Peronki, który również otrzymuje przy tym adres IP przeglądarki.
 - Zapis na powiadomienie o premierze — adres e-mail podany w formularzu „Powiadom mnie” oraz data i godzina zapisu i jego potwierdzenia.
 
@@ -51,7 +53,8 @@ Dane przetwarzamy wyłącznie w zakresie niezbędnym do realizacji poniższych c
 - Diagnostyka błędów i poprawa stabilności Aplikacji — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora polegający na zapewnieniu prawidłowego działania i rozwoju Aplikacji).
 - Wyświetlanie reklam spersonalizowanych — art. 6 ust. 1 lit. a RODO (zgoda wyrażona w formularzu zgody).
 - Wyświetlanie reklam niespersonalizowanych, z których finansowana jest bezpłatna Aplikacja — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora).
-- Prowadzenie statystyk odwiedzin oraz zapewnienie bezpieczeństwa Strony i serwerów — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora).
+- Prowadzenie statystyk odwiedzin bez plików cookies (Vercel Web Analytics) oraz zapewnienie bezpieczeństwa Strony i serwerów — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora).
+- Analiza korzystania z Aplikacji i Strony w Google Analytics, służąca jej rozwojowi — art. 6 ust. 1 lit. a RODO (zgoda wyrażona w formularzu zgody w Aplikacji lub w banerze cookies na Stronie).
 - Wysłanie wiadomości o udostępnieniu Aplikacji w App Store osobom, które zapisały się na powiadomienie o premierze — art. 6 ust. 1 lit. a RODO (zgoda wyrażona w formularzu i potwierdzona linkiem z wiadomości e-mail).
 - Odpowiadanie na wiadomości — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora polegający na prowadzeniu korespondencji z użytkownikami).
 - Rozpatrywanie reklamacji — art. 6 ust. 1 lit. c RODO (obowiązek wynikający z ustawy o prawach konsumenta).
@@ -75,7 +78,9 @@ Reklamy spersonalizowane wiążą się z profilowaniem prowadzonym przez Google 
 
 Aplikacja nie korzysta z plików cookies. Biblioteki Google Mobile Ads i Firebase zapisują na urządzeniu informacje potrzebne do ich działania, takie jak identyfikator instalacji i wybory dotyczące zgód. Identyfikator reklamowy jest odczytywany wyłącznie na zasadach opisanych w sekcji 5.
 
-Strona nie używa plików cookies. Statystyki odwiedzin (Vercel Web Analytics) działają bez plików cookies i bez identyfikatorów zapisywanych w przeglądarce.
+Strona zapisuje pliki cookies wyłącznie za zgodą wyrażoną w banerze cookies. Są to pliki Google Analytics: `_ga` oraz `_ga_<identyfikator>`, które rozróżniają odwiedzających i ich sesje i wygasają po 2 latach. Bez zgody skrypt Google Analytics nie jest w ogóle ładowany. Dokonany wybór zapamiętujemy w pamięci przeglądarki (localStorage), żeby nie pytać przy każdej wizycie.
+
+Zgodę można w każdej chwili zmienić lub wycofać przez link „Ustawienia cookies” w stopce Strony — po wycofaniu zgody pliki Google Analytics są usuwane. Statystyki Vercel Web Analytics działają bez plików cookies i bez identyfikatorów zapisywanych w przeglądarce.
 
 ## Odbiorcy danych
 
@@ -84,7 +89,7 @@ Administrator nie sprzedaje danych osobowych ani nie udostępnia ich w celach ma
 - Dostawcy infrastruktury serwerowej Aplikacji (serwery w Unii Europejskiej) — obsługa zapytań i pamięć podręczna rozkładów.
 - Vercel Inc. — hosting Strony i statystyki odwiedzin.
 - Brevo SAS (Francja) — obsługa zapisów na powiadomienie o premierze i wysyłka tej wiadomości.
-- Google Ireland Limited i Google LLC — raporty o awariach (Firebase Crashlytics) oraz reklamy (Google AdMob); w zakresie reklam spersonalizowanych Google działa jako odrębny administrator.
+- Google Ireland Limited i Google LLC — raporty o awariach (Firebase Crashlytics), statystyki korzystania (Google Analytics, w tym Google Analytics for Firebase) oraz reklamy (Google AdMob); w zakresie reklam spersonalizowanych Google działa jako odrębny administrator.
 - Dostawca poczty elektronicznej — obsługa korespondencji.
 - Organy państwowe i sądowe — w przypadkach przewidzianych przepisami prawa.
 
@@ -98,6 +103,7 @@ Google LLC i Vercel Inc. mają siedziby w Stanach Zjednoczonych, dlatego dane mo
 
 - Dane połączenia i logi serwerów — przez okres niezbędny do zapewnienia bezpieczeństwa i stabilnego działania usług, nie dłużej niż 12 miesięcy.
 - Raporty o awariach — do 90 dni od ich zebrania.
+- Dane Google Analytics (Aplikacja i Strona) — nie dłużej niż 14 miesięcy od ich zebrania; pliki cookies `_ga` wygasają po 2 latach lub wcześniej, gdy wycofasz zgodę.
 - Statystyki odwiedzin Strony — skrót rozróżniający odwiedzających jest usuwany po 24 godzinach; dalej przechowywane są wyłącznie zbiorcze statystyki, które nie pozwalają zidentyfikować osoby.
 - Dane reklamowe — wybory dotyczące zgód są przechowywane na urządzeniu do czasu ich zmiany lub usunięcia Aplikacji; dane przetwarzane przez Google w zakresie reklam spersonalizowanych — zgodnie z zasadami Google.
 - Zapisy na powiadomienie o premierze — do wysłania wiadomości o udostępnieniu Aplikacji albo wcześniejszego wycofania zgody; adres, którego nie potwierdzono linkiem z wiadomości, nie jest dodawany do listy odbiorców.
@@ -117,7 +123,7 @@ Zgodnie z RODO każdej osobie, której dane dotyczą, przysługują następując
 - Prawo do cofnięcia zgody w dowolnym momencie, bez wpływu na zgodność z prawem przetwarzania, którego dokonano przed jej cofnięciem.
 - Prawo do wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych (ul. Stawki 2, 00-193 Warszawa).
 
-Podanie danych jest dobrowolne. Bez przesłania danych połączenia nie jest jednak możliwe pobranie rozkładów, a odmowa zgody na reklamy spersonalizowane oznacza jedynie wyświetlanie reklam niespersonalizowanych. Zgodę na powiadomienie o premierze można wycofać w każdej chwili, pisząc na [kontakt@peronka.pl](mailto:kontakt@peronka.pl) lub korzystając z linku rezygnacji w wiadomości.
+Podanie danych jest dobrowolne. Bez przesłania danych połączenia nie jest jednak możliwe pobranie rozkładów, a odmowa zgody na reklamy spersonalizowane oznacza jedynie wyświetlanie reklam niespersonalizowanych. Odmowa zgody na Google Analytics nie ogranicza żadnych funkcji Aplikacji ani Strony. Zgodę na powiadomienie o premierze można wycofać w każdej chwili, pisząc na [kontakt@peronka.pl](mailto:kontakt@peronka.pl) lub korzystając z linku rezygnacji w wiadomości.
 
 ## Bezpieczeństwo
 

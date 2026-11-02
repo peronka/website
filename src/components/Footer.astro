@@ -61,6 +61,7 @@ const columns = [
       <p>© {new Date().getFullYear()} Peronka</p>
       <p>Twórca: <a href={site.owner.url}>{site.owner.name}</a>, NIP {site.owner.nip}</p>
       <p>{site.disclaimer}</p>
+      <p><button type="button" class="footer__consent" data-consent-open>Ustawienia cookies</button></p>
     </div>
   </div>
 </footer>
@@ -149,7 +150,17 @@ const columns = [
     text-decoration: none;
   }
 
-  .footer__bottom a:hover {
+  .footer__consent {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .footer__bottom a:hover,
+  .footer__consent:hover {
     color: var(--white);
     text-decoration: underline;
     text-underline-offset: 4px;

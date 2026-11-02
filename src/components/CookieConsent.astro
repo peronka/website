@@ -1,0 +1,174 @@
+---
+// Consent banner for Google Analytics. gtag.js is loaded only after the visitor
+// accepts, so nothing reaches Google before consent. The choice is kept in
+// localStorage; any [data-consent-open] element (the footer link) reopens it.
+import { site } from '../config';
+---
+
+<div class="consent" role="dialog" aria-label="Zgoda na pliki cookies" data-ga={site.gaId} hidden>
+  <p class="consent__text">
+    Za Twoją zgodą używamy Google Analytics, żeby wiedzieć, jak korzystacie ze strony. Bez zgody nie zapisujemy żadnych
+    plików cookies. <a href="/polityka-prywatnosci/">Polityka prywatności</a>
+  </p>
+  <div class="consent__actions">
+    <button type="button" class="consent__button" data-choice="denied">Odrzuć</button>
+    <button type="button" class="consent__button consent__button--accept" data-choice="granted">Akceptuję</button>
+  </div>
+</div>
+
+<script>
+  type Choice = 'granted' | 'denied';
+
+  const KEY = 'peronka-consent';
+  const banner = document.querySelector<HTMLElement>('.consent')!;
+  const id = banner.dataset.ga!;
+  const w = window as unknown as Record<string, unknown> & { dataLayer?: unknown[]; gtag?: (...args: unknown[]) => void };
+  let loaded = false;
+
+  function read(): Choice | null {
+    try {
+      const value = localStorage.getItem(KEY);
+      return value === 'granted' || value === 'denied' ? value : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function save(choice: Choice) {
+    try {
+      localStorage.setItem(KEY, choice);
+    } catch {
+      // Private mode or blocked storage: the banner simply shows again next visit.
+    }
+  }
+
+  function loadAnalytics() {
+    w[`ga-disable-${id}`] = false;
+    if (loaded) return;
+    loaded = true;
+    w.dataLayer = w.dataLayer || [];
+    // gtag expects the `arguments` object itself, not an array.
+    w.gtag = function () {
+      // eslint-disable-next-line prefer-rest-params
+      w.dataLayer!.push(arguments);
+    };
+    w.gtag('js', new Date());
+    w.gtag('config', id);
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+    document.head.append(script);
+  }
+
+  // Withdrawing consent: stop GA on this page and drop its cookies.
+  function stopAnalytics() {
+    w[`ga-disable-${id}`] = true;
+    const domain = location.hostname.replace(/^www\./, '');
+    for (const cookie of document.cookie.split(';')) {
+      const name = cookie.split('=')[0].trim();
+      if (name !== '_ga' && !name.startsWith('_ga_')) continue;
+      for (const scope of ['', `; domain=${location.hostname}`, `; domain=.${domain}`]) {
+        document.cookie = `${name}=; Max-Age=0; path=/${scope}`;
+      }
+    }
+  }
+
+  function choose(choice: Choice) {
+    save(choice);
+    banner.hidden = true;
+    if (choice === 'granted') loadAnalytics();
+    else stopAnalytics();
+  }
+
+  for (const button of banner.querySelectorAll<HTMLButtonElement>('[data-choice]')) {
+    button.addEventListener('click', () => choose(button.dataset.choice as Choice));
+  }
+
+  document.addEventListener('click', (event) => {
+    if (!(event.target as Element).closest('[data-consent-open]')) return;
+    banner.hidden = false;
+    banner.querySelector<HTMLButtonElement>('.consent__button--accept')!.focus();
+  });
+
+  // App Store clicks become an `app_store_click` event, tagged with where the
+  // link sits. Without consent gtag is never defined, so nothing is sent; after
+  // withdrawal the ga-disable flag drops it. Nav sits inside the hero, so it is
+  // checked first.
+  const placements: [string, string][] = [
+    ['.nav', 'nav'],
+    ['.hero', 'hero'],
+    ['.cta', 'cta'],
+    ['footer', 'footer'],
+  ];
+  document.addEventListener('click', (event) => {
+    const link = (event.target as Element).closest<HTMLAnchorElement>('a[href^="https://apps.apple.com/"]');
+    if (!link || !w.gtag) return;
+    const placement = placements.find(([selector]) => link.closest(selector))?.[1] ?? 'other';
+    w.gtag('event', 'app_store_click', { placement, link_url: link.href });
+  });
+
+  const stored = read();
+  if (stored === 'granted') loadAnalytics();
+  else if (!stored) banner.hidden = false;
+</script>
+
+<style>
+  .consent {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    z-index: 50;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 20px;
+    max-width: 640px;
+    margin-inline: auto;
+    padding: 18px 20px;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 18px;
+    background: var(--night);
+    box-shadow: 0 20px 50px rgb(0 0 0 / 0.35);
+    color: var(--white);
+  }
+
+  .consent[hidden] {
+    display: none;
+  }
+
+  .consent__text {
+    flex: 1 1 320px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--mist);
+  }
+
+  .consent__text a {
+    color: var(--white);
+  }
+
+  .consent__actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  /* Both choices equally prominent, so refusing is as easy as accepting. */
+  .consent__button {
+    padding: 10px 18px;
+    border: 1px solid rgb(255 255 255 / 0.3);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--white);
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .consent__button--accept {
+    border-color: var(--white);
+    background: var(--white);
+    color: var(--night);
+  }
+</style>
