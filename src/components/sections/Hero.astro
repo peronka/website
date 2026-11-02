@@ -3,6 +3,7 @@ import { ArrowDown } from '@lucide/astro';
 import Nav from '../Nav.astro';
 import StoreButton from '../StoreButton.astro';
 import NotifyForm from '../NotifyForm.astro';
+import AndroidSoon from '../AndroidSoon.astro';
 import DepartureBoard from '../DepartureBoard.astro';
 import { site } from '../../config';
 ---
@@ -18,6 +19,7 @@ import { site } from '../../config';
       </p>
       <div class="hero__ctas">
         {site.appStoreUrl ? <StoreButton /> : <NotifyForm id="powiadom-hero" />}
+        <AndroidSoon />
         <a class="hero__more" href="#aplikacja">Zobacz, jak działa <ArrowDown size={18} aria-hidden="true" /></a>
       </div>
       <p class="hero__meta mono">Bezpłatna · iPhone · bez konta</p>

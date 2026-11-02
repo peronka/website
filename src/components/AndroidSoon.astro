@@ -1,0 +1,45 @@
+---
+// "Android coming soon" note next to the App Store badge, with the estimated
+// release date from site.androidEta.
+import { Smartphone } from '@lucide/astro';
+import { site } from '../config';
+
+const [y, m, d] = site.androidEta.split('-');
+---
+
+<p class="android">
+  <Smartphone size={18} aria-hidden="true" />
+  <span class="android__text">
+    <span class="android__label">Android — wkrótce</span>
+    <span class="android__eta">szacowana premiera <time datetime={site.androidEta}>{`${d}.${m}.${y}`}</time></span>
+  </span>
+</p>
+
+<style>
+  .android {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 56px;
+    padding: 0 18px;
+    border: 1px dashed rgb(255 255 255 / 0.3);
+    border-radius: 14px;
+    color: var(--mist);
+    white-space: nowrap;
+  }
+
+  .android__text {
+    display: grid;
+    line-height: 1.2;
+  }
+
+  .android__label {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .android__eta {
+    font-size: 0.75rem;
+  }
+</style>

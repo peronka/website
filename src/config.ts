@@ -10,6 +10,8 @@ export const site = {
   // Drives the Safari Smart App Banner (apple-itunes-app meta in Base.astro).
   appStoreId,
   appStoreUrl: `https://apps.apple.com/pl/app/peronka/id${appStoreId}`,
+  // Estimated Android release (ISO date) shown next to the App Store badge.
+  androidEta: '2026-11-12',
   // Override with PUBLIC_STATUS_API_BASE (e.g. http://localhost:8080) to
   // point the status page at a local backend.
   statusApiBase: import.meta.env.PUBLIC_STATUS_API_BASE ?? 'https://api.peronka.pl',
