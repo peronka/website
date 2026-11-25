@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import icon from '../../assets/brand/icon.png';
 import StoreButton from '../StoreButton.astro';
 import NotifyForm from '../NotifyForm.astro';
-import AndroidSoon from '../AndroidSoon.astro';
+import AndroidDownload from '../AndroidDownload.astro';
 import { site } from '../../config';
 ---
 
@@ -12,11 +12,11 @@ import { site } from '../../config';
     <Image src={icon} alt="" width={104} height={104} densities={[1, 2]} class="cta__icon" />
     <div class="cta__text">
       <h2 class="cta__title">Sprawdź swój pociąg, zanim wyjdziesz z domu</h2>
-      <p class="cta__meta mono">Bezpłatna · bez konta · iPhone</p>
+      <p class="cta__meta mono">Bezpłatna · iPhone i Android · bez konta</p>
     </div>
     <div class="cta__stores">
       {site.appStoreUrl ? <StoreButton /> : <NotifyForm id="powiadom-cta" />}
-      <AndroidSoon />
+      <AndroidDownload />
     </div>
   </div>
 </section>

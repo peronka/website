@@ -1,0 +1,51 @@
+---
+import { Smartphone } from '@lucide/astro';
+import { site } from '../config';
+---
+
+<a class="android" href={site.androidDownloadUrl}>
+  <Smartphone size={18} aria-hidden="true" class="android__icon" />
+  <span class="android__text">
+    <span class="android__label">Pobierz na Androida</span>
+    <span class="android__version">APK · wersja {site.androidVersion}</span>
+  </span>
+</a>
+
+<style>
+  .android {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 56px;
+    max-width: 100%;
+    padding: 8px 18px;
+    border: 1px solid rgb(255 255 255 / 0.3);
+    border-radius: 14px;
+    color: var(--mist);
+    text-decoration: none;
+  }
+
+  .android:hover {
+    background: rgb(255 255 255 / 0.08);
+    border-color: var(--mist);
+  }
+
+  .android__icon {
+    flex-shrink: 0;
+  }
+
+  .android__text {
+    display: grid;
+    line-height: 1.2;
+  }
+
+  .android__label {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .android__version {
+    font-size: 0.75rem;
+  }
+</style>

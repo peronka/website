@@ -1,6 +1,7 @@
 // Site-wide settings. While appStoreUrl is empty (before launch) the hero and CTA
 // show the "Powiadom mnie" signup form instead of the App Store badge.
 const appStoreId = '6779992047';
+const androidVersion = '0.5.1';
 
 export const site = {
   name: 'Peronka',
@@ -10,8 +11,8 @@ export const site = {
   // Drives the Safari Smart App Banner (apple-itunes-app meta in Base.astro).
   appStoreId,
   appStoreUrl: `https://apps.apple.com/pl/app/peronka/id${appStoreId}`,
-  // Estimated Android release (ISO date) shown next to the App Store badge.
-  androidEta: '2026-11-12',
+  androidVersion,
+  androidDownloadUrl: `https://github.com/peronka/website/releases/download/android-v${androidVersion}/peronka-${androidVersion}.apk`,
   // GA4 web stream; gtag.js loads only after consent in CookieConsent.astro.
   gaId: 'G-JH5GFFHNZ2',
   // Override with PUBLIC_STATUS_API_BASE (e.g. http://localhost:8080) to
