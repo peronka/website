@@ -1,7 +1,6 @@
-// Illustrative departures for the hero board and the home-screen widgets, in
-// the same shape the app shows on the departures screen. Shared by the server
-// render (first paint) and station-sim.ts (the live simulation), so both
-// derive rows the same way.
+// Illustrative departures for the home-screen widget demos, in the same
+// shape the app shows on the departures screen. Shared by the server render
+// (first paint) and station-sim.ts, so both derive rows the same way.
 
 export type State = 'ok' | 'late' | 'in';
 

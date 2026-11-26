@@ -1,163 +1,188 @@
 ---
 import { RefreshCw } from '@lucide/astro';
-import { START, fmt, initial, view } from '../lib/departures';
-
-const [hh, mm] = fmt(START).split(':');
-const rows = initial.map((d) => ({ d, v: view(d, START) }));
+import { site } from '../config';
 ---
 
-<figure class="board-wrap">
-  <div class="board" role="table" aria-label="Przykładowa tablica odjazdów: Warszawa Centralna">
-    <div class="board__head" role="rowgroup">
-      <div role="row" class="board__head-row">
-        <div role="columnheader">
-          <p class="board__station">Warszawa Centralna</p>
-          <p class="board__kind">Odjazdy</p>
-        </div>
-        <p class="board__clock mono" role="columnheader">
-          <span class="board__hh">{hh}</span><span class="board__colon">:</span><span class="board__mm">{mm}</span>
-        </p>
+<section class="board-wrap" aria-labelledby="departure-station" data-departure-board={site.apiBase}>
+  <div class="board">
+    <header class="board__head">
+      <div>
+        <h2 class="board__station" id="departure-station">Warszawa Centralna</h2>
+        <p class="board__kind">Najbliższe odjazdy</p>
       </div>
-    </div>
-    <div class="board__body" role="rowgroup">
-      {
-        rows.map(({ d, v }, i) => (
-          <div role="row" class:list={['board__row', { 'board__row--flash': i === 1 }]} data-id={d.id}>
-            <div role="cell" class="board__time mono">
-              <span class:list={['board__time-value', { 'board__time--late': d.delay > 0 }]}>{v.time}</span>
-              <s class="board__planned" hidden={!v.planned}>
-                <span class="sr-only">planowo </span>
-                <span class="board__planned-value">{v.planned}</span>
-              </s>
-            </div>
-            <div role="cell" class="board__mid">
-              <p class="board__line">
-                <span class="board__train mono" style={`background:${d.color}`}>
-                  {d.train}
-                </span>
-                <span class="board__dest">{d.dest}</span>
-              </p>
-              <p class="board__via">{d.via}</p>
-            </div>
-            <div role="cell" class="board__platform mono">{v.platform}</div>
-            <div role="cell" class="board__status">
-              <span class:list={['board__pill', `board__pill--${v.state}`]}>{v.status}</span>
-            </div>
-          </div>
-        ))
-      }
-    </div>
+      <span class="board__live mono" data-live hidden><span class="live-dot" aria-hidden="true"></span>Na żywo</span>
+    </header>
+    <p class="board__message" data-message role="status">Włącz JavaScript, aby zobaczyć odjazdy.</p>
+    <ul class="board__body" data-rows hidden></ul>
   </div>
-  <figcaption class="board-caption mono">
+  <p class="board-caption mono">
     <RefreshCw size={14} aria-hidden="true" />
-    Tak wygląda tablica w aplikacji — godziny, perony i opóźnienia na bieżąco.
-  </figcaption>
-</figure>
+    <span><span data-caption role="status">Dane PKP PLK</span><span data-checked></span></span>
+  </p>
+  <template data-row>
+    <li class="board__row">
+      <div class="board__time mono">
+        <time data-time></time>
+        <span class="board__planned" data-planned hidden>
+          <span class="sr-only">Planowo </span><s data-planned-time></s>
+        </span>
+      </div>
+      <div class="board__train">
+        <span class="board__direction" data-direction></span>
+        <span class="board__number mono" data-number></span>
+      </div>
+      <div class="board__platform mono" data-platform></div>
+      <span class="board__pill" data-delay></span>
+    </li>
+  </template>
+</section>
 
 <script>
-  import { fmt, view, type Departure } from '../lib/departures';
-  import { AMBER, BLUE, flip, highlight, motionOk, slide, spin } from '../lib/motion';
-  import { subscribe, type Frame } from '../lib/station-sim';
+  interface Departure {
+    time?: string;
+    plannedTime?: string;
+    trainNumber: string;
+    trainName?: string;
+    direction?: string;
+    platform?: string;
+    track?: string;
+    delay: number | null;
+    offline?: boolean;
+  }
 
-  const board = document.querySelector<HTMLElement>('.board');
-  if (board && motionOk) live(board);
+  interface Operations {
+    departures: Departure[] | null;
+  }
 
-  function live(board: HTMLElement) {
-    const body = board.querySelector<HTMLElement>('.board__body')!;
-    const hh = board.querySelector<HTMLElement>('.board__hh')!;
-    const mm = board.querySelector<HTMLElement>('.board__mm')!;
-    const icon = board.parentElement?.querySelector('.board-caption svg');
-    const narrow = matchMedia('(max-width: 560px)');
-    // Server-rendered rows carry the ids of the initial departures.
-    const rows = new Map<number, HTMLElement>();
-    for (const row of body.querySelectorAll<HTMLElement>('.board__row')) rows.set(Number(row.dataset.id), row);
+  const refreshMs = 60_000;
+  const maxSnapshotAge = 5 * 60_000;
+  const lookAheadMs = 5 * 60 * 60_000;
+  const warsawTime = new Intl.DateTimeFormat('pl-PL', {
+    timeZone: 'Europe/Warsaw',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  });
+  const warsawDate = new Intl.DateTimeFormat('pl-PL', { timeZone: 'Europe/Warsaw' });
+  const board = document.querySelector<HTMLElement>('[data-departure-board]');
 
-    function paint(row: HTMLElement, d: Departure, now: number, animated: boolean) {
-      const v = view(d, now);
-      const $ = (selector: string) => row.querySelector<HTMLElement>(selector)!;
-      const time = $('.board__time-value');
-      flip(time, v.time, animated);
-      time.classList.toggle('board__time--late', d.delay > 0);
-      $('.board__planned').hidden = !v.planned;
-      $('.board__planned-value').textContent = v.planned;
-      const train = $('.board__train');
-      train.textContent = d.train;
-      train.style.background = d.color;
-      $('.board__dest').textContent = d.dest;
-      $('.board__via').textContent = d.via;
-      flip($('.board__platform'), v.platform, animated);
-      const pill = $('.board__pill');
-      pill.classList.remove('board__pill--ok', 'board__pill--late', 'board__pill--in');
-      pill.classList.add(`board__pill--${v.state}`);
-      flip(pill, v.status, animated);
-    }
+  if (board) startBoard(board);
 
-    // Narrow screens show four rows (see the CSS), wider ones five.
-    function render({ now, trains, changes }: Frame, animated: boolean) {
-      const shown = trains.slice(0, narrow.matches ? 4 : 5);
-      const ids = new Set(shown.map((d) => d.id));
-      for (const [id, row] of rows) {
-        if (ids.has(id)) continue;
-        rows.delete(id);
-        if (animated) slide(row, 'out');
-        else row.remove();
-      }
-      for (const d of shown) {
-        const row = rows.get(d.id);
-        if (row) {
-          paint(row, d, now, animated);
-          continue;
+  function startBoard(board: HTMLElement) {
+    const url = `${board.dataset.departureBoard?.replace(/\/+$/, '')}/api/operations?station=33605`;
+    const list = board.querySelector<HTMLUListElement>('[data-rows]')!;
+    const template = board.querySelector<HTMLTemplateElement>('[data-row]')!;
+    const message = board.querySelector<HTMLElement>('[data-message]')!;
+    const caption = board.querySelector<HTMLElement>('[data-caption]')!;
+    const checked = board.querySelector<HTMLElement>('[data-checked]')!;
+    const live = board.querySelector<HTMLElement>('[data-live]')!;
+    let snapshot: { departures: Departure[]; receivedAt: Date; offline: boolean } | undefined;
+    let pending = false;
+
+    function render(now: Date, failed: boolean) {
+      const usable = snapshot
+        && +now - +snapshot.receivedAt <= maxSnapshotAge
+        && warsawDate.format(now) === warsawDate.format(snapshot.receivedAt)
+        ? snapshot
+        : undefined;
+      const clock = warsawTime.format(now);
+      // The API supplies today's Warsaw times as HH:MM and orders by departure.
+      // Apply its five-hour window as cached responses can span midnight.
+      const latest = new Date(+now + lookAheadMs);
+      const end = warsawDate.format(now) === warsawDate.format(latest) ? warsawTime.format(latest) : '23:59';
+      const departures = usable?.departures
+        .filter((train): train is Departure & { time: string } => Boolean(train.time && train.time >= clock && train.time <= end))
+        .slice(0, 5) ?? [];
+
+      list.replaceChildren(...departures.map((train) => {
+        const row = template.content.cloneNode(true) as DocumentFragment;
+        const time = row.querySelector<HTMLTimeElement>('[data-time]')!;
+        time.textContent = time.dateTime = train.time;
+        const delayed = train.delay !== null && train.delay > 0;
+        time.classList.toggle('board__time--late', delayed);
+        if (train.plannedTime && train.plannedTime !== train.time) {
+          row.querySelector<HTMLElement>('[data-planned]')!.hidden = false;
+          row.querySelector<HTMLElement>('[data-planned-time]')!.textContent = train.plannedTime;
         }
-        // Cloning a rendered row keeps Astro's scoped-style attributes.
-        const added = body.querySelector('.board__row')!.cloneNode(true) as HTMLElement;
-        added.removeAttribute('style');
-        added.classList.remove('board__row--flash');
-        paint(added, d, now, false);
-        body.append(added);
-        rows.set(d.id, added);
-        if (animated) slide(added, 'in');
+        row.querySelector<HTMLElement>('[data-direction]')!.textContent = train.direction || 'Kierunek nieznany';
+        row.querySelector<HTMLElement>('[data-number]')!.textContent = [train.trainNumber, train.trainName].filter(Boolean).join(' · ');
+        row.querySelector<HTMLElement>('[data-platform]')!.textContent = [
+          train.platform ? `Peron ${train.platform}` : '',
+          train.track ? `tor ${train.track}` : '',
+        ].filter(Boolean).join(' · ') || '—';
+        const status = row.querySelector<HTMLElement>('[data-delay]')!;
+        status.textContent = delayed ? `+${train.delay} min` : train.delay === null ? 'Rozkład' : 'Planowo';
+        status.classList.toggle('board__pill--late', delayed);
+        status.classList.toggle('board__pill--ok', train.delay === 0 && !failed && !usable?.offline);
+        return row;
+      }));
+
+      list.hidden = departures.length === 0;
+      message.hidden = !list.hidden;
+      const isLive = usable && !usable.offline && !failed;
+      message.textContent = isLive ? 'Brak najbliższych odjazdów.' : 'Odjazdy są chwilowo niedostępne.';
+      live.hidden = !isLive;
+
+      let details = 'Dane PKP PLK';
+      if (failed) {
+        details = departures.length ? 'Dane sprzed utraty połączenia' : 'Nie udało się odświeżyć tablicy';
+      } else if (usable?.offline) {
+        details = 'Brak danych na żywo · rozkład i ostatnie znane opóźnienia';
       }
-      if (!animated) return;
-      for (const { kind, id } of changes) {
-        const row = rows.get(id);
-        if (row) highlight(row, kind === 'delay' ? AMBER : BLUE);
+      if (caption.textContent !== details) caption.textContent = details;
+      checked.textContent = usable ? ` · sprawdzono o ${warsawTime.format(usable.receivedAt)}` : '';
+    }
+
+    async function refresh() {
+      if (pending || document.hidden) return;
+      pending = true;
+      try {
+        const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(12_000) });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const body: Operations = await response.json();
+        if (!Array.isArray(body.departures) && body.departures !== null) {
+          throw new Error('Invalid departures response');
+        }
+        const departures = body.departures ?? [];
+        const receivedAt = new Date();
+        const offline = response.headers.get('X-PKP-Status') === 'down' || departures.some((train) => train.offline);
+        snapshot = { departures, receivedAt, offline };
+        render(receivedAt, false);
+      } catch {
+        render(new Date(), true);
+      } finally {
+        pending = false;
       }
     }
 
-    let frame = subscribe(board, (next) => {
-      frame = next;
-      const [h, m] = fmt(next.now).split(':');
-      flip(hh, h);
-      flip(mm, m);
-      spin(icon);
-      render(next, true);
-    });
-    board.classList.add('board--live');
-    render(frame, false);
-    narrow.addEventListener('change', () => render(frame, false));
+    message.textContent = 'Pobieramy najbliższe odjazdy…';
+    void refresh();
+    window.setInterval(refresh, refreshMs);
+    document.addEventListener('visibilitychange', refresh);
   }
 </script>
 
 <style>
   .board-wrap {
     display: grid;
-    gap: 14px;
+    gap: 12px;
     margin: 0;
   }
 
   .board {
     overflow: hidden;
     background: var(--navy);
-    border: 1px solid rgb(255 255 255 / 0.12);
+    border: 1px solid var(--line-dark);
     border-radius: 20px;
     box-shadow: 0 30px 60px rgb(0 0 0 / 0.33);
     color: var(--white);
   }
 
-  .board__head-row {
+  .board__head {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
     padding: 20px 24px;
     background: var(--navy-2);
   }
@@ -173,30 +198,31 @@ const rows = initial.map((d) => ({ d, v: view(d, START) }));
     color: var(--mist);
   }
 
-  .board__clock {
-    font-size: 1.75rem;
-    font-weight: 700;
+  .board__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 0.75rem;
+    white-space: nowrap;
   }
 
-  .board__hh,
-  .board__mm {
-    display: inline-block;
+  .board__body {
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  .board--live .board__colon {
-    animation: blink 1s steps(1) infinite;
-  }
-
-  @keyframes blink {
-    50% { opacity: 0.25; }
+  .board__message {
+    padding: 24px;
+    color: var(--mist);
   }
 
   .board__row {
     display: grid;
-    grid-template-columns: 72px minmax(0, 1fr) auto 96px;
-    gap: 18px;
+    grid-template-columns: 64px minmax(0, 1fr) auto auto;
+    gap: 12px;
     align-items: center;
-    padding: 18px 24px;
+    padding: 14px 24px;
   }
 
   .board__row + .board__row {
@@ -205,8 +231,8 @@ const rows = initial.map((d) => ({ d, v: view(d, START) }));
 
   .board__time {
     display: grid;
-    gap: 2px;
-    font-size: 1.5rem;
+    gap: 3px;
+    font-size: 1.375rem;
     font-weight: 700;
     line-height: 1.1;
   }
@@ -215,92 +241,65 @@ const rows = initial.map((d) => ({ d, v: view(d, START) }));
     color: var(--amber-bright);
   }
 
-  .board__planned {
+  .board__planned,
+  .board__number,
+  .board__platform,
+  .board__pill {
     font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--mist-2);
   }
 
-  .board__mid {
-    display: grid;
-    gap: 6px;
-    min-width: 0;
-  }
-
-  .board__line {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-  }
-
-  .board__train {
-    flex: none;
-    padding: 2px 7px;
-    border-radius: 5px;
-    font-size: 0.6875rem;
-    font-weight: 700;
-  }
-
-  .board__dest {
-    overflow: hidden;
-    font-size: 1.125rem;
-    font-weight: 700;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  .board__via {
-    font-size: 0.8125rem;
-    color: var(--mist-2);
-  }
-
+  .board__planned,
+  .board__number,
   .board__platform {
-    font-size: 0.8125rem;
-    font-weight: 500;
     color: var(--mist);
   }
 
-  .board__status {
-    display: flex;
-    justify-content: flex-end;
+  .board__train {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .board__direction {
+    font-weight: 700;
+    line-height: 1.25;
   }
 
   .board__pill {
-    padding: 4px 10px;
+    justify-self: end;
+    padding: 4px 9px;
     border-radius: 999px;
-    font-size: 0.75rem;
+    background: rgb(255 255 255 / 0.08);
+    color: var(--mist);
     font-weight: 700;
     white-space: nowrap;
   }
 
   .board__pill--ok { background: rgb(22 163 74 / 0.18); color: #86efac; }
   .board__pill--late { background: rgb(245 158 11 / 0.18); color: #fcd34d; }
-  .board__pill--in { background: rgb(59 130 246 / 0.18); color: #93c5fd; }
-
-  /* The delayed train lights up once on load; the script adds the rest of the motion. */
-  .board__row--flash {
-    background: rgb(245 158 11 / 0.08);
-    animation: flash 1.6s 0.9s ease-out both;
-  }
-
-  @keyframes flash {
-    0% { background: rgb(245 158 11 / 0); }
-    35% { background: rgb(245 158 11 / 0.28); }
-    100% { background: rgb(245 158 11 / 0.08); }
-  }
 
   .board-caption {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 8px;
     padding-inline: 4px;
     font-size: 0.8125rem;
-    color: var(--mist-2);
+    color: var(--mist);
   }
 
-  @media (max-width: 560px) {
-    .board__head-row {
+  .board-caption svg {
+    flex: none;
+    align-self: center;
+  }
+
+  [hidden] {
+    display: none;
+  }
+
+  @media (max-width: 560px), (min-width: 1024px) and (max-width: 1250px) {
+    .board__head,
+    .board__row {
       padding: 14px 16px;
     }
 
@@ -308,39 +307,18 @@ const rows = initial.map((d) => ({ d, v: view(d, START) }));
       font-size: 1rem;
     }
 
-    .board__clock {
-      font-size: 1.25rem;
-    }
-
     .board__row {
-      grid-template-columns: 54px minmax(0, 1fr) auto;
+      grid-template-columns: 50px minmax(0, 1fr) auto;
       grid-template-areas:
-        'time mid status'
-        'time mid platform';
-      gap: 4px 12px;
-      padding: 14px 16px;
+        'time train status'
+        'time train platform';
+      gap: 4px 10px;
     }
 
     .board__time { grid-area: time; font-size: 1.125rem; }
-    .board__mid { grid-area: mid; }
-    .board__status { grid-area: status; }
+    .board__train { grid-area: train; }
+    .board__direction { font-size: 0.9375rem; }
     .board__platform { grid-area: platform; justify-self: end; font-size: 0.6875rem; }
-    .board__via { display: none; }
-
-    .board__line {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 4px;
-    }
-
-    .board__dest {
-      font-size: 0.9375rem;
-    }
-
-    /* Without JS, CSS trims to four rows; the live board keeps four itself so
-       rows sliding in and out stay visible. */
-    .board:not(.board--live) .board__row:nth-child(n + 5) {
-      display: none;
-    }
+    .board__pill { grid-area: status; }
   }
 </style>

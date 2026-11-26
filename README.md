@@ -19,20 +19,21 @@ Wymaga Node ≥ 22.23 (wymóg Astro 7).
 - `src/pages/polityka-prywatnosci.astro`, `regulamin.astro` — treść w `src/legal/*.md`,
   układ ze spisem treści w `src/layouts/Legal.astro`
 - `src/pages/kontakt.astro` — skrzynki e-mail z `src/config.ts`
-- `src/pages/status.astro` — pobiera `GET {statusApiBase}/api/status` w przeglądarce
+- `src/pages/status.astro` — pobiera `GET {apiBase}/api/status` w przeglądarce
   i odświeża co `refresh_seconds`; lokalnie: `PUBLIC_STATUS_API_BASE=http://localhost:8080 npm run dev`
 - `src/pages/404.astro`
 - `src/pages/api/powiadom.ts` — zapis na powiadomienie o premierze (Brevo double opt-in);
   `zapisano.astro` i `potwierdzono.astro` — strony po zapisie i po kliknięciu linku z maila
 - `src/components/sections/` — sekcje landingu (Hero, AppFeatures, Widgets, DataSource, Cta)
 - `src/components/Phone.astro` — ramka iPhone'a w CSS (skaluje się jednostkami `cqi`)
-- `src/components/DepartureBoard.astro` — animowana tablica odjazdów w hero
+- `src/components/DepartureBoard.astro` — najbliższe odjazdy ze stacji Warszawa Centralna
+  (`GET {apiBase}/api/operations?station=33605`), odświeżane co minutę w otwartej karcie
 - `src/components/widgets/` — widżety (mały, średni, duży) i karta Live Activity w HTML,
   narysowane na wzór eksportów z `ui.pen`
 - `src/lib/` — dane i symulacja animacji: `departures.ts` (przykładowe odjazdy),
   `station-sim.ts` (wspólny zegar tablicy i widżetów), `journey.ts` (przejazd w Live Activity),
   `motion.ts` (animacje); przy `prefers-reduced-motion` wszystko zostaje statyczne
-- `src/config.ts` — adresy e-mail, link do App Store, adres API statusu
+- `src/config.ts` — adresy e-mail, link do App Store, adres publicznego API
 - `src/assets/` — zrzuty z aplikacji i widżety wyeksportowane z `ui.pen`
 
 ## Link do App Store

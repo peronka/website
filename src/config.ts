@@ -16,8 +16,8 @@ export const site = {
   // GA4 web stream; gtag.js loads only after consent in CookieConsent.astro.
   gaId: 'G-JH5GFFHNZ2',
   // Override with PUBLIC_STATUS_API_BASE (e.g. http://localhost:8080) to
-  // point the status page at a local backend.
-  statusApiBase: import.meta.env.PUBLIC_STATUS_API_BASE ?? 'https://api.peronka.pl',
+  // point the departures board and status page at a local backend.
+  apiBase: import.meta.env.PUBLIC_STATUS_API_BASE ?? 'https://api.peronka.pl',
   disclaimer: 'Aplikacja niezależna — niepowiązana z PKP PLK S.A.',
   owner: {
     name: 'Chlebowski.it Filip Chlebowski',

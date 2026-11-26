@@ -1,6 +1,5 @@
-// In-browser clock for the demo departures on the landing page. The hero board
-// and the home-screen widgets subscribe to this one simulation, so they always
-// agree on the time and on which train leaves next.
+// The home-screen widget demos share one simulation, so they agree on the
+// time and on which train leaves next.
 import { ARRIVING, START, departsAt, initial, upcoming, type Departure } from './departures';
 
 export interface Change {
