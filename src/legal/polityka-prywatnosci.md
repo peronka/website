@@ -28,7 +28,7 @@ Aplikacja została zaprojektowana zgodnie z zasadą minimalizacji danych. Nie wy
 
 W Aplikacji:
 
-- Dane połączenia — adres IP urządzenia oraz treść zapytania (np. wybrana stacja), przesyłane do serwera Peronki podczas pobierania rozkładów. Nie łączymy ich z tożsamością użytkownika.
+- Dane połączenia i wyszukiwania — serwer Peronki otrzymuje adres IP urządzenia i treść zapytania, na przykład wpisaną nazwę stacji lub numer wybranej stacji. Dane te służą do wyszukiwania stacji i pobierania rozkładów.
 - Identyfikator instalacji i preferencje — przy pierwszym uruchomieniu Aplikacja losuje identyfikator instalacji. Serwer Peronki używa go do obsługi ustawień, ulubionych stacji i śledzonych pociągów. Część ustawień i dane widżetów są przechowywane na urządzeniu. Powiadomienia o opóźnieniach i zmianach peronów są tworzone na urządzeniu.
 - Dane analityczne — Aplikacja przesyła do serwera Peronki otwarcia, wyświetlenia ekranów i zdarzenia, na przykład dodanie ulubionej stacji lub rozpoczęcie śledzenia pociągu. Zdarzenia zawierają czas, platformę, wersję Aplikacji i identyfikator instalacji. Zdarzenia korzystania są wysyłane także do Google Analytics for Firebase. Firebase może przetwarzać m.in. informacje o urządzeniu i systemie oraz przybliżoną lokalizację wywnioskowaną z połączenia. Aplikacja uruchamia zbieranie danych analitycznych po starcie. Formularz zgody reklamowej nie służy do wyłączania tej analityki.
 - Lokalizacja na Androidzie — jeśli zezwolisz Aplikacji na dostęp do przybliżonej lokalizacji i skorzystasz z funkcji najbliższej stacji, Aplikacja przesyła współrzędne do serwera Peronki, by znaleźć stację i obliczyć odległość. Stację możesz również wybrać ręcznie. Dostęp do lokalizacji można wyłączyć w ustawieniach Androida.
@@ -93,7 +93,7 @@ Administrator nie sprzedaje danych osobowych ani nie udostępnia ich w celach ma
 - Dostawca poczty elektronicznej — obsługa korespondencji.
 - Organy państwowe i sądowe — w przypadkach przewidzianych przepisami prawa.
 
-PKP Polskie Linie Kolejowe S.A. nie otrzymuje danych użytkowników — rozkłady pobiera serwer Peronki, kierując do PKP PLK OpenData wyłącznie zapytania o rozkłady.
+Do PKP PLK OpenData zapytania o rozkłady kieruje serwer Peronki. Gdy lokalny słownik stacji jest niedostępny, serwer może także przekazać wpisaną frazę, aby wyszukać stację w słowniku PKP PLK. W tym zapytaniu przekazuje frazę i limit wyników.
 
 ## Przekazywanie danych poza EOG
 
