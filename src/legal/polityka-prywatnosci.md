@@ -1,6 +1,6 @@
 ---
 title: Polityka prywatności
-updated: 2 listopada 2026 r.
+updated: 26 listopada 2026 r.
 intro: Jak aplikacja Peronka i strona peronka.pl zbierają, wykorzystują i chronią dane użytkowników. Dokument przygotowano zgodnie z RODO (Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679).
 numbering: decimal
 calloutTitle: Masz pytania o prywatność?
@@ -10,7 +10,7 @@ calloutNote: Odpowiadamy w ciągu 30 dni od otrzymania zapytania (art. 12 ust. 3
 
 ## Wprowadzenie
 
-Peronka („Aplikacja”) jest niezależną aplikacją mobilną na iOS, prezentującą rozkłady jazdy oraz informacje o odjazdach pociągów w czasie rzeczywistym dla podróżnych korzystających z polskiej sieci kolejowej. Aplikacja korzysta wyłącznie z publicznie dostępnych danych udostępnianych przez PKP Polskie Linie Kolejowe S.A. w ramach PKP PLK OpenData.
+Peronka („Aplikacja”) jest niezależną aplikacją mobilną na iOS i Androida, prezentującą rozkłady jazdy oraz informacje o odjazdach pociągów w czasie rzeczywistym dla podróżnych korzystających z polskiej sieci kolejowej. Dane o rozkładach pochodzą z publicznie dostępnych danych udostępnianych przez PKP Polskie Linie Kolejowe S.A. w ramach PKP PLK OpenData.
 
 Niniejszy dokument dotyczy Aplikacji oraz strony internetowej peronka.pl („Strona”). Wyjaśnia, jakie informacje są gromadzone, w jakim celu są wykorzystywane oraz jakie prawa przysługują użytkownikom. Prosimy o uważne zapoznanie się z całym tekstem przed rozpoczęciem korzystania z Aplikacji.
 
@@ -29,10 +29,10 @@ Aplikacja została zaprojektowana zgodnie z zasadą minimalizacji danych. Nie wy
 W Aplikacji:
 
 - Dane połączenia — adres IP urządzenia oraz treść zapytania (np. wybrana stacja), przesyłane do serwera Peronki podczas pobierania rozkładów. Nie łączymy ich z tożsamością użytkownika.
-- Dane diagnostyczne — raporty o awariach i statystyki stabilności Aplikacji (model urządzenia, wersja systemu operacyjnego i Aplikacji, język interfejsu, przebieg błędu) wraz z pseudonimowym identyfikatorem instalacji Firebase. Identyfikator pozwala rozróżnić instalacje, ale nie wskazuje wprost, do kogo należy urządzenie.
-- Dane analityczne — po wyrażeniu zgody: wyświetlane ekrany i zdarzenia w Aplikacji (np. wybór stacji, uruchomienie widżetu), czas korzystania, model urządzenia, wersja systemu i Aplikacji oraz przybliżona lokalizacja (kraj, miasto), wraz z pseudonimowym identyfikatorem instalacji, zbierane przez Google Analytics for Firebase.
-- Dane reklamowe — wybory dokonane w formularzu zgody, a po wyrażeniu zgody również reklamowy identyfikator urządzenia (IDFA). Szczegóły opisano w sekcji 5.
-- Preferencje — ulubione stacje, ustawienia widżetów i powiadomień. Są przechowywane wyłącznie lokalnie na urządzeniu i nie są przesyłane do Administratora. Powiadomienia o opóźnieniach i zmianach peronów są tworzone na urządzeniu — serwer Peronki nie przechowuje tokenów powiadomień ani listy obserwowanych pociągów i stacji.
+- Identyfikator instalacji i preferencje — przy pierwszym uruchomieniu Aplikacja losuje identyfikator instalacji. Serwer Peronki używa go do obsługi ustawień, ulubionych stacji i śledzonych pociągów. Część ustawień i dane widżetów są przechowywane na urządzeniu. Powiadomienia o opóźnieniach i zmianach peronów są tworzone na urządzeniu.
+- Dane analityczne — Aplikacja przesyła do serwera Peronki otwarcia, wyświetlenia ekranów i zdarzenia, na przykład dodanie ulubionej stacji lub rozpoczęcie śledzenia pociągu. Zdarzenia zawierają czas, platformę, wersję Aplikacji i identyfikator instalacji. Zdarzenia korzystania są wysyłane także do Google Analytics for Firebase. Firebase może przetwarzać m.in. informacje o urządzeniu i systemie oraz przybliżoną lokalizację wywnioskowaną z połączenia. Aplikacja uruchamia zbieranie danych analitycznych po starcie. Formularz zgody reklamowej nie służy do wyłączania tej analityki.
+- Lokalizacja na Androidzie — jeśli zezwolisz Aplikacji na dostęp do przybliżonej lokalizacji i skorzystasz z funkcji najbliższej stacji, Aplikacja przesyła współrzędne do serwera Peronki, by znaleźć stację i obliczyć odległość. Stację możesz również wybrać ręcznie. Dostęp do lokalizacji można wyłączyć w ustawieniach Androida.
+- Dane reklamowe — decyzje z formularza zgody Google UMP oraz, zależnie od platformy, zgód i konfiguracji reklam, dane połączenia, informacje o interakcjach i działaniu SDK oraz identyfikatory reklamowe urządzenia. Szczegóły opisano w sekcji 5.
 
 Na Stronie:
 
@@ -54,7 +54,7 @@ Dane przetwarzamy wyłącznie w zakresie niezbędnym do realizacji poniższych c
 - Wyświetlanie reklam spersonalizowanych — art. 6 ust. 1 lit. a RODO (zgoda wyrażona w formularzu zgody).
 - Wyświetlanie reklam niespersonalizowanych, z których finansowana jest bezpłatna Aplikacja — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora).
 - Prowadzenie statystyk odwiedzin bez plików cookies (Vercel Web Analytics) oraz zapewnienie bezpieczeństwa Strony i serwerów — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora).
-- Analiza korzystania z Aplikacji i Strony w Google Analytics, służąca jej rozwojowi — art. 6 ust. 1 lit. a RODO (zgoda wyrażona w formularzu zgody w Aplikacji lub w banerze cookies na Stronie).
+- Analiza korzystania ze Strony w Google Analytics, służąca jej rozwojowi — art. 6 ust. 1 lit. a RODO (zgoda wyrażona w banerze cookies na Stronie). Działanie analityki w Aplikacji opisano w sekcji „Jakie dane zbieramy”.
 - Wysłanie wiadomości o udostępnieniu Aplikacji w App Store osobom, które zapisały się na powiadomienie o premierze — art. 6 ust. 1 lit. a RODO (zgoda wyrażona w formularzu i potwierdzona linkiem z wiadomości e-mail).
 - Odpowiadanie na wiadomości — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora polegający na prowadzeniu korespondencji z użytkownikami).
 - Rozpatrywanie reklamacji — art. 6 ust. 1 lit. c RODO (obowiązek wynikający z ustawy o prawach konsumenta).
@@ -62,9 +62,9 @@ Dane przetwarzamy wyłącznie w zakresie niezbędnym do realizacji poniższych c
 
 ## Reklamy i zgody
 
-Aplikacja jest bezpłatna i finansowana z reklam wyświetlanych przez Google AdMob.
+Aplikacja jest bezpłatna i korzysta z Google AdMob oraz platformy zgód Google UMP. W testowym wydaniu Androida 0.5.1 jednostka reklamowa do wyświetlania reklam produkcyjnych nie jest skonfigurowana.
 
-Przy pierwszym uruchomieniu Aplikacja wyświetla formularz zgody Google (User Messaging Platform — certyfikowana platforma zarządzania zgodami zgodna ze standardem IAB TCF). W formularzu można zgodzić się na reklamy spersonalizowane i związane z nimi przetwarzanie danych, wybrać tylko niektóre cele albo odmówić zgody. Dodatkowo dostęp do identyfikatora reklamowego (IDFA) wymaga zgody w systemowym oknie App Tracking Transparency — bez niej Aplikacja nie ma dostępu do IDFA.
+Gdy jest to wymagane, Aplikacja wyświetla formularz zgody Google UMP. W formularzu można zgodzić się na reklamy spersonalizowane i związane z nimi przetwarzanie danych, wybrać tylko niektóre cele albo odmówić zgody. Na iOS dostęp do identyfikatora reklamowego (IDFA) wymaga zgody przez App Tracking Transparency. Na Androidzie identyfikator reklamowy można zresetować lub usunąć w ustawieniach systemowych.
 
 Bez zgody na personalizację wyświetlane są reklamy niespersonalizowane, dobierane na podstawie ogólnego kontekstu, np. przybliżonej lokalizacji ustalonej na podstawie adresu IP.
 
@@ -89,7 +89,7 @@ Administrator nie sprzedaje danych osobowych ani nie udostępnia ich w celach ma
 - Dostawcy infrastruktury serwerowej Aplikacji (serwery w Unii Europejskiej) — obsługa zapytań i pamięć podręczna rozkładów.
 - Vercel Inc. — hosting Strony i statystyki odwiedzin.
 - Brevo SAS (Francja) — obsługa zapisów na powiadomienie o premierze i wysyłka tej wiadomości.
-- Google Ireland Limited i Google LLC — raporty o awariach (Firebase Crashlytics), statystyki korzystania (Google Analytics, w tym Google Analytics for Firebase) oraz reklamy (Google AdMob); w zakresie reklam spersonalizowanych Google działa jako odrębny administrator.
+- Google Ireland Limited i Google LLC — statystyki korzystania (Google Analytics, w tym Google Analytics for Firebase) oraz obsługa zgód reklamowych i SDK reklam (Google UMP i AdMob); w zakresie reklam spersonalizowanych Google działa jako odrębny administrator.
 - Dostawca poczty elektronicznej — obsługa korespondencji.
 - Organy państwowe i sądowe — w przypadkach przewidzianych przepisami prawa.
 
@@ -108,7 +108,7 @@ Google LLC i Vercel Inc. mają siedziby w Stanach Zjednoczonych, dlatego dane mo
 - Dane reklamowe — wybory dotyczące zgód są przechowywane na urządzeniu do czasu ich zmiany lub usunięcia Aplikacji; dane przetwarzane przez Google w zakresie reklam spersonalizowanych — zgodnie z zasadami Google.
 - Zapisy na powiadomienie o premierze — do wysłania wiadomości o udostępnieniu Aplikacji albo wcześniejszego wycofania zgody; adres, którego nie potwierdzono linkiem z wiadomości, nie jest dodawany do listy odbiorców.
 - Korespondencja — przez czas potrzebny do załatwienia sprawy, a w przypadku reklamacji — do upływu terminu przedawnienia związanych z nią roszczeń.
-- Preferencje — wyłącznie na urządzeniu; można je w każdej chwili usunąć w ustawieniach Aplikacji lub odinstalowując Aplikację.
+- Preferencje zapisane na urządzeniu można usunąć przez odinstalowanie Aplikacji. W sprawie usunięcia danych zapisanych przez serwer Peronki skontaktuj się z Administratorem pod adresem [kontakt@peronka.pl](mailto:kontakt@peronka.pl).
 
 ## Twoje prawa
 
@@ -123,7 +123,7 @@ Zgodnie z RODO każdej osobie, której dane dotyczą, przysługują następując
 - Prawo do cofnięcia zgody w dowolnym momencie, bez wpływu na zgodność z prawem przetwarzania, którego dokonano przed jej cofnięciem.
 - Prawo do wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych (ul. Stawki 2, 00-193 Warszawa).
 
-Podanie danych jest dobrowolne. Bez przesłania danych połączenia nie jest jednak możliwe pobranie rozkładów, a odmowa zgody na reklamy spersonalizowane oznacza jedynie wyświetlanie reklam niespersonalizowanych. Odmowa zgody na Google Analytics nie ogranicza żadnych funkcji Aplikacji ani Strony. Zgodę na powiadomienie o premierze można wycofać w każdej chwili, pisząc na [kontakt@peronka.pl](mailto:kontakt@peronka.pl) lub korzystając z linku rezygnacji w wiadomości.
+Bez przesłania danych połączenia nie jest możliwe pobranie rozkładów. Możesz korzystać z ręcznego wyboru stacji bez udzielania dostępu do lokalizacji. Odmowa zgody na Google Analytics w banerze cookies nie ogranicza funkcji Strony. Zgodę na powiadomienie o premierze można wycofać w każdej chwili, pisząc na [kontakt@peronka.pl](mailto:kontakt@peronka.pl) lub korzystając z linku rezygnacji w wiadomości.
 
 ## Bezpieczeństwo
 
