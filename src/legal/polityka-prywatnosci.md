@@ -1,6 +1,6 @@
 ---
 title: Polityka prywatności
-updated: 26 listopada 2026 r.
+updated: 27 listopada 2026 r.
 intro: Jak aplikacja Peronka i strona peronka.pl zbierają, wykorzystują i chronią dane użytkowników. Dokument przygotowano zgodnie z RODO (Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679).
 numbering: decimal
 calloutTitle: Masz pytania o prywatność?
@@ -24,7 +24,7 @@ Administrator nie jest powiązany z PKP Polskimi Liniami Kolejowymi S.A. ani z �
 
 ## Jakie dane zbieramy
 
-Aplikacja została zaprojektowana zgodnie z zasadą minimalizacji danych. Nie wymagamy zakładania konta ani podawania imienia i nazwiska. Adres e-mail przekazujesz nam tylko wtedy, gdy zapiszesz się na powiadomienie o premierze albo do nas napiszesz. Przetwarzamy wyłącznie następujące kategorie informacji.
+Aplikacja została zaprojektowana zgodnie z zasadą minimalizacji danych. Nie wymagamy zakładania konta ani podawania imienia i nazwiska. Adres e-mail przekazujesz nam tylko wtedy, gdy zgłosisz się do testów na Androidzie, zapiszesz się na powiadomienie o premierze albo do nas napiszesz. Przetwarzamy wyłącznie następujące kategorie informacji.
 
 W Aplikacji:
 
@@ -39,6 +39,7 @@ Na Stronie:
 - Statystyki odwiedzin — adres odwiedzanej podstrony, adres strony odsyłającej, kraj, typ urządzenia, system operacyjny i przeglądarka, zbierane przez Vercel Web Analytics. Odwiedzający są rozróżniani za pomocą skrótu (hash) tworzonego z danych zapytania i resetowanego codziennie, dlatego nie da się śledzić tej samej osoby między kolejnymi dniami ani między różnymi stronami.
 - Statystyki Google Analytics — wyłącznie po wyrażeniu zgody w banerze cookies: odwiedzane podstrony, źródło wejścia, czas wizyty, zdarzenia (np. kliknięcie plakietki App Store), typ urządzenia, system, przeglądarka i przybliżona lokalizacja, powiązane z identyfikatorem zapisanym w plikach cookies `_ga`. Google Analytics nie zapisuje adresów IP.
 - Logi serwera — adres IP, data i godzina oraz adres żądanej podstrony, zapisywane automatycznie przez dostawcę hostingu. Strona statusu pobiera dane bezpośrednio z serwera Peronki, który również otrzymuje przy tym adres IP przeglądarki.
+- Zgłoszenie do zamkniętych testów na Androidzie — adres e-mail konta Google Play podany w formularzu.
 - Zapis na powiadomienie o premierze — adres e-mail podany w formularzu „Powiadom mnie” oraz data i godzina zapisu i jego potwierdzenia.
 
 W korespondencji:
@@ -55,6 +56,7 @@ Dane przetwarzamy wyłącznie w zakresie niezbędnym do realizacji poniższych c
 - Wyświetlanie reklam niespersonalizowanych, z których finansowana jest bezpłatna Aplikacja — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora).
 - Prowadzenie statystyk odwiedzin bez plików cookies (Vercel Web Analytics) oraz zapewnienie bezpieczeństwa Strony i serwerów — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora).
 - Analiza korzystania ze Strony w Google Analytics, służąca jej rozwojowi — art. 6 ust. 1 lit. a RODO (zgoda wyrażona w banerze cookies na Stronie). Działanie analityki w Aplikacji opisano w sekcji „Jakie dane zbieramy”.
+- Przyjmowanie zgłoszeń i zapraszanie do zamkniętych testów na Androidzie za pośrednictwem Google Play — na podstawie zgody udzielonej przy wysyłaniu formularza (art. 6 ust. 1 lit. a RODO).
 - Wysłanie wiadomości o udostępnieniu Aplikacji w App Store osobom, które zapisały się na powiadomienie o premierze — art. 6 ust. 1 lit. a RODO (zgoda wyrażona w formularzu i potwierdzona linkiem z wiadomości e-mail).
 - Odpowiadanie na wiadomości — art. 6 ust. 1 lit. f RODO (uzasadniony interes Administratora polegający na prowadzeniu korespondencji z użytkownikami).
 - Rozpatrywanie reklamacji — art. 6 ust. 1 lit. c RODO (obowiązek wynikający z ustawy o prawach konsumenta).
@@ -88,6 +90,7 @@ Administrator nie sprzedaje danych osobowych ani nie udostępnia ich w celach ma
 
 - Dostawcy infrastruktury serwerowej Aplikacji (serwery w Unii Europejskiej) — obsługa zapytań i pamięć podręczna rozkładów.
 - Vercel Inc. — hosting Strony i statystyki odwiedzin.
+- Resend — przekazanie zgłoszenia na skrzynkę zespołu Peronki. Przy dodawaniu testera do zamkniętych testów jego adres przekazujemy Google Play.
 - Brevo SAS (Francja) — obsługa zapisów na powiadomienie o premierze i wysyłka tej wiadomości.
 - Google Ireland Limited i Google LLC — statystyki korzystania (Google Analytics, w tym Google Analytics for Firebase) oraz obsługa zgód reklamowych i SDK reklam (Google UMP i AdMob); w zakresie reklam spersonalizowanych Google działa jako odrębny administrator.
 - Dostawca poczty elektronicznej — obsługa korespondencji.
@@ -106,6 +109,7 @@ Google LLC i Vercel Inc. mają siedziby w Stanach Zjednoczonych, dlatego dane mo
 - Dane Google Analytics (Aplikacja i Strona) — nie dłużej niż 14 miesięcy od ich zebrania; pliki cookies `_ga` wygasają po 2 latach lub wcześniej, gdy wycofasz zgodę.
 - Statystyki odwiedzin Strony — skrót rozróżniający odwiedzających jest usuwany po 24 godzinach; dalej przechowywane są wyłącznie zbiorcze statystyki, które nie pozwalają zidentyfikować osoby.
 - Dane reklamowe — wybory dotyczące zgód są przechowywane na urządzeniu do czasu ich zmiany lub usunięcia Aplikacji; dane przetwarzane przez Google w zakresie reklam spersonalizowanych — zgodnie z zasadami Google.
+- Zgłoszenia do testów na Androidzie — do zakończenia testów lub wcześniejszego wycofania zgody. Zgłoszenie można wycofać, pisząc na [kontakt@peronka.pl](mailto:kontakt@peronka.pl).
 - Zapisy na powiadomienie o premierze — do wysłania wiadomości o udostępnieniu Aplikacji albo wcześniejszego wycofania zgody; adres, którego nie potwierdzono linkiem z wiadomości, nie jest dodawany do listy odbiorców.
 - Korespondencja — przez czas potrzebny do załatwienia sprawy, a w przypadku reklamacji — do upływu terminu przedawnienia związanych z nią roszczeń.
 - Preferencje zapisane na urządzeniu można usunąć przez odinstalowanie Aplikacji. W sprawie usunięcia danych zapisanych przez serwer Peronki skontaktuj się z Administratorem pod adresem [kontakt@peronka.pl](mailto:kontakt@peronka.pl).

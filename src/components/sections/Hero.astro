@@ -25,6 +25,7 @@ import { site } from '../../config';
         <AndroidDownload />
         <a class="hero__more" href="#aplikacja">Zobacz, jak działa <ArrowDown size={18} aria-hidden="true" /></a>
       </div>
+      <a class="hero__tests" href="#testy-android">Dołącz do testów na Androidzie</a>
       <p class="hero__meta mono">Bezpłatna · iPhone i Android · bez konta</p>
     </div>
   </div>
@@ -106,6 +107,12 @@ import { site } from '../../config';
 
   .hero__more:hover {
     text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .hero__tests {
+    justify-self: start;
+    color: var(--mist);
     text-underline-offset: 4px;
   }
 

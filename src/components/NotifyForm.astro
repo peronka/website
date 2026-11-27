@@ -1,35 +1,46 @@
 ---
-// Waitlist signup shown while the App Store link is empty. Posts to
-// /api/powiadom/, which hands the address to Brevo's double opt-in.
+import { site } from '../config';
+
 interface Props {
-  // Unique per page: the hero and the CTA band both render this form.
   id: string;
+  androidTests?: boolean;
+  useMailClient?: boolean;
 }
 
-const { id } = Astro.props;
+const { id, androidTests = false, useMailClient = false } = Astro.props;
+const action = useMailClient ? `mailto:${site.emails.main}` : androidTests ? '/api/testy-android/' : '/api/powiadom/';
+const subject = 'Zgłoszenie do zamkniętych testów Peronki na Androidzie';
+const success = androidTests
+  ? 'Dziękujemy! Twoje zgłoszenie trafiło do zespołu Peronki.'
+  : 'Prawie gotowe — potwierdź zapis, klikając link w wiadomości, którą właśnie wysłaliśmy.';
 ---
 
-<form class="notify" action="/api/powiadom/" method="post">
-  <label class="notify__label" for={id}>Wkrótce w App Store. Zostaw e-mail — damy znać w dniu premiery.</label>
+<form class="notify" action={action} method={useMailClient ? 'get' : 'post'} data-success={success}>
+  {useMailClient && <input type="hidden" name="subject" value={subject} />}
+  <label class="notify__label" for={id}>
+    {androidTests ? 'Adres e-mail konta Google Play' : 'Wkrótce w App Store. Zostaw e-mail — damy znać w dniu premiery.'}
+  </label>
   <div class="notify__row">
     <input
       class="notify__input"
       id={id}
       type="email"
-      name="email"
+      name={useMailClient ? 'body' : 'email'}
       required
       maxlength="254"
       autocomplete="email"
       placeholder="twoj@adres.pl"
     />
-    <button class="notify__button" type="submit">Powiadom mnie</button>
+    <button class="notify__button" type="submit">{useMailClient ? 'Otwórz e-mail ze zgłoszeniem' : androidTests ? 'Zgłoś się do testów' : 'Powiadom mnie'}</button>
   </div>
-  <div class="notify__hp" aria-hidden="true">
+  {!useMailClient && <div class="notify__hp" aria-hidden="true">
     <label>Strona internetowa <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
-  </div>
+  </div>}
   <p class="notify__note">
-    Wyślemy jedną wiadomość o udostępnieniu Peronki. Zapis potwierdzasz linkiem z maila, a zgodę możesz wycofać w każdej
-    chwili. <a href="/polityka-prywatnosci/">Polityka prywatności</a>
+    {androidTests
+      ? 'Wysyłając zgłoszenie, zgadzasz się na użycie tego adresu do zaproszenia Cię do testów w Google Play.'
+      : 'Wyślemy jedną wiadomość o udostępnieniu Peronki. Zapis potwierdzasz linkiem z maila, a zgodę możesz wycofać w każdej chwili.'}
+    <a href="/polityka-prywatnosci/">Polityka prywatności</a>
   </p>
   <p class="notify__status" role="status" aria-live="polite"></p>
 </form>
@@ -41,6 +52,14 @@ const { id } = Astro.props;
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
+      if (form.action.startsWith('mailto:')) {
+        const data = new FormData(form);
+        const subject = encodeURIComponent(String(data.get('subject')));
+        const body = encodeURIComponent(`Chcę dołączyć do testów. Mój adres konta Google Play: ${data.get('body')}`);
+        window.location.href = `${form.action}?subject=${subject}&body=${body}`;
+        status.textContent = 'Wyślij przygotowaną wiadomość w swojej aplikacji pocztowej.';
+        return;
+      }
       button.disabled = true;
       form.dataset.state = 'sending';
       status.textContent = 'Zapisuję…';
@@ -54,7 +73,8 @@ const { id } = Astro.props;
         });
         if (res.ok) {
           form.dataset.state = 'done';
-          status.textContent = 'Prawie gotowe — potwierdź zapis, klikając link w wiadomości, którą właśnie wysłaliśmy.';
+          status.textContent = form.dataset.success!;
+          form.reset();
           return;
         }
         const data: { error?: string } = await res.json().catch(() => ({}));
@@ -76,6 +96,7 @@ const { id } = Astro.props;
     gap: 12px;
     inline-size: 440px;
     max-inline-size: 100%;
+    min-inline-size: 0;
   }
 
   .notify__label {
@@ -161,6 +182,7 @@ const { id } = Astro.props;
     color: var(--amber-bright);
   }
 
+  .notify[data-state='done'] .notify__label,
   .notify[data-state='done'] .notify__row,
   .notify[data-state='done'] .notify__note {
     display: none;

@@ -1,7 +1,7 @@
 # Peronka — strona (Astro)
 
 Strona peronka.pl zbudowana w Astro 7, hostowana na Vercelu. Wszystkie strony są statyczne,
-poza endpointem `/api/powiadom/` (funkcja serwerowa przez `@astrojs/vercel`).
+poza endpointami formularzy (funkcje serwerowe przez `@astrojs/vercel`).
 Projekt: ramki „Web — … (Astro)” w `ui.pen`.
 
 ```bash
@@ -59,3 +59,9 @@ Zmienne środowiskowe (wzór w `.env.example`, na produkcji: Vercel → Settings
 
 Bez nich endpoint odpowiada 503, a formularz pokazuje „Zapisy są chwilowo niedostępne”.
 Po wysłaniu maila o premierze usuń listę — tak obiecuje polityka prywatności.
+
+## Zamknięte testy Androida (Resend)
+
+Formularz na `/#testy-android` wysyła przez `POST /api/testy-android/` wiadomość na `kontakt@peronka.pl`. Zawiera ona adres konta Google Play testera. Zespół ręcznie dodaje testerów w Google Play Console.
+
+W środowisku Production projektu Peronka na Vercelu ustaw `RESEND_API_KEY` z uprawnieniem do wysyłki z domeny nadawcy. Domyślny nadawca to `Peronka <testy@peronka.pl>`; można go zmienić przez `RESEND_FROM`. Po zmianie zmiennych wdróż projekt ponownie. Gdy podczas budowania strony brakuje klucza, sekcja pozwala wysłać zgłoszenie z własnej aplikacji pocztowej. Formularz potwierdza zgłoszenie po przyjęciu wiadomości przez Resend.
