@@ -1,25 +1,31 @@
 ---
+import { isEnglish, localizedPath } from '../../lib/i18n';
 import { ArrowUpRight } from '@lucide/astro';
 
+const en = isEnglish(Astro.url.pathname);
+
 const facts = [
-  { label: 'Źródło danych', value: 'PKP PLK S.A. · Portal Danych Pasażerskich (OpenData)' },
-  { label: 'Konto', value: 'Niepotrzebne' },
-  { label: 'Cena', value: 'Bezpłatna, z reklamami' },
-  { label: 'Twoje dane', value: 'Ulubione i ustawienia zostają na telefonie' },
-  { label: 'Urządzenia', value: 'iPhone · widżety iOS · Live Activity' },
+  { label: en ? 'Data source' : 'Źródło danych', value: en ? 'PKP PLK S.A. · Passenger Data Portal (OpenData)' : 'PKP PLK S.A. · Portal Danych Pasażerskich (OpenData)' },
+  { label: en ? 'Account' : 'Konto', value: en ? 'None needed' : 'Niepotrzebne' },
+  { label: en ? 'Price' : 'Cena', value: en ? 'Free with ads' : 'Bezpłatna, z reklamami' },
+  { label: en ? 'Your data' : 'Twoje dane', value: en ? 'Favourites and settings stay on your phone' : 'Ulubione i ustawienia zostają na telefonie' },
+  { label: en ? 'Devices' : 'Urządzenia', value: en ? 'iPhone · iOS widgets · Live Activities' : 'iPhone · widżety iOS · Live Activity' },
 ];
 ---
 
 <section class="data wrap" id="dane">
   <div class="data__text">
-    <p class="kicker mono">Skąd są dane</p>
-    <h2 class="data__title">Oficjalne dane, niezależna aplikacja</h2>
+    <p class="kicker mono">{en ? 'Where the data comes from' : 'Skąd są dane'}</p>
+    <h2 class="data__title">{en ? 'Official data, independent app' : 'Oficjalne dane, niezależna aplikacja'}</h2>
     <p class="data__body">
-      Rozkłady, perony i opóźnienia pochodzą z otwartych danych PKP Polskich Linii Kolejowych S.A. — tych samych, które
-      zasilają tablice na stacjach. Peronka tylko pokazuje je czytelniej.
+      {en
+        ? 'Timetables, platforms and delays come from PKP Polskie Linie Kolejowe S.A. Peronka uses the same open data that powers station departure boards.'
+        : 'Rozkłady, perony i opóźnienia pochodzą z otwartych danych PKP Polskich Linii Kolejowych S.A. — tych samych, które zasilają tablice na stacjach. Peronka tylko pokazuje je czytelniej.'}
     </p>
     <p class="data__disclaimer">
-      Peronka nie jest powiązana z PKP PLK S.A. ani z przewoźnikami. W razie wątpliwości obowiązują komunikaty na stacji.
+      {en
+        ? 'Peronka is independent of PKP PLK S.A. and train operators. If information differs, follow the announcements at your station.'
+        : 'Peronka nie jest powiązana z PKP PLK S.A. ani z przewoźnikami. W razie wątpliwości obowiązują komunikaty na stacji.'}
     </p>
   </div>
 
@@ -33,10 +39,10 @@ const facts = [
       ))
     }
     <div class="fact">
-      <dt class="mono">Status usług</dt>
+      <dt class="mono">{en ? 'Service status' : 'Status usług'}</dt>
       <dd>
-        <a class="fact__link" href="/status/">
-          Sprawdź, czy wszystko działa <ArrowUpRight size={18} aria-hidden="true" />
+        <a class="fact__link" href={localizedPath('/status/', en)}>
+          {en ? 'Check service status' : 'Sprawdź, czy wszystko działa'} <ArrowUpRight size={18} aria-hidden="true" />
         </a>
       </dd>
     </div>

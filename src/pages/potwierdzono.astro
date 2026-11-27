@@ -1,11 +1,14 @@
 ---
 // Brevo redirects here after the double opt-in link is clicked.
 import Message from '../layouts/Message.astro';
+import { isEnglish } from '../lib/i18n';
 import { site } from '../config';
+
+const en = isEnglish(Astro.url.pathname);
 ---
 
 <Message
-  kicker="Gotowe"
-  title="Zapis potwierdzony"
-  lead={`Dziękujemy! Napiszemy, gdy Peronka będzie dostępna w App Store. Zgodę możesz wycofać w każdej chwili, pisząc na ${site.emails.main}.`}
+  kicker={en ? 'All set' : 'Gotowe'}
+  title={en ? 'Your signup is confirmed' : 'Zapis potwierdzony'}
+  lead={en ? `Thank you! We’ll email you when Peronka is available on the App Store. You can withdraw your consent at any time by writing to ${site.emails.main}.` : `Dziękujemy! Napiszemy, gdy Peronka będzie dostępna w App Store. Zgodę możesz wycofać w każdej chwili, pisząc na ${site.emails.main}.`}
 />

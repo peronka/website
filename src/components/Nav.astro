@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import { Menu, X } from '@lucide/astro';
 import icon from '../assets/brand/icon.png';
 import StoreButton from './StoreButton.astro';
+import { isEnglish, localizedPath, alternatePage } from '../lib/i18n';
 import { nav } from '../config';
 
 interface Props {
@@ -10,17 +11,20 @@ interface Props {
 }
 
 const { tone = 'dark' } = Astro.props;
+const path = Astro.url.pathname;
+const en = isEnglish(path);
+const links = nav.map(item => ({ href: localizedPath(item.href, en), label: en ? item.english : item.label }));
 ---
 
 <header class:list={['nav', `nav--${tone}`]}>
   <div class="nav__inner">
-    <a class="nav__logo" href="/" aria-label="Peronka — strona główna">
+    <a class="nav__logo" href={localizedPath('/', en)} aria-label={en ? 'Peronka home' : 'Peronka — strona główna'}>
       <Image src={icon} alt="" width={36} height={36} densities={[1, 2]} loading="eager" class="nav__icon" />
       <span>Peronka</span>
     </a>
 
-    <nav class="nav__links" aria-label="Główna nawigacja">
-      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+    <nav class="nav__links" aria-label={en ? 'Main navigation' : 'Główna nawigacja'}>
+      {links.map((item) => <a href={item.href}>{item.label}</a>)}
     </nav>
 
     <div class="nav__cta">
@@ -33,12 +37,28 @@ const { tone = 'dark' } = Astro.props;
         <X size={26} class="nav__menu-close" aria-hidden="true" />
       </summary>
       <div class="nav__panel">
-        {nav.map((item) => <a class="nav__panel-link" href={item.href}>{item.label}</a>)}
+        {links.map((item) => <a class="nav__panel-link" href={item.href}>{item.label}</a>)}
         <StoreButton tone="dark" />
       </div>
     </details>
+
+    <nav class="languages" aria-label={en ? 'Website language' : 'Język strony'}>
+      <a lang="pl" hreflang="pl" aria-label="Polski" aria-current={en ? undefined : 'true'} href={alternatePage(path, false)}>PL</a>
+      <a lang="en" hreflang="en" aria-label="English" aria-current={en ? 'true' : undefined} href={alternatePage(path, true)}>EN</a>
+    </nav>
   </div>
 </header>
+
+<script>
+  // The home sections have the same anchors in both languages.
+  function updateLanguageLinks() {
+    const { pathname, hash } = window.location;
+    if (pathname !== '/' && pathname !== '/en/') return;
+    for (const link of document.querySelectorAll<HTMLAnchorElement>('.languages a')) link.hash = hash;
+  }
+  updateLanguageLinks();
+  window.addEventListener('hashchange', updateLanguageLinks);
+</script>
 
 <style>
   .nav {
@@ -115,6 +135,31 @@ const { tone = 'dark' } = Astro.props;
     color: var(--white);
   }
 
+  .languages {
+    display: inline-flex;
+    flex-shrink: 0;
+    padding: 3px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+  }
+
+  .languages a {
+    display: grid;
+    place-items: center;
+    min-width: 38px;
+    min-height: 32px;
+    border-radius: 999px;
+    color: var(--ink-2);
+    font: 600 0.875rem var(--font-sans);
+    text-decoration: none;
+  }
+
+  .languages a[aria-current] { background: var(--navy); color: var(--white); }
+  .nav--dark .languages { border-color: rgb(255 255 255 / 0.3); }
+  .nav--dark .languages a { color: var(--mist); }
+  .nav--dark .languages a[aria-current] { background: var(--white); color: var(--night); }
+  .languages a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
   .nav__menu {
     display: none;
   }
@@ -122,6 +167,7 @@ const { tone = 'dark' } = Astro.props;
   @media (max-width: 860px) {
     .nav__inner {
       height: 64px;
+      gap: 12px;
     }
 
     .nav__links,
@@ -130,6 +176,7 @@ const { tone = 'dark' } = Astro.props;
     }
 
     .nav__menu {
+      margin-left: auto;
       display: block;
     }
 
@@ -138,7 +185,6 @@ const { tone = 'dark' } = Astro.props;
       place-items: center;
       width: 44px;
       height: 44px;
-      margin-right: -10px;
       list-style: none;
       cursor: pointer;
       color: var(--ink);

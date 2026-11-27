@@ -1,4 +1,5 @@
 ---
+import { isEnglish } from '../../lib/i18n';
 import { Image } from 'astro:assets';
 import { Smartphone, Lock, RefreshCw } from '@lucide/astro';
 import lockScreen from '../../assets/widgets/lock-screen.png';
@@ -7,27 +8,37 @@ import WidgetMedium from '../widgets/WidgetMedium.astro';
 import WidgetLarge from '../widgets/WidgetLarge.astro';
 import LiveActivity from '../widgets/LiveActivity.astro';
 
+const en = isEnglish(Astro.url.pathname);
+
 // Live HTML widgets, drawn after the ui.pen exports and driven by the same
 // simulation as the hero board.
 const widgets = [
-  { component: WidgetSmall, name: 'Mały', desc: 'Najbliższy odjazd' },
-  { component: WidgetMedium, name: 'Średni', desc: 'Trzy najbliższe odjazdy' },
-  { component: WidgetLarge, name: 'Duży', desc: 'Tablica Twojej stacji' },
+  { component: WidgetSmall, name: en ? 'Small' : 'Mały', desc: en ? 'Next departure' : 'Najbliższy odjazd' },
+  { component: WidgetMedium, name: en ? 'Medium' : 'Średni', desc: en ? 'Next three departures' : 'Trzy najbliższe odjazdy' },
+  { component: WidgetLarge, name: en ? 'Large' : 'Duży', desc: en ? 'Your station’s departure board' : 'Tablica Twojej stacji' },
 ];
 
 const laDetails = [
-  { icon: Smartphone, title: 'Dynamic Island', text: 'iPhone 14 Pro i nowsze' },
-  { icon: Lock, title: 'Ekran blokady', text: 'iOS 16.1 i nowsze' },
-  { icon: RefreshCw, title: 'Na bieżąco', text: 'Peron i opóźnienie aktualizują się same' },
+  { icon: Smartphone, title: 'Dynamic Island', text: en ? 'iPhone 14 Pro and later' : 'iPhone 14 Pro i nowsze' },
+  { icon: Lock, title: en ? 'Lock Screen' : 'Ekran blokady', text: en ? 'iOS 16.1 and later' : 'iOS 16.1 i nowsze' },
+  { icon: RefreshCw, title: en ? 'Live updates' : 'Na bieżąco', text: en ? 'Platforms and delays update automatically' : 'Peron i opóźnienie aktualizują się same' },
 ];
 ---
 
 <section class="widgets dark" id="widzety">
   <div class="wrap widgets__inner">
     <header class="widgets__head">
-      <p class="kicker mono">Widżety i Live Activity</p>
-      <h2 class="widgets__title">Rozkład na ekranie głównym, pociąg na ekranie blokady</h2>
-      <p class="lead">Sprawdzisz najbliższe odjazdy bez otwierania aplikacji — każdy widżet może pokazywać inną stację.</p>
+      <p class="kicker mono">{en ? 'Widgets and Live Activities' : 'Widżety i Live Activity'}</p>
+      <h2 class="widgets__title">
+        {en
+          ? 'Departures on your Home Screen. Your train on your Lock Screen.'
+          : 'Rozkład na ekranie głównym, pociąg na ekranie blokady'}
+      </h2>
+      <p class="lead">
+        {en
+          ? 'See the next departures without opening the app. Each widget can show a different station.'
+          : 'Sprawdzisz najbliższe odjazdy bez otwierania aplikacji — każdy widżet może pokazywać inną stację.'}
+      </p>
     </header>
 
     <ul class="widgets__row">
@@ -49,16 +60,17 @@ const laDetails = [
     <div class="la">
       <Image
         src={lockScreen}
-        alt="Ekran blokady iPhone'a z Live Activity śledzonego pociągu"
+        alt={en ? 'iPhone Lock Screen showing a Live Activity for a tracked train' : 'Ekran blokady iPhone\'a z Live Activity śledzonego pociągu'}
         width={360}
         densities={[1, 2]}
         class="la__lock"
       />
       <div class="la__text">
-        <h3 class="la__title">Śledź pociąg bez odblokowywania telefonu</h3>
+        <h3 class="la__title">{en ? 'Follow your train without unlocking your phone' : 'Śledź pociąg bez odblokowywania telefonu'}</h3>
         <p class="la__body">
-          Wybierz pociąg, a Live Activity pokaże go na ekranie blokady aż do stacji docelowej: postęp trasy, najbliższą
-          stację, peron i każde opóźnienie.
+          {en
+            ? 'Choose a train to follow it on your Lock Screen all the way to your destination. See your progress, next stop, platform and any delays.'
+            : 'Wybierz pociąg, a Live Activity pokaże go na ekranie blokady aż do stacji docelowej: postęp trasy, najbliższą stację, peron i każde opóźnienie.'}
         </p>
         <LiveActivity />
         <ul class="la__details">

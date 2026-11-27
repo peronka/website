@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
 
 // Signup endpoints use server-only credentials at request time.
-const confirmationPages = /\/(zapisano|potwierdzono|zgloszono-testy)\/$/;
+const confirmationPages = /\/(zapisano|potwierdzono|zgloszono-testy|signup-received|confirmed|application-received|404)\/$/;
 
 export default defineConfig({
   site: 'https://peronka.pl',

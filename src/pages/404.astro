@@ -3,15 +3,18 @@ import { ArrowLeft } from '@lucide/astro';
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import { isEnglish, localizedPath } from '../lib/i18n';
+
+const en = isEnglish(Astro.url.pathname);
 ---
 
-<Base title="Nie ma takiej strony">
+<Base noindex title={en ? 'Page not found' : 'Nie ma takiej strony'}>
   <Nav tone="light" />
   <main class="wrap notfound" id="tresc">
-    <p class="notfound__code mono">404 · Peron nieznany</p>
-    <h1 class="notfound__title">Ten pociąg tu nie zatrzymuje się</h1>
-    <p class="notfound__lead">Strona, której szukasz, nie istnieje albo zmieniła adres.</p>
-    <a class="notfound__link" href="/"><ArrowLeft size={18} aria-hidden="true" /> Wróć na stronę główną</a>
+    <p class="notfound__code mono">404 · {en ? 'Unknown platform' : 'Peron nieznany'}</p>
+    <h1 class="notfound__title">{en ? 'This train doesn’t stop here' : 'Ten pociąg tu nie zatrzymuje się'}</h1>
+    <p class="notfound__lead">{en ? 'The page you’re looking for doesn’t exist or has moved.' : 'Strona, której szukasz, nie istnieje albo zmieniła adres.'}</p>
+    <a class="notfound__link" href={localizedPath('/', en)}><ArrowLeft size={18} aria-hidden="true" /> {en ? 'Back to the homepage' : 'Wróć na stronę główną'}</a>
   </main>
   <Footer />
 </Base>

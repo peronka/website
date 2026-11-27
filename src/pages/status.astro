@@ -3,26 +3,36 @@ import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { site, statusComponents } from '../config';
+import { isEnglish } from '../lib/i18n';
+
+const en = isEnglish(Astro.url.pathname);
+const componentsEn = {
+  api_schedule: { name: 'Timetable API', description: 'Departures and arrivals from the timetable API.' },
+  pdp_opendata: { name: 'PKP PLK OpenData feed', description: 'Timetable and delay data from pdp-api.plk-sa.pl.' },
+  push: { name: 'Push notifications', description: 'Delivery of delay and platform change notifications.' },
+  ios_app: { name: 'iOS app', description: 'The mobile app on the App Store.' },
+  website: { name: 'Peronka website', description: 'The public website at peronka.pl.' },
+} as const;
 
 const metrics = [
-  { key: 'uptime_30d_pct', label: 'Dostępność · 30 dni' },
-  { key: 'uptime_90d_pct', label: 'Dostępność · 90 dni' },
-  { key: 'api_avg_response_ms', label: 'Średni czas odpowiedzi API' },
-  { key: 'incidents_30d', label: 'Incydenty · 30 dni' },
+  { key: 'uptime_30d_pct', label: en ? 'Uptime · 30 days' : 'Dostępność · 30 dni' },
+  { key: 'uptime_90d_pct', label: en ? 'Uptime · 90 days' : 'Dostępność · 90 dni' },
+  { key: 'api_avg_response_ms', label: en ? 'Average API response time' : 'Średni czas odpowiedzi API' },
+  { key: 'incidents_30d', label: en ? 'Incidents · 30 days' : 'Incydenty · 30 dni' },
 ];
 ---
 
-<Base title="Status usług" description="Bieżący stan API, danych PKP PLK OpenData, powiadomień i aplikacji Peronka.">
+<Base title={en ? 'Service status' : 'Status usług'} description={en ? 'Current status of the API, PKP PLK OpenData feed, notifications and the Peronka app.' : 'Bieżący stan API, danych PKP PLK OpenData, powiadomień i aplikacji Peronka.'}>
   <Nav tone="light" />
   <main class="status" data-api={site.apiBase} data-state="loading">
     <section class="hero" id="tresc">
       <div class="wrap hero__inner">
-        <p class="hero__kicker mono">Status usług</p>
+        <p class="hero__kicker mono">{en ? 'Service status' : 'Status usług'}</p>
         <div class="hero__overall">
           <span class="hero__dot" aria-hidden="true"><span></span></span>
-          <h1 class="hero__title" data-overall-title aria-live="polite">Sprawdzamy status…</h1>
+          <h1 class="hero__title" data-overall-title aria-live="polite">{en ? 'Checking service status…' : 'Sprawdzamy status…'}</h1>
         </div>
-        <p class="hero__lead" data-overall-lead>Pobieramy aktualny stan usług Peronki.</p>
+        <p class="hero__lead" data-overall-lead>{en ? 'Fetching the latest status of Peronka’s services.' : 'Pobieramy aktualny stan usług Peronki.'}</p>
         <p class="hero__meta mono" data-updated>&nbsp;</p>
       </div>
     </section>
@@ -40,11 +50,11 @@ const metrics = [
 
     <section class="wrap components" aria-labelledby="components-title">
       <div class="components__head">
-        <h2 id="components-title">Komponenty</h2>
-        <ul class="legend" aria-label="Legenda">
-          <li><span class="legend__sw legend__sw--ok"></span>Działa</li>
-          <li><span class="legend__sw legend__sw--degraded"></span>Spowolnione</li>
-          <li><span class="legend__sw legend__sw--down"></span>Awaria</li>
+        <h2 id="components-title">{en ? 'Services' : 'Komponenty'}</h2>
+        <ul class="legend" aria-label={en ? 'Status legend' : 'Legenda'}>
+          <li><span class="legend__sw legend__sw--ok"></span>{en ? 'Operational' : 'Działa'}</li>
+          <li><span class="legend__sw legend__sw--degraded"></span>{en ? 'Degraded' : 'Spowolnione'}</li>
+          <li><span class="legend__sw legend__sw--down"></span>{en ? 'Outage' : 'Awaria'}</li>
         </ul>
       </div>
       <ul class="component-list">
@@ -53,21 +63,21 @@ const metrics = [
             <li class="component" data-component={c.key}>
               <div class="component__top">
                 <div>
-                  <h3 class="component__name">{c.name}</h3>
-                  <p class="component__desc">{c.description}</p>
+                  <h3 class="component__name">{en ? componentsEn[c.key].name : c.name}</h3>
+                  <p class="component__desc">{en ? componentsEn[c.key].description : c.description}</p>
                 </div>
                 <span class="pill pill--unknown" data-pill>
                   <span class="pill__dot" aria-hidden="true" />
-                  <span data-pill-label>Sprawdzamy…</span>
+                  <span data-pill-label>{en ? 'Checking…' : 'Sprawdzamy…'}</span>
                 </span>
               </div>
-              <div class="bars" data-bars role="img" aria-label="Historia z ostatnich 60 dni">
+              <div class="bars" data-bars role="img" aria-label={en ? 'Status over the last 60 days' : 'Historia z ostatnich 60 dni'}>
                 {Array.from({ length: 60 }, () => <span class="bar" />)}
               </div>
               <div class="component__labels mono">
-                <span><span class="days-long">60</span><span class="days-short">30</span> dni temu</span>
+                <span><span class="days-long">60</span><span class="days-short">30</span> {en ? 'days ago' : 'dni temu'}</span>
                 <span class="component__uptime" data-uptime>&nbsp;</span>
-                <span>Dziś</span>
+                <span>{en ? 'Today' : 'Dziś'}</span>
               </div>
             </li>
           ))
@@ -76,10 +86,10 @@ const metrics = [
     </section>
 
     <section class="wrap incidents" aria-labelledby="incidents-title">
-      <h2 id="incidents-title">Historia incydentów</h2>
-      <p class="incidents__sub">Ostatnie 30 dni.</p>
+      <h2 id="incidents-title">{en ? 'Incident history' : 'Historia incydentów'}</h2>
+      <p class="incidents__sub">{en ? 'Last 30 days.' : 'Ostatnie 30 dni.'}</p>
       <ol class="incident-list" data-incidents>
-        <li class="incidents__empty">Ładujemy historię…</li>
+        <li class="incidents__empty">{en ? 'Loading incident history…' : 'Ładujemy historię…'}</li>
       </ol>
     </section>
   </main>
@@ -108,7 +118,14 @@ const metrics = [
     }[];
   }
 
-  const OVERALL: Record<State | 'error', [string, string]> = {
+  const en = document.documentElement.lang === 'en';
+  const locale = en ? 'en-GB' : 'pl-PL';
+  const OVERALL: Record<State | 'error', [string, string]> = en ? {
+    ok: ['All systems operational', 'Departures, delays and notifications are updating normally. This page reports issues within about a minute.'],
+    degraded: ['Some services are running slowly', 'We’re working on it. You can find details below.'],
+    down: ['Service outage', 'Some features are unavailable. We’re working on a fix. See below for details.'],
+    error: ['Couldn’t load the service status', 'Try refreshing this page in a moment. If the problem continues, please contact us.'],
+  } : {
     ok: [
       'Wszystko działa',
       'Odjazdy, opóźnienia i powiadomienia docierają normalnie. Jeśli coś przestanie działać, zobaczysz to tutaj w ciągu kilkudziesięciu sekund.',
@@ -117,16 +134,20 @@ const metrics = [
     down: ['Trwa awaria', 'Część funkcji jest niedostępna. Pracujemy nad rozwiązaniem — szczegóły poniżej.'],
     error: ['Nie udało się pobrać statusu', 'Spróbuj odświeżyć stronę za chwilę. Jeśli problem się powtarza, napisz do nas.'],
   };
-  const PILL: Record<State, string> = { ok: 'Działa', degraded: 'Spowolnione', down: 'Awaria' };
-  const SEVERITY = { minor: 'Drobny', major: 'Poważny' };
+  const PILL: Record<State, string> = en ? { ok: 'Operational', degraded: 'Degraded', down: 'Outage' } : { ok: 'Działa', degraded: 'Spowolnione', down: 'Awaria' };
+  const SEVERITY = en ? { minor: 'Minor', major: 'Major' } : { minor: 'Drobny', major: 'Poważny' };
+
+  const incidentStatus = en
+    ? { resolved: 'Resolved', open: 'Ongoing', lasted: 'Lasted', ongoingFor: 'Ongoing for' }
+    : { resolved: 'Rozwiązany', open: 'Trwa', lasted: 'Trwał', ongoingFor: 'Trwa od' };
 
   const root = document.querySelector<HTMLElement>('.status')!;
   const api = `${root.dataset.api}/api/status`;
   const $ = <T extends Element = HTMLElement>(sel: string, el: ParentNode = root) => el.querySelector<T>(sel);
 
   const pct = (v: number) =>
-    `${v.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
-  const time = (iso: string) => new Date(iso).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+    `${v.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+  const time = (iso: string) => new Date(iso).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
   const duration = (min: number) => (min < 60 ? `${min} min` : `${Math.floor(min / 60)} h ${min % 60} min`);
 
   function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls: string, text?: string) {
@@ -142,16 +163,31 @@ const metrics = [
     $('[data-overall-lead]')!.textContent = OVERALL[state][1];
   }
 
+  // Automatic incident reports are produced in Polish by the status API.
+  // Free-text incident updates from an operator should retain their original wording.
+  const monitoringMessages = new Map([
+    ['Automatyczny detektor zarejestrował serię nieudanych prób kontaktu z komponentem.', 'Automated monitoring recorded several unsuccessful attempts to reach the service.'],
+    ['Wykryto problem przez automatyczny monitoring.', 'Automated monitoring detected the issue.'],
+    ['Eskalacja: pełna niedostępność.', 'The issue escalated to a full outage.'],
+    ['Rozwiązano.', 'Resolved.'],
+  ]);
+
+  function incidentMessage(text: string) {
+    return en ? monitoringMessages.get(text) ?? text : text;
+  }
+
   function render(data: StatusPayload) {
     setOverall(data.overall);
-    const generated = new Date(data.generated_at).toLocaleString('pl-PL', {
+    const generated = new Date(data.generated_at).toLocaleString(locale, {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
     });
-    $('[data-updated]')!.textContent = `Zaktualizowano ${generated} · odświeża się co ${data.refresh_seconds} s`;
+    $('[data-updated]')!.textContent = en
+      ? `Updated ${generated} · refreshes every ${data.refresh_seconds} s`
+      : `Zaktualizowano ${generated} · odświeża się co ${data.refresh_seconds} s`;
 
     const m = data.metrics;
     $('[data-metric="uptime_30d_pct"]')!.textContent = pct(m.uptime_30d_pct);
@@ -160,14 +196,17 @@ const metrics = [
     $('[data-metric="incidents_30d"]')!.textContent = String(m.incidents_30d);
 
     const names = new Map<string, string>();
+    const automaticTitles = new Map<string, string>();
     for (const c of data.components) {
-      names.set(c.key, c.name);
       const row = $(`[data-component="${c.key}"]`);
+      const localName = row?.querySelector('.component__name')?.textContent;
+      names.set(c.key, en && localName ? localName : c.name);
+      if (en && localName) automaticTitles.set(`Wykryto problem: ${c.name}`, `Issue detected: ${localName}`);
       if (!row) continue;
       const pill = $('[data-pill]', row)!;
       pill.className = `pill pill--${c.state}`;
       $('[data-pill-label]', pill)!.textContent = PILL[c.state];
-      $('[data-uptime]', row)!.textContent = `${pct(c.uptime_60d_pct)} dostępności`;
+      $('[data-uptime]', row)!.textContent = `${pct(c.uptime_60d_pct)} ${en ? 'uptime' : 'dostępności'}`;
       const bars = $('[data-bars]', row)!;
       bars.replaceChildren(
         ...c.daily.map((d) => {
@@ -180,39 +219,40 @@ const metrics = [
 
     const list = $('[data-incidents]')!;
     if (!data.incidents.length) {
-      list.replaceChildren(el('li', 'incidents__empty', 'Brak incydentów w ostatnich 30 dniach.'));
+      list.replaceChildren(el('li', 'incidents__empty', en ? 'No incidents in the last 30 days.' : 'Brak incydentów w ostatnich 30 dniach.'));
       return;
     }
     list.replaceChildren(
       ...data.incidents.map((inc) => {
+        const affected = inc.components.map((k) => names.get(k) ?? k).join(', ');
+        const title = automaticTitles.get(inc.title) ?? inc.title;
         const started = new Date(inc.started_at);
         const li = el('li', 'incident');
 
         const date = el('div', 'incident__date mono');
         date.append(
-          el('span', 'incident__day', started.toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' })),
-          el('span', 'incident__weekday', started.toLocaleDateString('pl-PL', { weekday: 'long' })),
+          el('span', 'incident__day', started.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })),
+          el('span', 'incident__weekday', started.toLocaleDateString(locale, { weekday: 'long' })),
         );
 
         const body = el('div', 'incident__body');
         const head = el('div', 'incident__head');
         head.append(
-          el('h3', 'incident__title', inc.title),
+          el('h3', 'incident__title', title),
           el('span', `tag tag--${inc.severity}`, SEVERITY[inc.severity] ?? inc.severity),
-          el('span', inc.resolved ? 'tag tag--resolved' : 'tag tag--open', inc.resolved ? 'Rozwiązany' : 'Trwa'),
+          el('span', inc.resolved ? 'tag tag--resolved' : 'tag tag--open', inc.resolved ? incidentStatus.resolved : incidentStatus.open),
         );
-        const comps = inc.components.map((k) => names.get(k) ?? k).join(', ');
         body.append(
           head,
-          el('p', 'incident__meta mono', `${inc.resolved ? 'Trwał' : 'Trwa od'} ${duration(inc.duration_min)}${comps ? ` · ${comps}` : ''}`),
+          el('p', 'incident__meta mono', `${inc.resolved ? incidentStatus.lasted : incidentStatus.ongoingFor} ${duration(inc.duration_min)}${affected ? ` · ${affected}` : ''}`),
         );
-        if (inc.description) body.append(el('p', 'incident__desc', inc.description));
+        if (inc.description) body.append(el('p', 'incident__desc', incidentMessage(inc.description)));
 
         if (inc.timeline?.length) {
           const tl = el('ol', 'timeline');
           [...inc.timeline].reverse().forEach((t, i) => {
             const item = el('li', i === 0 && inc.resolved ? 'timeline__item timeline__item--latest' : 'timeline__item');
-            item.append(el('time', 'timeline__time mono', time(t.at)), el('span', 'timeline__label', t.label));
+            item.append(el('time', 'timeline__time mono', time(t.at)), el('span', 'timeline__label', incidentMessage(t.label)));
             tl.append(item);
           });
           body.append(tl);
@@ -241,8 +281,8 @@ const metrics = [
       // if we never managed to load anything.
       if (!loaded) {
         setOverall('error');
-        root.querySelectorAll('[data-pill-label]').forEach((l) => (l.textContent = 'Brak danych'));
-        $('[data-incidents]')!.replaceChildren(el('li', 'incidents__empty', 'Nie udało się wczytać historii incydentów.'));
+        root.querySelectorAll('[data-pill-label]').forEach((l) => (l.textContent = en ? 'No data' : 'Brak danych'));
+        $('[data-incidents]')!.replaceChildren(el('li', 'incidents__empty', en ? 'Couldn’t load incident history.' : 'Nie udało się wczytać historii incydentów.'));
       }
     }
     timer = window.setTimeout(poll, next * 1000);

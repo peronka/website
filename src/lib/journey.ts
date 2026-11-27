@@ -28,7 +28,7 @@ const DWELL = 3;
 // focus: the stop the train stands at or heads to; upcoming: the one after it.
 export type StopState = 'passed' | 'focus' | 'upcoming' | 'future';
 
-export function journey(now: number, delay: number) {
+export function journey(now: number, delay: number, en: boolean) {
   const last = stops.length - 1;
   const dep = stops.map((s) => s.time + delay);
   const arr = dep.map((t, i) => (i === 0 || i === last ? t : t - DWELL));
@@ -52,16 +52,18 @@ export function journey(now: number, delay: number) {
 
   const arrived = now >= arr[last];
   const next = standing && focus < last ? focus + 1 : focus;
+  const arrivedText = en ? 'Arrived' : 'Na miejscu';
+  const inText = en ? 'in' : 'za';
   return {
     position, // 0…last, fractional between stops
     states: stops.map((_, i): StopState =>
       i < focus ? 'passed' : i === focus ? 'focus' : i === focus + 1 ? 'upcoming' : 'future',
     ),
     // Time left to the destination; the footer counts down to the next stop.
-    headline: arrived ? 'Na miejscu' : `za ${duration(arr[last] - now)}`,
-    delayText: delay > 0 ? `+${delay} min opóźnienia` : 'Bez opóźnienia',
-    next: `${stops[next].name} · peron ${stops[next].platform}`,
-    nextIn: arrived ? 'na miejscu' : `za ${arr[next] - now} min`,
+    headline: arrived ? arrivedText : `${inText} ${duration(arr[last] - now)}`,
+    delayText: delay > 0 ? `+${delay} min ${en ? 'delay' : 'opóźnienia'}` : (en ? 'On time' : 'Bez opóźnienia'),
+    next: `${stops[next].name} · ${en ? 'platform' : 'peron'} ${stops[next].platform}`,
+    nextIn: arrived ? arrivedText.toLowerCase() : `${inText} ${arr[next] - now} min`,
     arrival: fmt(dep[last]),
     arrived,
   };

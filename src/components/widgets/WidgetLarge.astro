@@ -1,22 +1,25 @@
 ---
+import { isEnglish } from '../../lib/i18n';
 // Large home-screen widget: the station board. Drawn after the ui.pen export
 // it replaced; station-sim.ts keeps it in step with the other widget demos.
 import { RefreshCw, TrainFront } from '@lucide/astro';
 import { START, disruptions, fmt, initial, untilText, view } from '../../lib/departures';
 
-const rows = initial.slice(0, 5).map((d) => ({ d, v: view(d, START) }));
+const en = isEnglish(Astro.url.pathname);
+
+const rows = initial.slice(0, 5).map((d) => ({ d, v: view(d, START, en) }));
 ---
 
-<div class="wlarge" role="img" aria-label="Duży widżet z tablicą odjazdów stacji">
+<div class="wlarge" role="img" aria-label={en ? 'Large widget showing the station departure board' : 'Duży widżet z tablicą odjazdów stacji'}>
   <div class="wlarge__head">
     <span class="wlarge__icon"><TrainFront size={17} aria-hidden="true" /></span>
     <p class="wlarge__title">
       <strong>Warszawa Centralna</strong>
-      <span>Odjazdy · stacja domyślna</span>
+      <span>{en ? 'Departures · default station' : 'Odjazdy · stacja domyślna'}</span>
     </p>
     <p class="wlarge__clock">
       <span class="wlarge__now mono">{fmt(START)}</span>
-      <span class="wlarge__live"><span class="wlarge__dot"></span>na żywo</span>
+      <span class="wlarge__live"><span class="wlarge__dot"></span>{en ? 'live' : 'na żywo'}</span>
     </p>
   </div>
   <ul class="wlarge__rows">
@@ -25,14 +28,14 @@ const rows = initial.slice(0, 5).map((d) => ({ d, v: view(d, START) }));
         <li class="wlarge__row" data-id={d.id}>
           <span class="wlarge__when">
             <span class="wlarge__time mono">{fmt(d.planned)}</span>
-            <span class="wlarge__until">{untilText(d, START)}</span>
+            <span class="wlarge__until">{untilText(d, START, en)}</span>
           </span>
           <span class="wlarge__train mono" style={`background:${d.color}`}>
             {d.train}
           </span>
           <span class="wlarge__where">
             <span class="wlarge__dest">{d.dest}</span>
-            <span class="wlarge__platform mono">{`Peron ${d.platform} · Tor ${d.track}`}</span>
+            <span class="wlarge__platform mono">{`${v.platform} · ${en ? 'Track' : 'Tor'} ${d.track}`}</span>
           </span>
           <span class:list={['wlarge__pill', `wlarge__pill--${v.state}`]}>{v.status}</span>
         </li>
@@ -41,8 +44,8 @@ const rows = initial.slice(0, 5).map((d) => ({ d, v: view(d, START) }));
   </ul>
   <p class="wlarge__foot">
     <RefreshCw size={12} aria-hidden="true" />
-    <span>Zaktualizowano <span class="wlarge__updated">{fmt(START)}</span> · 63 odjazdy / h</span>
-    <span class="wlarge__issues">{disruptions(initial.slice(0, 5))}</span>
+    <span>{en ? 'Updated' : 'Zaktualizowano'} <span class="wlarge__updated">{fmt(START)}</span> · {en ? '63 departures / h' : '63 odjazdy / h'}</span>
+    <span class="wlarge__issues">{disruptions(initial.slice(0, 5), en)}</span>
   </p>
 </div>
 
@@ -53,6 +56,7 @@ const rows = initial.slice(0, 5).map((d) => ({ d, v: view(d, START) }));
 
   const widget = document.querySelector<HTMLElement>('.wlarge');
   if (widget && motionOk) {
+    const en = document.documentElement.lang === 'en';
     const $ = (selector: string) => widget.querySelector<HTMLElement>(selector)!;
     const rows = [...widget.querySelectorAll<HTMLElement>('.wlarge__row')];
     let ids = rows.map((row) => Number(row.dataset.id));
@@ -60,18 +64,18 @@ const rows = initial.slice(0, 5).map((d) => ({ d, v: view(d, START) }));
     subscribe(widget, ({ now, trains, changes }) => {
       flip($('.wlarge__now'), fmt(now));
       flip($('.wlarge__updated'), fmt(now));
-      flip($('.wlarge__issues'), disruptions(trains.slice(0, rows.length)));
+      flip($('.wlarge__issues'), disruptions(trains.slice(0, rows.length), en));
       spin($('.wlarge__foot svg'));
       ids = shiftSlots(rows, ids, trains, (row, d, animated) => {
-        const v = view(d, now);
+        const v = view(d, now, en);
         const cell = (selector: string) => row.querySelector<HTMLElement>(selector)!;
         flip(cell('.wlarge__time'), fmt(d.planned), animated);
-        flip(cell('.wlarge__until'), untilText(d, now), animated);
+        flip(cell('.wlarge__until'), untilText(d, now, en), animated);
         const train = cell('.wlarge__train');
         train.textContent = d.train;
         train.style.background = d.color;
         cell('.wlarge__dest').textContent = d.dest;
-        flip(cell('.wlarge__platform'), `Peron ${d.platform} · Tor ${d.track}`, animated);
+        flip(cell('.wlarge__platform'), `${v.platform} · ${en ? 'Track' : 'Tor'} ${d.track}`, animated);
         const pill = cell('.wlarge__pill');
         pill.classList.remove('wlarge__pill--ok', 'wlarge__pill--late', 'wlarge__pill--in');
         pill.classList.add(`wlarge__pill--${v.state}`);

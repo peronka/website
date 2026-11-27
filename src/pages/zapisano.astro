@@ -1,10 +1,13 @@
 ---
 // Landing page after a no-JS signup; with JS the form shows this inline.
 import Message from '../layouts/Message.astro';
+import { isEnglish } from '../lib/i18n';
+
+const en = isEnglish(Astro.url.pathname);
 ---
 
 <Message
-  kicker="Prawie gotowe"
-  title="Sprawdź skrzynkę"
-  lead="Wysłaliśmy wiadomość z linkiem potwierdzającym. Kliknij go, a damy znać, gdy Peronka pojawi się w App Store."
+  kicker={en ? 'One last step' : 'Prawie gotowe'}
+  title={en ? 'Check your inbox' : 'Sprawdź skrzynkę'}
+  lead={en ? 'Follow the confirmation link in the email we just sent. We’ll let you know when Peronka is available on the App Store.' : 'Wysłaliśmy wiadomość z linkiem potwierdzającym. Kliknij go, a damy znać, gdy Peronka pojawi się w App Store.'}
 />

@@ -5,28 +5,31 @@ import Nav from '../components/Nav.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
 import { site } from '../config';
+import { isEnglish, localizedPath } from '../lib/i18n';
+
+const en = isEnglish(Astro.url.pathname);
 
 const channels = [
-  { icon: MessageCircle, title: 'Pytania ogólne', text: 'Pytania o aplikację, współpraca i reklamacje.', email: site.emails.main },
-  { icon: Bug, title: 'Zgłoś błąd', text: 'Opisz, co się stało, i podaj model telefonu oraz wersję aplikacji.', email: site.emails.bugs },
-  { icon: Lightbulb, title: 'Pomysł na funkcję', text: 'Napisz, czego brakuje Ci w Peronce — czytamy każdą wiadomość.', email: site.emails.feedback },
-  { icon: ShieldCheck, title: 'Prywatność i dane', text: 'Wnioski z RODO: dostęp do danych, usunięcie, sprzeciw.', email: site.emails.privacy },
+  { icon: MessageCircle, title: en ? 'General enquiries' : 'Pytania ogólne', text: en ? 'Questions about the app, partnerships and complaints.' : 'Pytania o aplikację, współpraca i reklamacje.', email: site.emails.main },
+  { icon: Bug, title: en ? 'Report a bug' : 'Zgłoś błąd', text: en ? 'Tell us what happened and include your phone model and app version.' : 'Opisz, co się stało, i podaj model telefonu oraz wersję aplikacji.', email: site.emails.bugs },
+  { icon: Lightbulb, title: en ? 'Suggest a feature' : 'Pomysł na funkcję', text: en ? 'Tell us what you’d like to see in Peronka. We read every message.' : 'Napisz, czego brakuje Ci w Peronce — czytamy każdą wiadomość.', email: site.emails.feedback },
+  { icon: ShieldCheck, title: en ? 'Privacy and data' : 'Prywatność i dane', text: en ? 'GDPR requests, including access, erasure and objections.' : 'Wnioski z RODO: dostęp do danych, usunięcie, sprzeciw.', email: site.emails.privacy },
 ];
 
 const times = [
-  { label: 'Zwykle', value: 'do 24 h w dni robocze' },
-  { label: 'Reklamacje', value: 'do 14 dni' },
-  { label: 'Sprawy RODO', value: 'do 30 dni' },
+  { label: en ? 'General enquiries' : 'Zwykle', value: en ? 'within 24 hours on working days' : 'do 24 h w dni robocze' },
+  { label: en ? 'Complaints' : 'Reklamacje', value: en ? 'within 14 days' : 'do 14 dni' },
+  { label: en ? 'GDPR requests' : 'Sprawy RODO', value: en ? 'within 30 days' : 'do 30 dni' },
 ];
 ---
 
-<Base title="Kontakt" description="Napisz do zespołu Peronki: pytania, zgłoszenia błędów, pomysły na funkcje i sprawy RODO.">
+<Base title={en ? 'Contact' : 'Kontakt'} description={en ? 'Contact the Peronka team with questions, bug reports, feature ideas or GDPR requests.' : 'Napisz do zespołu Peronki: pytania, zgłoszenia błędów, pomysły na funkcje i sprawy RODO.'}>
   <Nav tone="light" />
   <main>
     <PageHeader
-      kicker="Kontakt"
-      title="Napisz do nas"
-      intro="Masz pytanie, znalazłeś błąd albo brakuje Ci jakiejś funkcji? Wybierz temat — wiadomość trafi prosto do właściwej skrzynki."
+      kicker={en ? 'Contact' : 'Kontakt'}
+      title={en ? 'Get in touch' : 'Napisz do nas'}
+      intro={en ? 'Have a question, found a bug or have a feature in mind? Choose a topic to email the team.' : 'Masz pytanie, znalazłeś błąd albo brakuje Ci jakiejś funkcji? Wybierz temat — wiadomość trafi prosto do właściwej skrzynki.'}
     />
 
     <div class="wrap contact">
@@ -52,7 +55,7 @@ const times = [
 
       <aside class="aside">
         <div>
-          <h2 class="aside__heading mono">Czas odpowiedzi</h2>
+          <h2 class="aside__heading mono">{en ? 'Response times' : 'Czas odpowiedzi'}</h2>
           <dl class="times">
             {
               times.map((t) => (
@@ -66,12 +69,12 @@ const times = [
         </div>
 
         <div class="status-box">
-          <p class="status-box__kicker mono"><span class="live-dot" aria-hidden="true"></span>Coś nie działa?</p>
-          <p class="status-box__title">Sprawdź status usług, zanim napiszesz</p>
+          <p class="status-box__kicker mono"><span class="live-dot" aria-hidden="true"></span>{en ? 'Something not working?' : 'Coś nie działa?'}</p>
+          <p class="status-box__title">{en ? 'Check the service status before you email' : 'Sprawdź status usług, zanim napiszesz'}</p>
           <p class="status-box__text">
-            Jeśli dane z PKP PLK chwilowo nie docierają, zobaczysz to od razu na stronie statusu.
+            {en ? 'The status page shows when the PKP PLK data feed is interrupted.' : 'Jeśli dane z PKP PLK chwilowo nie docierają, zobaczysz to od razu na stronie statusu.'}
           </p>
-          <a class="status-box__link" href="/status/">Status usług <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="status-box__link" href={localizedPath('/status/', en)}>{en ? 'Service status' : 'Status usług'} <ArrowRight size={18} aria-hidden="true" /></a>
         </div>
       </aside>
     </div>

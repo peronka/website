@@ -1,18 +1,20 @@
 import type { APIRoute } from 'astro';
+import { localizedPath } from '../../lib/i18n';
 import { BREVO_API_KEY, BREVO_DOI_TEMPLATE_ID, BREVO_LIST_ID } from 'astro:env/server';
 
 // Rendered on demand so the Brevo key never reaches the browser.
 export const prerender = false;
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const GENERIC_ERROR = 'Nie udało się zapisać. Spróbuj ponownie za chwilę.';
 
 // Signs the address up through Brevo's double opt-in: Brevo mails a
 // confirmation link and adds the contact to the list only after it is clicked.
-export const POST: APIRoute = async ({ request, site, redirect }) => {
+export const POST: APIRoute = async ({ request, site, redirect, url }) => {
+  const en = url.searchParams.get('lang') === 'en';
+  const errorMessage = en ? 'We couldn’t submit your signup. Please try again shortly.' : 'Nie udało się zapisać. Spróbuj ponownie za chwilę.';
   // Without JS the form posts natively, so answer with a page instead of JSON.
   const wantsJson = request.headers.get('accept')?.includes('application/json') ?? false;
-  const done = () => (wantsJson ? Response.json({ ok: true }) : redirect('/zapisano/', 303));
+  const done = () => (wantsJson ? Response.json({ ok: true }) : redirect(localizedPath('/zapisano/', en), 303));
   const fail = (status: number, error: string) =>
     wantsJson
       ? Response.json({ error }, { status })
@@ -22,18 +24,18 @@ export const POST: APIRoute = async ({ request, site, redirect }) => {
   try {
     form = await request.formData();
   } catch {
-    return fail(400, 'Nieprawidłowe dane formularza.');
+    return fail(400, en ? 'Invalid form data.' : 'Nieprawidłowe dane formularza.');
   }
 
   // Honeypot: hidden from people, filled in by bots. Pretend it worked.
   if (form.get('website')) return done();
 
   const email = String(form.get('email') ?? '').trim();
-  if (email.length > 254 || !EMAIL.test(email)) return fail(400, 'Podaj poprawny adres e-mail.');
+  if (email.length > 254 || !EMAIL.test(email)) return fail(400, en ? 'Enter a valid email address.' : 'Podaj poprawny adres e-mail.');
 
   if (!BREVO_API_KEY || !BREVO_LIST_ID || !BREVO_DOI_TEMPLATE_ID) {
     console.error('Brevo is not configured: set BREVO_API_KEY, BREVO_LIST_ID and BREVO_DOI_TEMPLATE_ID');
-    return fail(503, 'Zapisy są chwilowo niedostępne. Spróbuj później.');
+    return fail(503, en ? 'Signups are temporarily unavailable. Please try again later.' : 'Zapisy są chwilowo niedostępne. Spróbuj później.');
   }
 
   try {
@@ -44,16 +46,16 @@ export const POST: APIRoute = async ({ request, site, redirect }) => {
         email,
         includeListIds: [BREVO_LIST_ID],
         templateId: BREVO_DOI_TEMPLATE_ID,
-        redirectionUrl: new URL('/potwierdzono/', site ?? request.url).href,
+        redirectionUrl: new URL(localizedPath('/potwierdzono/', en), site ?? request.url).href,
       }),
     });
     if (!res.ok) {
       console.error('Brevo double opt-in failed', res.status, await res.text());
-      return fail(502, GENERIC_ERROR);
+      return fail(502, errorMessage);
     }
   } catch (error) {
     console.error('Brevo unreachable', error);
-    return fail(502, GENERIC_ERROR);
+    return fail(502, errorMessage);
   }
 
   return done();

@@ -1,4 +1,5 @@
 ---
+import { isEnglish } from '../../lib/i18n';
 // Live Activity card for a tracked train. Drawn after the ui.pen export it
 // replaced; the script runs the journey from journey.ts so the train moves
 // along the route, then starts over.
@@ -6,11 +7,13 @@ import { ArrowRight, MapPin, Timer, TrainFront } from '@lucide/astro';
 import { JOURNEY_DELAY, JOURNEY_START, journey, routeOffset, stops } from '../../lib/journey';
 import { fmt } from '../../lib/departures';
 
-const j = journey(JOURNEY_START, JOURNEY_DELAY);
+const en = isEnglish(Astro.url.pathname);
+
+const j = journey(JOURNEY_START, JOURNEY_DELAY, en);
 const last = stops.length - 1;
 ---
 
-<div class="la-card" role="img" aria-label="Live Activity: pociąg EIP do Gdańska Głównego z postępem trasy i opóźnieniem">
+<div class="la-card" role="img" aria-label={en ? 'Live Activity showing route progress and delay for an EIP train to Gdańsk Główny' : 'Live Activity: pociąg EIP do Gdańska Głównego z postępem trasy i opóźnieniem'}>
   <div class="la-card__head">
     <span class="la-card__icon"><TrainFront size={22} aria-hidden="true" /></span>
     <div class="la-card__title">
@@ -19,7 +22,7 @@ const last = stops.length - 1;
         <ArrowRight size={14} aria-hidden="true" />
         <strong>Gdańsk Główny</strong>
       </p>
-      <p class="la-card__operator">PKP Intercity · z Warszawa Centralna</p>
+      <p class="la-card__operator">{en ? 'PKP Intercity · from Warszawa Centralna' : 'PKP Intercity · z Warszawa Centralna'}</p>
     </div>
     <p class:list={['la-card__eta', { 'la-card__eta--late': JOURNEY_DELAY > 0 }]}>
       <span class="la-card__headline">{j.headline}</span>
@@ -29,7 +32,7 @@ const last = stops.length - 1;
 
   <div class="la-card__route" style={`--fill:${(j.position / last) * 100}%;--at:${routeOffset(j.position)}`}>
     <span class="la-card__track"><span class="la-card__fill"></span></span>
-    <span class="la-card__marker"><span class="la-card__here">Tutaj</span><span class="la-card__ring"></span></span>
+    <span class="la-card__marker"><span class="la-card__here">{en ? 'Here' : 'Tutaj'}</span><span class="la-card__ring"></span></span>
     <ol class="la-card__stops">
       {
         stops.map((s, i) => (
@@ -39,9 +42,9 @@ const last = stops.length - 1;
             <span class="la-card__time">{fmt(s.time)}</span>
             <span class="la-card__details">
               <span class="la-card__delay" hidden={JOURNEY_DELAY === 0}>{`+${JOURNEY_DELAY} min`}</span>
-              <span class="la-card__platform">peron {s.platform}</span>
-              <span class="la-card__then">następnie</span>
-              <span class="la-card__arrive">Przyjazd</span>
+              <span class="la-card__platform">{en ? 'platform' : 'peron'} {s.platform}</span>
+              <span class="la-card__then">{en ? 'up next' : 'następnie'}</span>
+              <span class="la-card__arrive">{en ? 'Arrival' : 'Przyjazd'}</span>
             </span>
           </li>
         ))
@@ -52,14 +55,14 @@ const last = stops.length - 1;
   <div class="la-card__foot">
     <span class="la-card__pin"><MapPin size={15} aria-hidden="true" /></span>
     <div>
-      <p class="la-card__label">Następna stacja</p>
+      <p class="la-card__label">{en ? 'Next stop' : 'Następna stacja'}</p>
       <p class="la-card__next">
         <span class="la-card__next-name">{j.next}</span>
         <span class="la-card__next-in"><Timer size={11} aria-hidden="true" /><span>{j.nextIn}</span></span>
       </p>
     </div>
     <div class="la-card__arrival">
-      <p class="la-card__label">Przyjazd</p>
+      <p class="la-card__label">{en ? 'Arrival' : 'Przyjazd'}</p>
       <p><span class="la-card__dest">Gdańsk Gł.</span> <span class="la-card__arrival-time">{j.arrival}</span></p>
     </div>
   </div>
@@ -78,6 +81,7 @@ const last = stops.length - 1;
   if (card && motionOk) live(card);
 
   function live(card: HTMLElement) {
+    const en = document.documentElement.lang === 'en';
     const $ = (selector: string) => card.querySelector<HTMLElement>(selector)!;
     const route = $('.la-card__route');
     const stopEls = [...card.querySelectorAll<HTMLElement>('.la-card__stop')];
@@ -87,7 +91,7 @@ const last = stops.length - 1;
     let held = 0;
 
     function paint(animated: boolean) {
-      const j = journey(now, delay);
+      const j = journey(now, delay, en);
       route.style.setProperty('--fill', `${(j.position / (stops.length - 1)) * 100}%`);
       route.style.setProperty('--at', routeOffset(j.position));
       flip($('.la-card__headline'), j.headline, animated);
@@ -105,7 +109,7 @@ const last = stops.length - 1;
     }
 
     function step() {
-      if (journey(now, delay).arrived) {
+      if (journey(now, delay, en).arrived) {
         if (++held < HOLD) return;
         held = 0;
         tick = 0;

@@ -63,19 +63,20 @@ export function departsAt(d: Departure): number {
   return d.planned + d.delay;
 }
 
-export function untilText(d: Departure, now: number): string {
-  return `za ${departsAt(d) - now} min`;
+export function untilText(d: Departure, now: number, en: boolean): string {
+  return `${en ? 'in' : 'za'} ${departsAt(d) - now} min`;
 }
 
 // The small widget's countdown, with the delay when there is one.
-export function countdown(d: Departure, now: number): string {
-  return d.delay > 0 ? `${untilText(d, now)} · +${d.delay} min` : untilText(d, now);
+export function countdown(d: Departure, now: number, en: boolean): string {
+  return d.delay > 0 ? `${untilText(d, now, en)} · +${d.delay} min` : untilText(d, now, en);
 }
 
 // Compact status for the medium widget's pill.
-export function shortStatus(d: Departure, now: number): string {
-  const { state } = view(d, now);
-  return state === 'in' ? 'wjeżdża' : state === 'late' ? `+${d.delay}` : 'plan';
+export function shortStatus(d: Departure, now: number, en: boolean): string {
+  const { state } = view(d, now, en);
+  if (state === 'late') return `+${d.delay}`;
+  return state === 'in' ? (en ? 'arriving' : 'wjeżdża') : (en ? 'on time' : 'plan');
 }
 
 // Widget-sized station names: "Gdańsk Główny" → "Gdańsk Gł.".
@@ -83,22 +84,23 @@ export function shortName(name: string): string {
   return name.replace(/ Główny$/, ' Gł.').replace(/^Warszawa /, 'W-wa ');
 }
 
-export function disruptions(trains: readonly Departure[]): string {
+export function disruptions(trains: readonly Departure[], en: boolean): string {
   const n = trains.filter((d) => d.delay > 0).length;
-  if (n === 0) return 'Bez utrudnień';
+  if (n === 0) return en ? 'No disruptions' : 'Bez utrudnień';
+  if (en) return n === 1 ? '1 disruption' : `${n} disruptions`;
   if (n === 1) return '1 utrudnienie';
   const few = n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14);
   return `${n} ${few ? 'utrudnienia' : 'utrudnień'}`;
 }
 
 // What a row displays at a given moment.
-export function view(d: Departure, now: number) {
+export function view(d: Departure, now: number, en: boolean) {
   const state: State = departsAt(d) - now <= ARRIVING ? 'in' : d.delay > 0 ? 'late' : 'ok';
   return {
     time: fmt(departsAt(d)),
     planned: d.delay > 0 ? fmt(d.planned) : '',
-    platform: `Peron ${d.platform}`,
+    platform: `${en ? 'Platform' : 'Peron'} ${d.platform}`,
     state,
-    status: state === 'in' ? 'Wjeżdża' : state === 'late' ? `+${d.delay} min` : 'Planowo',
+    status: state === 'late' ? `+${d.delay} min` : state === 'in' ? (en ? 'Arriving' : 'Wjeżdża') : (en ? 'On time' : 'Planowo'),
   };
 }

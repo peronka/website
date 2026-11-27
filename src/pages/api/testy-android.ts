@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { localizedPath } from '../../lib/i18n';
 import { RESEND_API_KEY, RESEND_FROM } from 'astro:env/server';
 import { createHash } from 'node:crypto';
 import { site } from '../../config';
@@ -6,25 +7,28 @@ import { site } from '../../config';
 export const prerender = false;
 
 const emailPattern = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/i;
-const unavailable = `Formularz jest chwilowo niedostępny. Możesz wysłać adres swojego konta Google Play na ${site.emails.main} z tematem „Testy Androida”.`;
 
-export const POST: APIRoute = async ({ request, redirect }) => {
+export const POST: APIRoute = async ({ request, redirect, url }) => {
+  const en = url.searchParams.get('lang') === 'en';
+  const unavailable = en
+    ? `The form is temporarily unavailable. Email your Google Play account address to ${site.emails.main} with the subject “Android testing”.`
+    : `Formularz jest chwilowo niedostępny. Możesz wysłać adres swojego konta Google Play na ${site.emails.main} z tematem „Testy Androida”.`;
   const json = request.headers.get('accept')?.includes('application/json');
   const fail = (status: number, error: string) => json
     ? Response.json({ error }, { status })
     : new Response(error, { status, headers: { 'content-type': 'text/plain; charset=utf-8' } });
-  const done = () => json ? Response.json({ ok: true }) : redirect('/zgloszono-testy/', 303);
+  const done = () => json ? Response.json({ ok: true }) : redirect(localizedPath('/zgloszono-testy/', en), 303);
 
   let form: FormData;
   try {
     form = await request.formData();
   } catch {
-    return fail(400, 'Nieprawidłowe dane formularza.');
+    return fail(400, en ? 'Invalid form data.' : 'Nieprawidłowe dane formularza.');
   }
   if (form.get('website')) return done();
   const field = form.get('email');
   const email = typeof field === 'string' ? field.trim() : '';
-  if (email.length > 254 || !emailPattern.test(email)) return fail(400, 'Podaj poprawny adres e-mail.');
+  if (email.length > 254 || !emailPattern.test(email)) return fail(400, en ? 'Enter a valid email address.' : 'Podaj poprawny adres e-mail.');
   if (!RESEND_API_KEY) return fail(503, unavailable);
 
   try {

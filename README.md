@@ -36,6 +36,10 @@ Wymaga Node ≥ 22.23 (wymóg Astro 7).
 - `src/config.ts` — adresy e-mail, link do App Store, adres publicznego API
 - `src/assets/` — zrzuty z aplikacji i widżety wyeksportowane z `ui.pen`
 
+## Wersje językowe
+
+Polska wersja jest pod `/`, angielska pod `/en/`. Adresy odpowiadających sobie podstron są w `src/lib/i18n.ts`. Angielskie trasy w `src/pages/en/` używają wspólnych komponentów. Tłumaczenia regulaminu i polityki prywatności są obok polskich dokumentów w `src/legal/`.
+
 ## Link do App Store
 
 `site.appStoreId` w `src/config.ts` buduje link do App Store i baner Safari

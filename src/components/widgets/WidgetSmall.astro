@@ -1,14 +1,17 @@
 ---
+import { isEnglish } from '../../lib/i18n';
 // Small home-screen widget: the next departure from the default station.
 // Drawn after the ui.pen export it replaced; station-sim.ts keeps it in step
 // with the other widget demos.
 import { TrainFront } from '@lucide/astro';
 import { START, countdown, departsAt, fmt, initial, shortName } from '../../lib/departures';
 
+const en = isEnglish(Astro.url.pathname);
+
 const d = initial[0];
 ---
 
-<div class="wsmall" role="img" aria-label="Mały widżet z najbliższym odjazdem">
+<div class="wsmall" role="img" aria-label={en ? 'Small widget showing the next departure' : 'Mały widżet z najbliższym odjazdem'}>
   <p class="wsmall__head">
     <TrainFront size={14} aria-hidden="true" />
     <span>W-wa Centralna</span>
@@ -16,13 +19,13 @@ const d = initial[0];
   </p>
   <div class="wsmall__next" data-id={d.id}>
     <p class="wsmall__time mono">{fmt(departsAt(d))}</p>
-    <p class:list={['wsmall__until', { 'wsmall__until--late': d.delay > 0 }]}>{countdown(d, START)}</p>
+    <p class:list={['wsmall__until', { 'wsmall__until--late': d.delay > 0 }]}>{countdown(d, START, en)}</p>
     <p class="wsmall__line">
       <span class="wsmall__train mono" style={`background:${d.color}`}>{d.train}</span>
       <span class="wsmall__dest">{shortName(d.dest)}</span>
     </p>
   </div>
-  <p class="wsmall__platform mono">Peron {d.platform}</p>
+  <p class="wsmall__platform mono">{en ? 'Platform' : 'Peron'} {d.platform}</p>
 </div>
 
 <script>
@@ -32,6 +35,7 @@ const d = initial[0];
 
   const widget = document.querySelector<HTMLElement>('.wsmall');
   if (widget && motionOk) {
+    const en = document.documentElement.lang === 'en';
     const next = widget.querySelector<HTMLElement>('.wsmall__next')!;
     const $ = (selector: string) => widget.querySelector<HTMLElement>(selector)!;
     let shown = Number(next.dataset.id);
@@ -42,13 +46,13 @@ const d = initial[0];
       shown = d.id;
       flip($('.wsmall__time'), fmt(departsAt(d)), animated);
       const until = $('.wsmall__until');
-      flip(until, countdown(d, now), animated);
+      flip(until, countdown(d, now, en), animated);
       until.classList.toggle('wsmall__until--late', d.delay > 0);
       const train = $('.wsmall__train');
       train.textContent = d.train;
       train.style.background = d.color;
       $('.wsmall__dest').textContent = shortName(d.dest);
-      flip($('.wsmall__platform'), `Peron ${d.platform}`, animated);
+      flip($('.wsmall__platform'), `${en ? 'Platform' : 'Peron'} ${d.platform}`, animated);
       if (!animated) {
         next.animate([{ transform: 'translateY(40%)', opacity: 0 }, { transform: 'none', opacity: 1 }], {
           duration: 600,

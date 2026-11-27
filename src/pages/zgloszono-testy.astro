@@ -1,9 +1,12 @@
 ---
 import Message from '../layouts/Message.astro';
+import { isEnglish } from '../lib/i18n';
+
+const en = isEnglish(Astro.url.pathname);
 ---
 
 <Message
-  kicker="Testy na Androidzie"
-  title="Dziękujemy za zgłoszenie"
-  lead="Twój adres konta Google Play trafił do zespołu Peronki."
+  kicker={en ? 'Android testing' : 'Testy na Androidzie'}
+  title={en ? 'Thank you for applying' : 'Dziękujemy za zgłoszenie'}
+  lead={en ? 'The Peronka team has received your Google Play account email address.' : 'Twój adres konta Google Play trafił do zespołu Peronki.'}
 />

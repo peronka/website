@@ -1,5 +1,8 @@
 ---
+import { isEnglish } from '../lib/i18n';
 import { RefreshCw } from '@lucide/astro';
+
+const en = isEnglish(Astro.url.pathname);
 import { site } from '../config';
 ---
 
@@ -8,23 +11,23 @@ import { site } from '../config';
     <header class="board__head">
       <div>
         <h2 class="board__station" id="departure-station">Warszawa Centralna</h2>
-        <p class="board__kind">Najbliższe odjazdy</p>
+        <p class="board__kind">{en ? 'Next departures' : 'Najbliższe odjazdy'}</p>
       </div>
-      <span class="board__live mono" data-live hidden><span class="live-dot" aria-hidden="true"></span>Na żywo</span>
+      <span class="board__live mono" data-live hidden><span class="live-dot" aria-hidden="true"></span>{en ? 'Live' : 'Na żywo'}</span>
     </header>
-    <p class="board__message" data-message role="status">Włącz JavaScript, aby zobaczyć odjazdy.</p>
+    <p class="board__message" data-message role="status">{en ? 'Enable JavaScript to see departures.' : 'Włącz JavaScript, aby zobaczyć odjazdy.'}</p>
     <ul class="board__body" data-rows hidden></ul>
   </div>
   <p class="board-caption mono">
     <RefreshCw size={14} aria-hidden="true" />
-    <span><span data-caption role="status">Dane PKP PLK</span><span data-checked></span></span>
+    <span><span data-caption role="status">{en ? 'Data from PKP PLK' : 'Dane PKP PLK'}</span><span data-checked></span></span>
   </p>
   <template data-row>
     <li class="board__row">
       <div class="board__time mono">
         <time data-time></time>
         <span class="board__planned" data-planned hidden>
-          <span class="sr-only">Planowo </span><s data-planned-time></s>
+          <span class="sr-only">{en ? 'Scheduled' : 'Planowo'} </span><s data-planned-time></s>
         </span>
       </div>
       <div class="board__train">
@@ -54,16 +57,18 @@ import { site } from '../config';
     departures: Departure[] | null;
   }
 
+  const en = document.documentElement.lang === 'en';
+  const locale = en ? 'en-GB' : 'pl-PL';
   const refreshMs = 60_000;
   const maxSnapshotAge = 5 * 60_000;
   const lookAheadMs = 5 * 60 * 60_000;
-  const warsawTime = new Intl.DateTimeFormat('pl-PL', {
+  const warsawTime = new Intl.DateTimeFormat(locale, {
     timeZone: 'Europe/Warsaw',
     hour: '2-digit',
     minute: '2-digit',
     hourCycle: 'h23',
   });
-  const warsawDate = new Intl.DateTimeFormat('pl-PL', { timeZone: 'Europe/Warsaw' });
+  const warsawDate = new Intl.DateTimeFormat(locale, { timeZone: 'Europe/Warsaw' });
   const board = document.querySelector<HTMLElement>('[data-departure-board]');
 
   if (board) startBoard(board);
@@ -104,14 +109,14 @@ import { site } from '../config';
           row.querySelector<HTMLElement>('[data-planned]')!.hidden = false;
           row.querySelector<HTMLElement>('[data-planned-time]')!.textContent = train.plannedTime;
         }
-        row.querySelector<HTMLElement>('[data-direction]')!.textContent = train.direction || 'Kierunek nieznany';
+        row.querySelector<HTMLElement>('[data-direction]')!.textContent = train.direction || (en ? 'Unknown destination' : 'Kierunek nieznany');
         row.querySelector<HTMLElement>('[data-number]')!.textContent = [train.trainNumber, train.trainName].filter(Boolean).join(' · ');
         row.querySelector<HTMLElement>('[data-platform]')!.textContent = [
-          train.platform ? `Peron ${train.platform}` : '',
-          train.track ? `tor ${train.track}` : '',
+          train.platform ? `${en ? 'Platform' : 'Peron'} ${train.platform}` : '',
+          train.track ? `${en ? 'track' : 'tor'} ${train.track}` : '',
         ].filter(Boolean).join(' · ') || '—';
         const status = row.querySelector<HTMLElement>('[data-delay]')!;
-        status.textContent = delayed ? `+${train.delay} min` : train.delay === null ? 'Rozkład' : 'Planowo';
+        status.textContent = delayed ? `+${train.delay} min` : train.delay === null ? (en ? 'Scheduled' : 'Rozkład') : (en ? 'On time' : 'Planowo');
         status.classList.toggle('board__pill--late', delayed);
         status.classList.toggle('board__pill--ok', train.delay === 0 && !failed && !usable?.offline);
         return row;
@@ -120,17 +125,21 @@ import { site } from '../config';
       list.hidden = departures.length === 0;
       message.hidden = !list.hidden;
       const isLive = usable && !usable.offline && !failed;
-      message.textContent = isLive ? 'Brak najbliższych odjazdów.' : 'Odjazdy są chwilowo niedostępne.';
+      message.textContent = isLive
+        ? (en ? 'No upcoming departures.' : 'Brak najbliższych odjazdów.')
+        : (en ? 'Departures are temporarily unavailable.' : 'Odjazdy są chwilowo niedostępne.');
       live.hidden = !isLive;
 
-      let details = 'Dane PKP PLK';
+      let details = en ? 'Data from PKP PLK' : 'Dane PKP PLK';
       if (failed) {
-        details = departures.length ? 'Dane sprzed utraty połączenia' : 'Nie udało się odświeżyć tablicy';
+        details = departures.length
+          ? (en ? 'Last data before the connection was lost' : 'Dane sprzed utraty połączenia')
+          : (en ? 'Could not refresh the board' : 'Nie udało się odświeżyć tablicy');
       } else if (usable?.offline) {
-        details = 'Brak danych na żywo · rozkład i ostatnie znane opóźnienia';
+        details = en ? 'Live data unavailable · timetable and last known delays' : 'Brak danych na żywo · rozkład i ostatnie znane opóźnienia';
       }
       if (caption.textContent !== details) caption.textContent = details;
-      checked.textContent = usable ? ` · sprawdzono o ${warsawTime.format(usable.receivedAt)}` : '';
+      checked.textContent = usable ? ` · ${en ? 'checked at' : 'sprawdzono o'} ${warsawTime.format(usable.receivedAt)}` : '';
     }
 
     async function refresh() {
@@ -155,7 +164,7 @@ import { site } from '../config';
       }
     }
 
-    message.textContent = 'Pobieramy najbliższe odjazdy…';
+    message.textContent = en ? 'Loading departures…' : 'Pobieramy najbliższe odjazdy…';
     void refresh();
     window.setInterval(refresh, refreshMs);
     document.addEventListener('visibilitychange', refresh);

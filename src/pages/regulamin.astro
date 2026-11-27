@@ -1,7 +1,11 @@
 ---
 import Legal from '../layouts/Legal.astro';
 import type { LegalFrontmatter } from '../legal/types';
-import { Content, frontmatter, getHeadings } from '../legal/regulamin.md';
+import * as polish from '../legal/regulamin.md';
+import * as english from '../legal/terms.en.md';
+import { isEnglish } from '../lib/i18n';
+
+const { Content, frontmatter, getHeadings } = isEnglish(Astro.url.pathname) ? english : polish;
 ---
 
 <Legal frontmatter={frontmatter as LegalFrontmatter} headings={getHeadings()}>

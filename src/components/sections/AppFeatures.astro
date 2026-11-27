@@ -1,4 +1,5 @@
 ---
+import { isEnglish } from '../../lib/i18n';
 import {
   Clock3,
   MapPin,
@@ -17,41 +18,55 @@ import powiadomienia from '../../assets/screens/powiadomienia.png';
 import ulubione from '../../assets/screens/ulubione.png';
 import wyborStacji from '../../assets/screens/wybor-stacji.png';
 
+const en = isEnglish(Astro.url.pathname);
+
 const features = [
   {
-    kicker: 'Odjazdy i przyjazdy',
-    title: 'Tablica odjazdów, która mieści się w kieszeni',
-    text: 'Wybierz stację i od razu zobacz najbliższe pociągi — z planową i rzeczywistą godziną, kategorią i kierunkiem.',
+    kicker: en ? 'Departures and arrivals' : 'Odjazdy i przyjazdy',
+    title: en ? 'A departure board in your pocket' : 'Tablica odjazdów, która mieści się w kieszeni',
+    text: en
+      ? 'Choose a station to see the next trains, their scheduled and updated times, service types and destinations.'
+      : 'Wybierz stację i od razu zobacz najbliższe pociągi — z planową i rzeczywistą godziną, kategorią i kierunkiem.',
     image: odjazdy,
-    alt: 'Ekran odjazdów ze stacji Warszawa Centralna z godzinami, peronami i opóźnieniami',
+    alt: en
+      ? 'Departures from Warszawa Centralna with times, platforms and delays'
+      : 'Ekran odjazdów ze stacji Warszawa Centralna z godzinami, peronami i opóźnieniami',
     details: [
-      { icon: Clock3, text: 'Planowa i rzeczywista godzina' },
-      { icon: MapPin, text: 'Peron i tor' },
-      { icon: Timer, text: 'Czas do odjazdu' },
+      { icon: Clock3, text: en ? 'Scheduled and updated times' : 'Planowa i rzeczywista godzina' },
+      { icon: MapPin, text: en ? 'Platform and track' : 'Peron i tor' },
+      { icon: Timer, text: en ? 'Time until departure' : 'Czas do odjazdu' },
     ],
   },
   {
-    kicker: 'Szczegóły pociągu',
-    title: 'Cała trasa, stacja po stacji',
-    text: 'Otwórz dowolny pociąg i sprawdź każdy przystanek: godziny przyjazdów, perony i aktualne opóźnienie.',
+    kicker: en ? 'Train details' : 'Szczegóły pociągu',
+    title: en ? 'Your route, stop by stop' : 'Cała trasa, stacja po stacji',
+    text: en
+      ? 'Select a train to see arrival times, platforms and the current delay for each stop.'
+      : 'Otwórz dowolny pociąg i sprawdź każdy przystanek: godziny przyjazdów, perony i aktualne opóźnienie.',
     image: szczegoly,
-    alt: 'Szczegóły pociągu IC z trasą przejazdu i informacjami o składzie',
+    alt: en
+      ? 'Intercity train details showing the route and carriage information'
+      : 'Szczegóły pociągu IC z trasą przejazdu i informacjami o składzie',
     details: [
-      { icon: Route, text: 'Kolejne stacje z godzinami' },
-      { icon: Locate, text: 'Gdzie pociąg jest teraz' },
-      { icon: TrainFront, text: 'Skład: wagony i udogodnienia' },
+      { icon: Route, text: en ? 'Upcoming stops and times' : 'Kolejne stacje z godzinami' },
+      { icon: Locate, text: en ? 'Current train location' : 'Gdzie pociąg jest teraz' },
+      { icon: TrainFront, text: en ? 'Carriages and onboard facilities' : 'Skład: wagony i udogodnienia' },
     ],
   },
   {
-    kicker: 'Powiadomienia',
-    title: 'Opóźnienie? Dowiesz się od razu',
-    text: 'Śledź swój pociąg, a Peronka da znać, gdy się spóźnia, zmienia peron albo na trasie są utrudnienia.',
+    kicker: en ? 'Alerts' : 'Powiadomienia',
+    title: en ? 'Know when your train is delayed' : 'Opóźnienie? Dowiesz się od razu',
+    text: en
+      ? 'Follow your train and Peronka will tell you about delays, platform changes and disruptions along the way.'
+      : 'Śledź swój pociąg, a Peronka da znać, gdy się spóźnia, zmienia peron albo na trasie są utrudnienia.',
     image: powiadomienia,
-    alt: 'Lista powiadomień o opóźnieniach, zmianach peronu i utrudnieniach',
+    alt: en
+      ? 'Alerts for delays, platform changes and route disruptions'
+      : 'Lista powiadomień o opóźnieniach, zmianach peronu i utrudnieniach',
     details: [
-      { icon: BellRing, text: 'Opóźnienia' },
-      { icon: ArrowLeftRight, text: 'Zmiany peronu' },
-      { icon: TriangleAlert, text: 'Utrudnienia na trasie' },
+      { icon: BellRing, text: en ? 'Delays' : 'Opóźnienia' },
+      { icon: ArrowLeftRight, text: en ? 'Platform changes' : 'Zmiany peronu' },
+      { icon: TriangleAlert, text: en ? 'Route disruptions' : 'Utrudnienia na trasie' },
     ],
   },
 ];
@@ -59,10 +74,11 @@ const features = [
 
 <section class="app wrap" id="aplikacja">
   <header class="app__head">
-    <h2 class="app__title">Cała podróż w jednej aplikacji</h2>
+    <h2 class="app__title">{en ? 'Your whole journey in one app' : 'Cała podróż w jednej aplikacji'}</h2>
     <p class="lead">
-      Od wyboru stacji po ostatni przystanek — Peronka pokazuje to, co zwykle sprawdzasz na tablicy na peronie, tylko
-      wcześniej.
+      {en
+        ? 'From your first station to your final stop, see what’s on the platform board before you get there.'
+        : 'Od wyboru stacji po ostatni przystanek — Peronka pokazuje to, co zwykle sprawdzasz na tablicy na peronie, tylko wcześniej.'}
     </p>
   </header>
 
@@ -91,17 +107,18 @@ const features = [
 
   <article class="favs">
     <div class="favs__text">
-      <p class="kicker mono">Ulubione stacje</p>
-      <h3 class="feature__title">Twoje stacje jednym dotknięciem</h3>
+      <p class="kicker mono">{en ? 'Favourite stations' : 'Ulubione stacje'}</p>
+      <h3 class="feature__title">{en ? 'Your stations, one tap away' : 'Twoje stacje jednym dotknięciem'}</h3>
       <p class="favs__body">
-        Zapisz stacje, z których jeździsz najczęściej, i ustaw jedną jako domyślną. Wyszukiwarka znajdzie każdą stację w
-        Polsce.
+        {en
+          ? 'Save the stations you use most and set one as your default. You can search for any station in Poland.'
+          : 'Zapisz stacje, z których jeździsz najczęściej, i ustaw jedną jako domyślną. Wyszukiwarka znajdzie każdą stację w Polsce.'}
       </p>
-      <p class="favs__note mono">Ulubione zostają na Twoim telefonie.</p>
+      <p class="favs__note mono">{en ? 'Your favourites stay on your phone.' : 'Ulubione zostają na Twoim telefonie.'}</p>
     </div>
     <div class="favs__phones">
-      <Phone src={ulubione} alt="Lista ulubionych stacji z najbliższymi odjazdami" sizes="250px" class="favs__phone" />
-      <Phone src={wyborStacji} alt="Wyszukiwarka stacji z ostatnio używanymi stacjami" bar="white" sizes="250px" class="favs__phone" />
+      <Phone src={ulubione} alt={en ? 'Favourite stations with upcoming departures' : 'Lista ulubionych stacji z najbliższymi odjazdami'} sizes="250px" class="favs__phone" />
+      <Phone src={wyborStacji} alt={en ? 'Station search showing recently used stations' : 'Wyszukiwarka stacji z ostatnio używanymi stacjami'} bar="white" sizes="250px" class="favs__phone" />
     </div>
   </article>
 </section>

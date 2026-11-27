@@ -1,4 +1,5 @@
 ---
+import { isEnglish } from '../../lib/i18n';
 import { Image } from 'astro:assets';
 import { RESEND_API_KEY } from 'astro:env/server';
 import icon from '../../assets/brand/icon.png';
@@ -7,14 +8,16 @@ import NotifyForm from '../NotifyForm.astro';
 import AndroidDownload from '../AndroidDownload.astro';
 import { site } from '../../config';
 
+const en = isEnglish(Astro.url.pathname);
+
 ---
 
 <section class="cta wrap" id="pobierz">
   <div class="cta__band">
     <Image src={icon} alt="" width={104} height={104} densities={[1, 2]} class="cta__icon" />
     <div class="cta__text">
-      <h2 class="cta__title">Sprawdź swój pociąg, zanim wyjdziesz z domu</h2>
-      <p class="cta__meta mono">Bezpłatna · iPhone i Android · bez konta</p>
+      <h2 class="cta__title">{en ? 'Check your train before you leave home' : 'Sprawdź swój pociąg, zanim wyjdziesz z domu'}</h2>
+      <p class="cta__meta mono">{en ? 'Free · iPhone and Android · no account needed' : 'Bezpłatna · iPhone i Android · bez konta'}</p>
     </div>
     <div class="cta__stores">
       {site.appStoreUrl ? <StoreButton /> : <NotifyForm id="powiadom-cta" />}
@@ -22,8 +25,12 @@ import { site } from '../../config';
     </div>
     <section class="cta__tests" id="testy-android" aria-labelledby="testy-tytul">
       <div class="cta__text">
-        <h2 id="testy-tytul">Zamknięte testy na Androidzie</h2>
-        <p>Pomóż nam przetestować Peronkę przed publikacją w Google Play. Szukamy osób, które korzystają z telefonu z Androidem.</p>
+        <h2 id="testy-tytul">{en ? 'Closed testing on Android' : 'Zamknięte testy na Androidzie'}</h2>
+        <p>
+          {en
+            ? 'Help us test Peronka before it launches on Google Play. You’ll need an Android phone to take part.'
+            : 'Pomóż nam przetestować Peronkę przed publikacją w Google Play. Szukamy osób, które korzystają z telefonu z Androidem.'}
+        </p>
       </div>
       <NotifyForm id="email-testera" androidTests useMailClient={!RESEND_API_KEY} />
     </section>

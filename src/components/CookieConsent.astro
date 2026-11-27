@@ -3,16 +3,21 @@
 // accepts, so nothing reaches Google before consent. The choice is kept in
 // localStorage; any [data-consent-open] element (the footer link) reopens it.
 import { site } from '../config';
+import { isEnglish, localizedPath } from '../lib/i18n';
+
+const en = isEnglish(Astro.url.pathname);
 ---
 
-<div class="consent" role="dialog" aria-label="Zgoda na pliki cookies" data-ga={site.gaId} hidden>
+<div class="consent" role="dialog" aria-label={en ? 'Cookie consent' : 'Zgoda na pliki cookies'} data-ga={site.gaId} hidden>
   <p class="consent__text">
-    Za Twoją zgodą używamy Google Analytics, żeby wiedzieć, jak korzystacie ze strony. Bez zgody nie zapisujemy żadnych
-    plików cookies. <a href="/polityka-prywatnosci/">Polityka prywatności</a>
+    {en
+      ? 'With your permission, we use Google Analytics to understand how people use this site. We only set cookies if you agree.'
+      : 'Za Twoją zgodą używamy Google Analytics, żeby wiedzieć, jak korzystacie ze strony. Bez zgody nie zapisujemy żadnych plików cookies.'}
+    <a href={localizedPath('/polityka-prywatnosci/', en)}>{en ? 'Privacy policy' : 'Polityka prywatności'}</a>
   </p>
   <div class="consent__actions">
-    <button type="button" class="consent__button" data-choice="denied">Odrzuć</button>
-    <button type="button" class="consent__button consent__button--accept" data-choice="granted">Akceptuję</button>
+    <button type="button" class="consent__button" data-choice="denied">{en ? 'Reject' : 'Odrzuć'}</button>
+    <button type="button" class="consent__button consent__button--accept" data-choice="granted">{en ? 'Accept' : 'Akceptuję'}</button>
   </div>
 </div>
 

@@ -1,13 +1,16 @@
 ---
+import { isEnglish } from '../../lib/i18n';
 // Medium home-screen widget: the next three departures. Drawn after the
 // ui.pen export it replaced; station-sim.ts keeps it in step with the other widget demos.
 import { TrainFront } from '@lucide/astro';
 import { START, fmt, initial, shortStatus, view } from '../../lib/departures';
 
-const rows = initial.slice(0, 3).map((d) => ({ d, state: view(d, START).state }));
+const en = isEnglish(Astro.url.pathname);
+
+const rows = initial.slice(0, 3).map((d) => ({ d, state: view(d, START, en).state }));
 ---
 
-<div class="wmed" role="img" aria-label="Średni widżet z trzema odjazdami">
+<div class="wmed" role="img" aria-label={en ? 'Medium widget showing the next three departures' : 'Średni widżet z trzema odjazdami'}>
   <p class="wmed__head">
     <TrainFront size={16} aria-hidden="true" />
     <span class="wmed__station">Warszawa Centralna</span>
@@ -23,7 +26,7 @@ const rows = initial.slice(0, 3).map((d) => ({ d, state: view(d, START).state })
           </span>
           <span class="wmed__dest">{d.dest}</span>
           <span class="wmed__platform mono">P{d.platform}</span>
-          <span class:list={['wmed__pill', `wmed__pill--${state}`]}>{shortStatus(d, START)}</span>
+          <span class:list={['wmed__pill', `wmed__pill--${state}`]}>{shortStatus(d, START, en)}</span>
         </li>
       ))
     }
@@ -37,6 +40,7 @@ const rows = initial.slice(0, 3).map((d) => ({ d, state: view(d, START).state })
 
   const widget = document.querySelector<HTMLElement>('.wmed');
   if (widget && motionOk) {
+    const en = document.documentElement.lang === 'en';
     const clock = widget.querySelector<HTMLElement>('.wmed__now')!;
     const rows = [...widget.querySelectorAll<HTMLElement>('.wmed__row')];
     let ids = rows.map((row) => Number(row.dataset.id));
@@ -53,8 +57,8 @@ const rows = initial.slice(0, 3).map((d) => ({ d, state: view(d, START).state })
         flip($('.wmed__platform'), `P${d.platform}`, animated);
         const pill = $('.wmed__pill');
         pill.classList.remove('wmed__pill--ok', 'wmed__pill--late', 'wmed__pill--in');
-        pill.classList.add(`wmed__pill--${view(d, now).state}`);
-        flip(pill, shortStatus(d, now), animated);
+        pill.classList.add(`wmed__pill--${view(d, now, en).state}`);
+        flip(pill, shortStatus(d, now, en), animated);
       });
       for (const { kind, id } of changes) {
         const j = ids.indexOf(id);

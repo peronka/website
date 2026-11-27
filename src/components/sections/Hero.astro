@@ -1,10 +1,13 @@
 ---
+import { isEnglish } from '../../lib/i18n';
 import { ArrowDown } from '@lucide/astro';
 import Nav from '../Nav.astro';
 import StoreButton from '../StoreButton.astro';
 import NotifyForm from '../NotifyForm.astro';
 import AndroidDownload from '../AndroidDownload.astro';
 import DepartureBoard from '../DepartureBoard.astro';
+
+const en = isEnglish(Astro.url.pathname);
 import { site } from '../../config';
 ---
 
@@ -12,10 +15,12 @@ import { site } from '../../config';
   <Nav tone="dark" />
   <div class="wrap hero__body" id="tresc">
     <div class="hero__copy">
-      <p class="hero__live mono"><span class="live-dot" aria-hidden="true"></span>Na żywo z danych PKP PLK</p>
-      <h1 class="hero__title">Wiesz, kiedy naprawdę odjedzie.</h1>
+      <p class="hero__live mono"><span class="live-dot" aria-hidden="true"></span>{en ? 'Live data from PKP PLK' : 'Na żywo z danych PKP PLK'}</p>
+      <h1 class="hero__title">{en ? 'Know when your train will actually leave.' : 'Wiesz, kiedy naprawdę odjedzie.'}</h1>
       <p class="hero__lead">
-        Odjazdy, perony i opóźnienia ze stacji w całej Polsce — w jednym czytelnym widoku. Bez zakładania konta.
+        {en
+          ? 'Check departures, platforms and delays at stations across Poland. No account needed.'
+          : 'Odjazdy, perony i opóźnienia ze stacji w całej Polsce — w jednym czytelnym widoku. Bez zakładania konta.'}
       </p>
     </div>
     <div class="hero__board"><DepartureBoard /></div>
@@ -23,10 +28,10 @@ import { site } from '../../config';
       <div class="hero__ctas">
         {site.appStoreUrl ? <StoreButton /> : <NotifyForm id="powiadom-hero" />}
         <AndroidDownload />
-        <a class="hero__more" href="#aplikacja">Zobacz, jak działa <ArrowDown size={18} aria-hidden="true" /></a>
+        <a class="hero__more" href="#aplikacja">{en ? 'See how it works' : 'Zobacz, jak działa'} <ArrowDown size={18} aria-hidden="true" /></a>
       </div>
-      <a class="hero__tests" href="#testy-android">Dołącz do testów na Androidzie</a>
-      <p class="hero__meta mono">Bezpłatna · iPhone i Android · bez konta</p>
+      <a class="hero__tests" href="#testy-android">{en ? 'Join the Android test' : 'Dołącz do testów na Androidzie'}</a>
+      <p class="hero__meta mono">{en ? 'Free · iPhone and Android · no account needed' : 'Bezpłatna · iPhone i Android · bez konta'}</p>
     </div>
   </div>
 </section>

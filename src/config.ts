@@ -43,8 +43,8 @@ export const statusComponents = [
 ] as const;
 
 export const nav = [
-  { href: '/#aplikacja', label: 'Aplikacja' },
-  { href: '/#widzety', label: 'Widżety' },
-  { href: '/#dane', label: 'Dane' },
-  { href: '/status/', label: 'Status' },
+  { href: '/#aplikacja', label: 'Aplikacja', english: 'App' },
+  { href: '/#widzety', label: 'Widżety', english: 'Widgets' },
+  { href: '/#dane', label: 'Dane', english: 'Data' },
+  { href: '/status/', label: 'Status', english: 'Status' },
 ] as const;

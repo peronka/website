@@ -1,8 +1,12 @@
 ---
+import { isEnglish, localizedPath } from '../lib/i18n';
 import { site } from '../config';
-// Official Polish badge from Apple Marketing Tools ("Pobierz w App Store").
+// Official localized badges from Apple Marketing Tools.
 // Apple's guidelines forbid recoloring it or adding effects, so it is shown as is.
-import badge from '../assets/brand/app-store-badge-pl.svg';
+import polishBadge from '../assets/brand/app-store-badge-pl.svg';
+import englishBadge from '../assets/brand/app-store-badge-en.svg';
+
+const en = isEnglish(Astro.url.pathname);
 
 interface Props {
   size?: 'small' | 'large';
@@ -10,25 +14,27 @@ interface Props {
 }
 
 const { size = 'large', tone = 'light' } = Astro.props;
+const badge = en ? englishBadge : polishBadge;
+const notifyLabel = en ? 'Notify me' : 'Powiadom mnie';
 const url = site.appStoreUrl;
 // Until the listing is live there is nothing to download, so the button
 // leads to the "Powiadom mnie" form in the CTA band instead.
-const href = url || '/#pobierz';
+const href = url || localizedPath('/#pobierz', en);
 ---
 
 {
   url && size === 'large' ? (
     <a class="badge" href={url} rel="noopener">
-      <img src={badge.src} width={badge.width} height={badge.height} alt="Pobierz w App Store" />
+      <img src={badge.src} width={badge.width} height={badge.height} alt={en ? 'Download on the App Store' : 'Pobierz w App Store'} />
     </a>
   ) : (
     <a class:list={['store', `store--${size}`, `store--${tone}`]} href={href} rel={url ? 'noopener' : undefined}>
       {size === 'small' ? (
-        <span class="store__single">{url ? 'Pobierz' : 'Powiadom mnie'}</span>
+        <span class="store__single">{url ? (en ? 'Download' : 'Pobierz') : notifyLabel}</span>
       ) : (
         <span class="store__label">
-          <span class="store__small">Wkrótce w App Store</span>
-          <span class="store__big">Powiadom mnie</span>
+          <span class="store__small">{en ? 'Coming to the App Store' : 'Wkrótce w App Store'}</span>
+          <span class="store__big">{notifyLabel}</span>
         </span>
       )}
     </a>

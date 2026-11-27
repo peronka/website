@@ -1,5 +1,6 @@
 ---
 import { site } from '../config';
+import { isEnglish, localizedPath } from '../lib/i18n';
 
 interface Props {
   id: string;
@@ -8,17 +9,36 @@ interface Props {
 }
 
 const { id, androidTests = false, useMailClient = false } = Astro.props;
-const action = useMailClient ? `mailto:${site.emails.main}` : androidTests ? '/api/testy-android/' : '/api/powiadom/';
-const subject = 'Zgłoszenie do zamkniętych testów Peronki na Androidzie';
-const success = androidTests
-  ? 'Dziękujemy! Twoje zgłoszenie trafiło do zespołu Peronki.'
-  : 'Prawie gotowe — potwierdź zapis, klikając link w wiadomości, którą właśnie wysłaliśmy.';
+const en = isEnglish(Astro.url.pathname);
+const endpoint = androidTests ? '/api/testy-android/' : '/api/powiadom/';
+const action = useMailClient ? `mailto:${site.emails.main}` : en ? `${endpoint}?lang=en` : endpoint;
+const copy = en ? {
+  subject: 'Application for the Peronka closed test on Android',
+  label: androidTests ? 'Google Play account email address' : 'Coming soon to the App Store. Enter your email to hear when Peronka launches.',
+  button: useMailClient ? 'Open email draft' : androidTests ? 'Apply to test' : 'Notify me',
+  note: androidTests
+    ? 'By applying, you agree that we can use this email address to invite you to the test on Google Play.'
+    : 'We’ll send one email when Peronka launches. Confirm your signup using the link in your email. You can withdraw your consent at any time.',
+  success: androidTests
+    ? 'Thank you! The Peronka team has received your application.'
+    : 'Check your inbox and follow the link to confirm your signup.',
+} : {
+  subject: 'Zgłoszenie do zamkniętych testów Peronki na Androidzie',
+  label: androidTests ? 'Adres e-mail konta Google Play' : 'Wkrótce w App Store. Zostaw e-mail — damy znać w dniu premiery.',
+  button: useMailClient ? 'Otwórz e-mail ze zgłoszeniem' : androidTests ? 'Zgłoś się do testów' : 'Powiadom mnie',
+  note: androidTests
+    ? 'Wysyłając zgłoszenie, zgadzasz się na użycie tego adresu do zaproszenia Cię do testów w Google Play.'
+    : 'Wyślemy jedną wiadomość o udostępnieniu Peronki. Zapis potwierdzasz linkiem z maila, a zgodę możesz wycofać w każdej chwili.',
+  success: androidTests
+    ? 'Dziękujemy! Twoje zgłoszenie trafiło do zespołu Peronki.'
+    : 'Prawie gotowe — potwierdź zapis, klikając link w wiadomości, którą właśnie wysłaliśmy.',
+};
 ---
 
-<form class="notify" action={action} method={useMailClient ? 'get' : 'post'} data-success={success}>
-  {useMailClient && <input type="hidden" name="subject" value={subject} />}
+<form class="notify" action={action} method={useMailClient ? 'get' : 'post'} data-success={copy.success}>
+  {useMailClient && <input type="hidden" name="subject" value={copy.subject} />}
   <label class="notify__label" for={id}>
-    {androidTests ? 'Adres e-mail konta Google Play' : 'Wkrótce w App Store. Zostaw e-mail — damy znać w dniu premiery.'}
+    {copy.label}
   </label>
   <div class="notify__row">
     <input
@@ -29,23 +49,22 @@ const success = androidTests
       required
       maxlength="254"
       autocomplete="email"
-      placeholder="twoj@adres.pl"
+      placeholder={en ? 'you@example.com' : 'twoj@adres.pl'}
     />
-    <button class="notify__button" type="submit">{useMailClient ? 'Otwórz e-mail ze zgłoszeniem' : androidTests ? 'Zgłoś się do testów' : 'Powiadom mnie'}</button>
+    <button class="notify__button" type="submit">{copy.button}</button>
   </div>
   {!useMailClient && <div class="notify__hp" aria-hidden="true">
-    <label>Strona internetowa <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+    <label>{en ? 'Website' : 'Strona internetowa'} <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
   </div>}
   <p class="notify__note">
-    {androidTests
-      ? 'Wysyłając zgłoszenie, zgadzasz się na użycie tego adresu do zaproszenia Cię do testów w Google Play.'
-      : 'Wyślemy jedną wiadomość o udostępnieniu Peronki. Zapis potwierdzasz linkiem z maila, a zgodę możesz wycofać w każdej chwili.'}
-    <a href="/polityka-prywatnosci/">Polityka prywatności</a>
+    {copy.note}
+    <a href={localizedPath('/polityka-prywatnosci/', en)}>{en ? 'Privacy policy' : 'Polityka prywatności'}</a>
   </p>
   <p class="notify__status" role="status" aria-live="polite"></p>
 </form>
 
 <script>
+  const en = document.documentElement.lang === 'en';
   for (const form of document.querySelectorAll<HTMLFormElement>('.notify')) {
     const button = form.querySelector('button')!;
     const status = form.querySelector<HTMLElement>('.notify__status')!;
@@ -55,16 +74,17 @@ const success = androidTests
       if (form.action.startsWith('mailto:')) {
         const data = new FormData(form);
         const subject = encodeURIComponent(String(data.get('subject')));
-        const body = encodeURIComponent(`Chcę dołączyć do testów. Mój adres konta Google Play: ${data.get('body')}`);
+        const intro = en ? 'I would like to join the test. My Google Play account email is' : 'Chcę dołączyć do testów. Mój adres konta Google Play:';
+        const body = encodeURIComponent(`${intro} ${data.get('body')}`);
         window.location.href = `${form.action}?subject=${subject}&body=${body}`;
-        status.textContent = 'Wyślij przygotowaną wiadomość w swojej aplikacji pocztowej.';
+        status.textContent = en ? 'Send the draft from your email app to submit your application.' : 'Wyślij przygotowaną wiadomość w swojej aplikacji pocztowej.';
         return;
       }
       button.disabled = true;
       form.dataset.state = 'sending';
-      status.textContent = 'Zapisuję…';
+      status.textContent = en ? 'Submitting…' : 'Zapisuję…';
 
-      let error = 'Nie udało się zapisać. Spróbuj ponownie za chwilę.';
+      let error = en ? 'We couldn’t submit your signup. Please try again shortly.' : 'Nie udało się zapisać. Spróbuj ponownie za chwilę.';
       try {
         const res = await fetch(form.action, {
           method: 'POST',

@@ -4,6 +4,7 @@ import { ArrowLeft } from '@lucide/astro';
 import Base from './Base.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import { isEnglish, localizedPath } from '../lib/i18n';
 
 interface Props {
   kicker: string;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const { kicker, title, lead } = Astro.props;
+const en = isEnglish(Astro.url.pathname);
 ---
 
 <Base title={title} noindex>
@@ -20,7 +22,7 @@ const { kicker, title, lead } = Astro.props;
     <p class="message__kicker mono">{kicker}</p>
     <h1 class="message__title">{title}</h1>
     <p class="message__lead">{lead}</p>
-    <a class="message__link" href="/"><ArrowLeft size={18} aria-hidden="true" /> Wróć na stronę główną</a>
+    <a class="message__link" href={localizedPath('/', en)}><ArrowLeft size={18} aria-hidden="true" /> {en ? 'Back to the homepage' : 'Wróć na stronę główną'}</a>
   </main>
   <Footer />
 </Base>

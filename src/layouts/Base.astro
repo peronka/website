@@ -2,6 +2,7 @@
 import Analytics from '@vercel/analytics/astro';
 import '../styles/global.css';
 import CookieConsent from '../components/CookieConsent.astro';
+import { isEnglish, alternatePage } from '../lib/i18n';
 import { site } from '../config';
 
 interface Props {
@@ -10,20 +11,31 @@ interface Props {
   noindex?: boolean;
 }
 
-const { title, description = site.description, noindex = false } = Astro.props;
-const fullTitle = title ? `${title} · ${site.name}` : `${site.name} — ${site.tagline}`;
+const en = isEnglish(Astro.url.pathname);
+const defaultDescription = en
+  ? 'Live train departures, arrivals, platforms and delays across Poland, using official PKP PLK data. Free, with no account needed.'
+  : site.description;
+const { title, description = defaultDescription, noindex = false } = Astro.props;
+const fullTitle = title ? `${title} · ${site.name}` : `${site.name} — ${en ? 'Live train departures and delays' : site.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL('/og.png', Astro.site);
 ---
 
 <!doctype html>
-<html lang="pl">
+<html lang={en ? 'en' : 'pl'}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {!noindex && (
+      <>
+        <link rel="alternate" hreflang="pl" href={new URL(alternatePage(Astro.url.pathname, false), Astro.site)} />
+        <link rel="alternate" hreflang="en" href={new URL(alternatePage(Astro.url.pathname, true), Astro.site)} />
+        <link rel="alternate" hreflang="x-default" href={new URL(alternatePage(Astro.url.pathname, false), Astro.site)} />
+      </>
+    )}
     {noindex && <meta name="robots" content="noindex" />}
     <meta name="theme-color" content="#0b1a40" />
     <meta name="apple-itunes-app" content={`app-id=${site.appStoreId}`} />
@@ -32,7 +44,7 @@ const ogImage = new URL('/og.png', Astro.site);
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="pl_PL" />
+    <meta property="og:locale" content={en ? 'en_GB' : 'pl_PL'} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
@@ -44,7 +56,7 @@ const ogImage = new URL('/og.png', Astro.site);
     <Analytics />
   </head>
   <body>
-    <a class="skip-link" href="#tresc">Przejdź do treści</a>
+    <a class="skip-link" href="#tresc">{en ? 'Skip to content' : 'Przejdź do treści'}</a>
     <slot />
     <CookieConsent />
   </body>

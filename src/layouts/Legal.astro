@@ -8,12 +8,16 @@ import Footer from '../components/Footer.astro';
 
 import type { LegalFrontmatter } from '../legal/types';
 
+import { isEnglish } from '../lib/i18n';
+
 interface Props {
   frontmatter: LegalFrontmatter;
   headings: MarkdownHeading[];
 }
 
 const { frontmatter: fm, headings } = Astro.props;
+const en = isEnglish(Astro.url.pathname);
+const contents = en ? 'Contents' : 'Spis treści';
 const sections = headings.filter((h) => h.depth === 2);
 const label = (i: number) => (fm.numbering === 'paragraph' ? `§ ${i + 1}` : String(i + 1).padStart(2, '0'));
 ---
@@ -21,11 +25,11 @@ const label = (i: number) => (fm.numbering === 'paragraph' ? `§ ${i + 1}` : Str
 <Base title={fm.title} description={fm.intro}>
   <Nav tone="light" />
   <main>
-    <PageHeader kicker="Dokumenty" title={fm.title} meta={`Ostatnia aktualizacja: ${fm.updated}`} intro={fm.intro} />
+    <PageHeader kicker={en ? 'Documents' : 'Dokumenty'} title={fm.title} meta={`${en ? 'Last updated' : 'Ostatnia aktualizacja'}: ${fm.updated}`} intro={fm.intro} />
 
     <div class="wrap legal">
-      <nav class="toc" aria-label="Spis treści">
-        <p class="toc__title mono">Spis treści</p>
+      <nav class="toc" aria-label={contents}>
+        <p class="toc__title mono">{contents}</p>
         <ol>
           {
             sections.map((h, i) => (

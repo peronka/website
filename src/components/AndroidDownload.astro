@@ -1,13 +1,16 @@
 ---
+import { isEnglish } from '../lib/i18n';
 import { Smartphone } from '@lucide/astro';
+
+const en = isEnglish(Astro.url.pathname);
 import { site } from '../config';
 ---
 
 <a class="android" href={site.androidDownloadUrl}>
   <Smartphone size={18} aria-hidden="true" class="android__icon" />
   <span class="android__text">
-    <span class="android__label">Pobierz na Androida</span>
-    <span class="android__version">APK · wersja {site.androidVersion}</span>
+    <span class="android__label">{en ? 'Download for Android' : 'Pobierz na Androida'}</span>
+    <span class="android__version">{en ? 'APK · version' : 'APK · wersja'} {site.androidVersion}</span>
   </span>
 </a>
 
