@@ -1,54 +1,22 @@
 ---
+import { Download } from '@lucide/astro';
+import { site } from '../config';
 import { isEnglish } from '../lib/i18n';
-import { Smartphone } from '@lucide/astro';
 
 const en = isEnglish(Astro.url.pathname);
-import { site } from '../config';
 ---
 
-<a class="android" href={site.androidDownloadUrl}>
-  <Smartphone size={18} aria-hidden="true" class="android__icon" />
-  <span class="android__text">
-    <span class="android__label">{en ? 'Download for Android' : 'Pobierz na Androida'}</span>
-    <span class="android__version">{en ? 'APK · version' : 'APK · wersja'} {site.androidVersion}</span>
-  </span>
+<a class="apk" href={site.androidDownloadUrl}>
+  <Download size={16} aria-hidden="true" />
+  {en ? 'Download APK' : 'Pobierz APK'} · {site.androidVersion}
 </a>
 
 <style>
-  .android {
+  .apk {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    min-height: 56px;
-    max-width: 100%;
-    padding: 8px 18px;
-    border: 1px solid rgb(255 255 255 / 0.3);
-    border-radius: 14px;
+    gap: 6px;
     color: var(--mist);
-    text-decoration: none;
-  }
-
-  .android:hover {
-    background: rgb(255 255 255 / 0.08);
-    border-color: var(--mist);
-  }
-
-  .android__icon {
-    flex-shrink: 0;
-  }
-
-  .android__text {
-    display: grid;
-    line-height: 1.2;
-  }
-
-  .android__label {
-    font-size: 0.9375rem;
-    font-weight: 700;
-    color: var(--white);
-  }
-
-  .android__version {
-    font-size: 0.75rem;
+    text-underline-offset: 3px;
   }
 </style>

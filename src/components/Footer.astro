@@ -64,6 +64,7 @@ const columns = [
       <p>{en ? 'Created by' : 'Twórca:'} <a href={site.owner.url}>{site.owner.name}</a>, {en ? 'Polish tax ID' : 'NIP'} {site.owner.nip}</p>
       <p>{en ? 'An independent app, unaffiliated with PKP PLK S.A.' : site.disclaimer}</p>
       <p><button type="button" class="footer__consent" data-consent-open>{en ? 'Cookie settings' : 'Ustawienia cookies'}</button></p>
+      <slot />
     </div>
   </div>
 </footer>

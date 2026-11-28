@@ -4,7 +4,6 @@ import { ArrowDown } from '@lucide/astro';
 import Nav from '../Nav.astro';
 import StoreButton from '../StoreButton.astro';
 import NotifyForm from '../NotifyForm.astro';
-import AndroidDownload from '../AndroidDownload.astro';
 import DepartureBoard from '../DepartureBoard.astro';
 
 const en = isEnglish(Astro.url.pathname);
@@ -23,16 +22,15 @@ import { site } from '../../config';
           : 'Odjazdy, perony i opóźnienia ze stacji w całej Polsce — w jednym czytelnym widoku. Bez zakładania konta.'}
       </p>
     </div>
-    <div class="hero__board"><DepartureBoard /></div>
     <div class="hero__actions">
       <div class="hero__ctas">
+        <a class="hero__tests" href="#testy-android">{en ? 'Join the Android beta' : 'Zapisz się do bety na Androidzie'}</a>
         {site.appStoreUrl ? <StoreButton /> : <NotifyForm id="powiadom-hero" />}
-        <AndroidDownload />
-        <a class="hero__more" href="#aplikacja">{en ? 'See how it works' : 'Zobacz, jak działa'} <ArrowDown size={18} aria-hidden="true" /></a>
       </div>
-      <a class="hero__tests" href="#testy-android">{en ? 'Join the Android test' : 'Dołącz do testów na Androidzie'}</a>
+      <a class="hero__more" href="#aplikacja">{en ? 'See how it works' : 'Zobacz, jak działa'} <ArrowDown size={18} aria-hidden="true" /></a>
       <p class="hero__meta mono">{en ? 'Free · iPhone and Android · no account needed' : 'Bezpłatna · iPhone i Android · bez konta'}</p>
     </div>
+    <div class="hero__board"><DepartureBoard /></div>
   </div>
 </section>
 
@@ -103,6 +101,7 @@ import { site } from '../../config';
   }
 
   .hero__more {
+    justify-self: start;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -116,9 +115,21 @@ import { site } from '../../config';
   }
 
   .hero__tests {
-    justify-self: start;
-    color: var(--mist);
-    text-underline-offset: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    background: var(--amber-bright);
+    color: var(--night);
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .hero__tests:hover {
+    background: var(--amber-soft);
   }
 
   .hero__meta {
@@ -129,7 +140,7 @@ import { site } from '../../config';
   @media (max-width: 1023px) {
     .hero__body {
       grid-template-columns: minmax(0, 1fr);
-      grid-template-areas: 'copy' 'board' 'actions';
+      grid-template-areas: 'copy' 'actions' 'board';
       grid-template-rows: none;
       gap: 28px;
       padding-top: 32px;
